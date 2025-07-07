@@ -11,7 +11,7 @@ class UserController extends Controller
      public function index()
     {
         $users = User::where('role', 'user')->get();
-        return view('admin.users.index', compact('users'));
+        return view('admin.staff.index', compact('users'));
     }
 
     // Form tambah user (optional, atau digabung di index)
@@ -36,7 +36,7 @@ class UserController extends Controller
             'role' => 'user', // default role
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dibuat.');
+        return redirect()->route('admin.staff.index')->with('success', 'User berhasil dibuat.');
     }
 
     // Form edit user
@@ -66,7 +66,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui.');
+        return redirect()->route('admin.staff.index')->with('success', 'User berhasil diperbarui.');
     }
 
     // Hapus user
@@ -75,7 +75,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+        return redirect()->route('admin.staff.index')->with('success', 'User berhasil dihapus.');
     }
 }
 

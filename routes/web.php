@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\StaffController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -44,6 +45,12 @@ Route::middleware(['auth'])->group(function () {
         })->name('dashboard');
         
         // Admin Users Management
-        Route::resource('users', UserController::class);
+        Route::resource('staff', UserController::class);
     });
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/staff/create', [StaffController::class, 'create'])->name('admin.staff.create');
+    Route::post('/admin/staff', [StaffController::class, 'store'])->name('admin.staff.store');
+});
+
 });
