@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
         return redirect()->route('admin.dashboard'); // ✅ nama route
     }
 
-    return redirect()->route('dashboard'); // ✅ route default
+    return redirect()->route('staff.dashboard'); // ✅ route default
 }
 
     /**

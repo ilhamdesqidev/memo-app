@@ -25,8 +25,8 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')->name('logout');
 
 // User Dashboard
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/staff/dashboard', function () {
+    return view('/staff/dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Profile Routes
@@ -53,4 +53,6 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/staff', [StaffController::class, 'store'])->name('admin.staff.store');
 });
 
-});
+ 
+    });
+
