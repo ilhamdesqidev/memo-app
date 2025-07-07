@@ -7,7 +7,7 @@
     <!-- Form Tambah User -->
     <div class="bg-white p-6 rounded shadow mb-6">
         <h3 class="text-xl font-semibold mb-4">Tambah User Baru</h3>
-        <form action="{{ route('admin.user.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -58,8 +58,8 @@
                     <td class="border px-4 py-2">{{ $user->email }}</td>
                     <td class="border px-4 py-2 capitalize">{{ $user->role }}</td>
                     <td class="border px-4 py-2 space-x-2">
-                        <a href="{{ route('admin.user.edit', $user->id) }}" class="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500">Edit</a>
-                        <form action="{{ route('admin.user.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                        <a href="{{ route('admin.users.edit', $user->id) }}" class="bg-yellow-400 text-white px-2 py-1 rounded hover:bg-yellow-500">Edit</a>
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">Hapus</button>
