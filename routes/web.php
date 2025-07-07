@@ -52,3 +52,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 
 
 // require __DIR__.'/auth.php';
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin/users', [App\Http\Controllers\Admin\UserController::class, 'index']);
+});
