@@ -21,7 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'jabatan_id',
     ];
+    
 
     /**
      * The attributes that should be hidden for serialization.
@@ -44,5 +47,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    
+        public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class);
     }
 }
