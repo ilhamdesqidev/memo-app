@@ -417,7 +417,7 @@
 
                 <!-- Loading Text -->
                 <p class="text-primary-100 font-medium animate-pulse" id="loading-text">
-                    Sedang memuat...
+                    Sedang memuat....
                 </p>
             </div>
         </div>
