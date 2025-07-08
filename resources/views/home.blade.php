@@ -172,56 +172,56 @@
                             </a>
                             <span class="tooltip-text">User</span>
                         </div>
+                    </div>
 
-                        <!-- User Section - Moved to bottom -->
-                        <div class="mt-auto mb-4 space-y-2">
-                            <!-- User Dropdown -->
-                            <div class="dropdown tooltip relative">
-                                <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
-                                    <div class="flex items-center">
-                                        <div class="user-avatar">
-                                            {{ substr(Auth::user()->name, 0, 1) }}
-                                        </div>
-                                        <div class="sidebar-text">
-                                            <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
-                                            <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
-                                        </div>
+                    <!-- User Profile Section - Moved to bottom -->
+                    <div class="mt-auto mb-4 px-4">
+                        <!-- User Dropdown -->
+                        <div class="dropdown tooltip relative">
+                            <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
+                                <div class="flex items-center">
+                                    <div class="user-avatar">
+                                        {{ substr(Auth::user()->name, 0, 1) }}
                                     </div>
-                                    <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                
-                                <div class="dropdown-content user-dropdown-content absolute left-0 right-0 bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 mx-2 mb-2">
-                                    <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                        Profile
-                                    </a>
-                                    
-                                    <a href="#" class="flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                        Settings
-                                    </a>
+                                    <div class="sidebar-text">
+                                        <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
+                                        <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
+                                    </div>
                                 </div>
-                                <span class="tooltip-text">User Profile</span>
-                            </div>
-
-                            <!-- Logout -->
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="tooltip nav-item flex items-center w-full px-4 py-2 text-white rounded-lg hover:bg-red-600 transition-colors duration-200">
-                                    <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div class="dropdown-content user-dropdown-content absolute left-0 right-0 bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 mx-2 mb-2">
+                                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
-                                    <span class="sidebar-text">Logout</span>
-                                    <span class="tooltip-text">Logout</span>
-                                </button>
-                            </form>
+                                    Profile
+                                </a>
+                                
+                                <a href="#" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    Settings
+                                </a>
+
+                                <div class="border-t border-indigo-700"></div>
+                                
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-red-600 rounded-b-lg">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                        </svg>
+                                        Logout
+                                    </button>
+                                </form>
+                            </div>
+                            <span class="tooltip-text">User Profile</span>
                         </div>
                     </div>
                 </div>
