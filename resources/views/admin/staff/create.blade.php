@@ -11,9 +11,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <h2 class="text-2xl font-bold text-gray-800">Tambah Akun Staff</h2>
+                <h2 class="text-2xl font-bold text-gray-800">Tambah Akun User</h2>
             </div>
-            <p class="text-gray-600">Buat akun staff baru untuk sistem manajemen</p>
+            <p class="text-gray-600">Buat akun user baru untuk sistem manajemen</p>
         </div>
 
         <!-- Success Message -->
@@ -29,8 +29,8 @@
         <!-- Form Card -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800">Informasi Staff</h3>
-                <p class="text-sm text-gray-600 mt-1">Lengkapi data staff yang akan ditambahkan</p>
+                <h3 class="text-lg font-semibold text-gray-800">Informasi User</h3>
+                <p class="text-sm text-gray-600 mt-1">Lengkapi data user yang akan ditambahkan</p>
             </div>
 
             <form method="POST" action="{{ route('admin.staff.store') }}" class="p-6 space-y-6">
