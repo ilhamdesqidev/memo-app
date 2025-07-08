@@ -15,7 +15,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+      public function create(): View
     {
         return view('auth.login');
     }
@@ -23,29 +23,34 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
- public function store(Request $request): RedirectResponse
-{
-    $request->validate([
-        'email' => ['required', 'string', 'email'],
-        'password' => ['required', 'string'],
-    ]);
-
-    if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
         ]);
+
+        if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
+            return back()->withErrors([
+                'email' => 'Email atau password salah.',
+            ]);
+        }
+
+        $request->session()->regenerate();
+
+        $user = Auth::user();
+
+        // Debug log untuk melihat role user
+        \Log::info('User login', ['email' => $user->email, 'role' => $user->role]);
+
+        // Redirect berdasarkan role
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Default redirect untuk user biasa
+        return redirect()->route('staff.dashboard');
     }
-
-    $request->session()->regenerate();
-
-    $user = Auth::user();
-
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard'); // ✅ nama route
-    }
-
-    return redirect()->route('staff.dashboard'); // ✅ route default
-}
 
     /**
      * Destroy an authenticated session.

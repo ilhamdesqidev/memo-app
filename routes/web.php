@@ -24,10 +24,10 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')->name('logout');
 
-// User Dashboard
+// Staff Dashboard - untuk user biasa
 Route::get('/staff/dashboard', function () {
-    return view('/staff/dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('staff.dashboard');
+})->middleware(['auth', 'verified'])->name('staff.dashboard');
 
 // Profile Routes
 Route::middleware('auth')->group(function () {
@@ -36,7 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin Routes - menggunakan middleware sederhana dulu
+// Admin Routes
 Route::middleware(['auth'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         // Admin Dashboard
@@ -44,15 +44,13 @@ Route::middleware(['auth'])->group(function () {
             return view('admin.dashboard');
         })->name('dashboard');
         
-        // Admin Users Management
-        Route::resource('staff', UserController::class);
+        // Routes untuk Staff Management
+        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+        Route::get('/staff/{id}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+        Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        
     });
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/staff/create', [StaffController::class, 'create'])->name('admin.staff.create');
-    Route::post('/admin/staff', [StaffController::class, 'store'])->name('admin.staff.store');
 });
-
- 
-    });
-

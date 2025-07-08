@@ -15,9 +15,20 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->role === 'admin') {
-            return $next($request);
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
-        abort(403, 'Unauthorized');
+
+        if (Auth::user()->role !== 'admin') {
+            // Redirect non-admin users to their dashboard
+            return redirect()->route('staff.dashboard')->with('error', 'Akses ditolak. Anda tidak memiliki izin admin.');
+        }
+
+        return $next($request);
     }
+
+        protected $middlewareAliases = [
+    // ... middleware lainnya
+    'admin' => \App\Http\Middleware\AdminMiddleware::class,
+];
 }
