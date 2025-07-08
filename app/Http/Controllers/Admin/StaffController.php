@@ -7,12 +7,13 @@ use App\Models\User;
 use App\Models\Jabatan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 
 class StaffController extends Controller
 {
     public function index()
     {
-        $users = \App\Models\User::with('jabatan')
+        $users = User::with('jabatan')
             ->where('role', 'user')
             ->orderBy('name')
             ->get();
@@ -43,7 +44,11 @@ class StaffController extends Controller
             'jabatan_id' => $request->jabatan_id,
         ]);
 
-        return redirect()->route('admin.staff.index')->with('success', 'Akun staff berhasil dibuat.');
+        // Clear cache yang berkaitan dengan statistik dashboard
+        $this->clearDashboardCache();
+
+        return redirect()->route('admin.staff.index')
+            ->with('success', 'Akun staff berhasil dibuat. Total pengguna sekarang: ' . User::where('role', 'user')->count());
     }
 
     public function edit($id)
@@ -76,6 +81,9 @@ class StaffController extends Controller
 
         $user->save();
 
+        // Clear cache yang berkaitan dengan statistik dashboard
+        $this->clearDashboardCache();
+
         return redirect()->route('admin.staff.index')->with('success', 'Data staff berhasil diperbarui.');
     }
 
@@ -90,6 +98,39 @@ class StaffController extends Controller
         
         $user->delete();
 
-        return redirect()->route('admin.staff.index')->with('success', 'Staff berhasil dihapus.');
+        // Clear cache yang berkaitan dengan statistik dashboard
+        $this->clearDashboardCache();
+
+        $remainingUsers = User::where('role', 'user')->count();
+
+        return redirect()->route('admin.staff.index')
+            ->with('success', 'Staff berhasil dihapus. Total pengguna sekarang: ' . $remainingUsers);
+    }
+
+    /**
+     * Clear dashboard related cache
+     */
+    private function clearDashboardCache()
+    {
+        // Clear cache keys yang berkaitan dengan statistik dashboard
+        Cache::forget('dashboard_total_users');
+        Cache::forget('dashboard_active_users_today');
+        Cache::forget('dashboard_user_growth_percentage');
+    }
+
+    /**
+     * Get total users count for API or AJAX calls
+     */
+    public function getTotalUsers()
+    {
+        $totalUsers = User::where('role', 'user')->count();
+        $activeUsersToday = User::where('role', 'user')
+            ->whereDate('updated_at', now()->format('Y-m-d'))
+            ->count();
+
+        return response()->json([
+            'total_users' => $totalUsers,
+            'active_users_today' => $activeUsersToday
+        ]);
     }
 }

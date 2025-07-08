@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
+use App\Http\Controllers\Admin\DashboardAdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,6 +24,8 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')->name('logout');
+
+    
 
 // Staff Dashboard - untuk user biasa
 Route::get('/staff/dashboard', function () {
@@ -53,4 +56,12 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
         
     });
+
+    
+// Admin Routes
+Route::prefix('admin')->middleware(['auth:web'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
+});
+
 });

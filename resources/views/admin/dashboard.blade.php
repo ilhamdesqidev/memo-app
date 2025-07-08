@@ -64,12 +64,12 @@
             </div>
         </div>
 
-        <!-- Total User -->
+        <!-- Total User (Dynamic) -->
         <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-purple-500">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-600">Total Pengguna</p>
-                    <p class="text-3xl font-bold text-purple-600">24</p>
+                    <p class="text-3xl font-bold text-purple-600">{{ $totalUsers }}</p>
                 </div>
                 <div class="p-3 bg-purple-100 rounded-full">
                     <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,7 +78,15 @@
                 </div>
             </div>
             <div class="mt-2">
-                <span class="text-sm text-purple-600">5 user aktif hari ini</span>
+                @if($userGrowthPercentage > 0)
+                    <span class="text-sm text-green-600">↑ {{ $userGrowthPercentage }}% dari bulan lalu</span>
+                @elseif($userGrowthPercentage < 0)
+                    <span class="text-sm text-red-600">↓ {{ abs($userGrowthPercentage) }}% dari bulan lalu</span>
+                @else
+                    <span class="text-sm text-gray-600">Tidak ada perubahan</span>
+                @endif
+                <br>
+                <span class="text-sm text-purple-600">{{ $activeUsersToday }} user aktif hari ini</span>
             </div>
         </div>
     </div>
@@ -107,7 +115,7 @@
                 </div>
                 <div>
                     <p class="font-medium text-gray-800">Kelola Pengguna</p>
-                    <p class="text-sm text-gray-600">Tambah/edit pengguna</p>
+                    <p class="text-sm text-gray-600">Tambah/edit pengguna ({{ $totalUsers }})</p>
                 </div>
             </a>
 
