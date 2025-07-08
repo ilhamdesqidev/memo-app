@@ -100,6 +100,19 @@
             bottom: 100%;
             margin-bottom: 8px;
         }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: #4f46e5;
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 0.75rem; /* mr-3 */
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -177,20 +190,27 @@
                         <div class="mt-auto mb-4 space-y-2">
                             <!-- User Dropdown -->
                             <div class="dropdown tooltip relative">
-                                <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
-                                    <div class="flex items-center">
-                                        <div class="user-avatar">
-                                            {{ substr(Auth::user()->name, 0, 1) }}
-                                        </div>
-                                        <div class="sidebar-text">
-                                            <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
-                                            <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
-                                        </div>
+                            <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
+                                <div class="flex items-center">
+                                    <div class="user-avatar mr-3">
+                                        {{ substr(Auth::user()->name, 0, 1) }}
                                     </div>
-                                    <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
+                                    <div class="sidebar-text">
+                                        <div class="flex items-center">
+                                            <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
+                                            @if(Auth::user()->jabatan)
+                                                <span class="ml-2 px-2 py-0.5 text-xs bg-indigo-600 rounded-full">
+                                                    {{ Auth::user()->jabatan->nama }} <!-- Sesuaikan dengan nama kolom di tabel jabatans -->
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
+                                    </div>
+                                </div>
+                                <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
                                 
                                 <div class="dropdown-content user-dropdown-content absolute left-0 right-0 bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 mx-2 mb-2">
                                     <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
