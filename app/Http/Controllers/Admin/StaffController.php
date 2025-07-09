@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Jabatan;
+use App\Models\Divisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
@@ -13,7 +13,7 @@ class StaffController extends Controller
 {
     public function index()
     {
-        $users = User::with('jabatan')
+        $users = User::with('divisi')
             ->where('role', 'user')
             ->orderBy('name')
             ->get();
@@ -23,8 +23,8 @@ class StaffController extends Controller
 
     public function create()
     {
-        $jabatans = Jabatan::orderBy('urutan')->get();
-        return view('admin.staff.create', compact('jabatans'));
+        $divisis = Divisi::orderBy('urutan')->get();
+        return view('admin.staff.create', compact('divisis'));
     }
 
     public function store(Request $request)
@@ -33,7 +33,7 @@ class StaffController extends Controller
             'name'       => 'required|string|max:255',
             'email'      => 'required|string|email|max:255|unique:users',
             'password'   => 'required|string|min:6|confirmed',
-            'jabatan_id' => 'required|exists:jabatans,id',
+            'divisi_id' => 'required|exists:divisis,id',
         ]);
 
         User::create([
@@ -41,7 +41,7 @@ class StaffController extends Controller
             'email'      => $request->email,
             'password'   => Hash::make($request->password),
             'role'       => 'user',
-            'jabatan_id' => $request->jabatan_id,
+            'divisi_id' => $request->divisi_id,
         ]);
 
         // Clear cache yang berkaitan dengan statistik dashboard
@@ -53,10 +53,10 @@ class StaffController extends Controller
 
     public function edit($id)
     {
-        $user = User::with('jabatan')->findOrFail($id);
-        $jabatans = Jabatan::orderBy('urutan')->get();
+        $user = User::with('divisi')->findOrFail($id);
+        $divisis = Divisi::orderBy('urutan')->get();
         
-        return view('admin.staff.edit', compact('user', 'jabatans'));
+        return view('admin.staff.edit', compact('user', 'divisis'));
     }
 
     public function update(Request $request, $id)
@@ -67,12 +67,12 @@ class StaffController extends Controller
             'name'       => 'required|string|max:255',
             'email'      => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password'   => 'nullable|string|min:6|confirmed',
-            'jabatan_id' => 'required|exists:jabatans,id',
+            'divisi_id' => 'required|exists:divisis,id',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->jabatan_id = $request->jabatan_id;
+        $user->divisi_id = $request->divisi_id;
         
         // Only update password if provided
         if ($request->filled('password')) {

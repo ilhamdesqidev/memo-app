@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('jabatans', function (Blueprint $table) {
+        Schema::create('divisis', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
             $table->integer('urutan'); // untuk menentukan tingkatan jabatan
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('jabatans');
+        Schema::dropIfExists('divisis');
     }
 };

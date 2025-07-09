@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
+use App\Http\Controllers\MemoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,5 +64,7 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('admin.dashboard');
 });
+
+Route::get('/staff/memo', [MemoController::class, 'index'])->name('staff.memo');
 
 });

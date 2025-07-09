@@ -22,7 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'jabatan_id',
+        'divisi_id',
     ];
     
 
@@ -55,8 +55,8 @@ class User extends Authenticatable
     return $this->role === 'admin';
 }
 
-        public function jabatan()
+        public function divisi()
     {
-        return $this->belongsTo(Jabatan::class, 'jabatan_id'); // Sesuaikan foreign key jika berbeda
+        return $this->belongsTo(Divisi::class, 'divisi_id'); // Sesuaikan foreign key jika berbeda
     }
 }
