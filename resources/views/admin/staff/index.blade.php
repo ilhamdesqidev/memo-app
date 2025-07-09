@@ -51,8 +51,10 @@
                     <!-- Search Box -->
                     <div class="relative w-full sm:w-64">
                         <input type="text" 
+                               id="searchInput"
                                placeholder="Cari user..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                               onkeyup="searchUsers()">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -99,9 +101,14 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
                     @forelse ($users as $user)
-                    <tr class="hover:bg-gray-50 transition-all duration-200 group">
+                    <tr class="user-row hover:bg-gray-50 transition-all duration-200 group" 
+                        data-name="{{ strtolower($user->name) }}"
+                        data-email="{{ strtolower($user->email) }}"
+                        data-jabatan="{{ strtolower($user->jabatan ?? '') }}"
+                        data-role="{{ strtolower($user->role) }}"
+                        data-divisi="{{ strtolower($user->divisi->nama) }}">
                         <td class="px-4 py-3 whitespace-nowrap">
                             <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors duration-200">
                                 {{ $loop->iteration }}
@@ -197,7 +204,7 @@
             </table>
         </div>
         
-        <!-- Pagination (if needed) -->
+        <!-- Pagination -->
         @if(method_exists($users, 'links'))
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
             {{ $users->links() }}
@@ -206,7 +213,79 @@
     </div>
 </div>
 
-<!-- Custom Styles -->
+<script>
+function searchUsers() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll('.user-row');
+    let hasVisibleRows = false;
+    const emptyState = document.querySelector('.empty-state');
+
+    // Jika search kosong, tampilkan semua row dan hapus empty state jika ada
+    if (filter === '') {
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+        if (emptyState) {
+            emptyState.remove();
+        }
+        return;
+    }
+
+    rows.forEach(row => {
+        const name = row.getAttribute('data-name');
+        const email = row.getAttribute('data-email');
+        const jabatan = row.getAttribute('data-jabatan');
+        const role = row.getAttribute('data-role');
+        const divisi = row.getAttribute('data-divisi');
+        
+        if (name.includes(filter) || 
+            email.includes(filter) || 
+            jabatan.includes(filter) || 
+            role.includes(filter) || 
+            divisi.includes(filter)) {
+            row.style.display = '';
+            hasVisibleRows = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    // Tampilkan pesan jika tidak ada hasil
+    const tbody = document.getElementById('usersTableBody');
+    if (!hasVisibleRows && rows.length > 0) {
+        if (!emptyState) {
+            tbody.insertAdjacentHTML('beforeend', `
+                <tr class="empty-state">
+                    <td colspan="7" class="px-6 py-16 text-center">
+                        <div class="text-gray-500">
+                            <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ditemukan hasil</h3>
+                            <p class="text-sm text-gray-500 mb-4">Tidak ada user yang sesuai dengan pencarian "${filter}"</p>
+                            <button onclick="clearSearch()" class="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-md border border-gray-300 transition-colors duration-200">
+                                Reset Pencarian
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        }
+    } else if (emptyState && hasVisibleRows) {
+        emptyState.remove();
+    }
+}
+
+function clearSearch() {
+    const input = document.getElementById('searchInput');
+    input.value = '';
+    searchUsers();
+}
+</script>
+
 <style>
     .group:hover .group-hover\:bg-blue-100 {
         background-color: #dbeafe;
@@ -215,7 +294,6 @@
         color: #2563eb;
     }
     
-    /* Smooth hover animations */
     tr {
         transition: all 0.2s ease;
     }
@@ -224,7 +302,6 @@
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
-    /* Better responsive table */
     @media (max-width: 768px) {
         table {
             display: block;
