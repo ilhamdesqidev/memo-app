@@ -94,7 +94,7 @@
                                 </svg>
                             </div>
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Username</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Jabatan</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Divisi</th>
@@ -105,7 +105,7 @@
                     @forelse ($users as $user)
                     <tr class="user-row hover:bg-gray-50 transition-all duration-200 group" 
                         data-name="{{ strtolower($user->name) }}"
-                        data-email="{{ strtolower($user->email) }}"
+                        data-username="{{ strtolower($user->username) }}"
                         data-jabatan="{{ strtolower($user->jabatan ?? '') }}"
                         data-role="{{ strtolower($user->role) }}"
                         data-divisi="{{ strtolower($user->divisi->nama) }}">
@@ -130,7 +130,7 @@
                                 <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
-                                <div class="text-sm text-gray-600 truncate max-w-xs">{{ $user->email }}</div>
+                                <div class="text-sm text-gray-600 truncate max-w-xs">{{ $user->username }}</div>
                             </div>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
@@ -234,13 +234,13 @@ function searchUsers() {
 
     rows.forEach(row => {
         const name = row.getAttribute('data-name');
-        const email = row.getAttribute('data-email');
+        const username = row.getAttribute('data-username');
         const jabatan = row.getAttribute('data-jabatan');
         const role = row.getAttribute('data-role');
         const divisi = row.getAttribute('data-divisi');
         
         if (name.includes(filter) || 
-            email.includes(filter) || 
+            username.includes(filter) || 
             jabatan.includes(filter) || 
             role.includes(filter) || 
             divisi.includes(filter)) {

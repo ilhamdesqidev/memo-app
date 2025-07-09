@@ -1,4 +1,4 @@
-@extends('layouts.app') <!-- Sesuaikan dengan layout utama Anda -->
+@extends('home') <!-- Sesuaikan dengan layout utama Anda -->
 
 @section('content')
 

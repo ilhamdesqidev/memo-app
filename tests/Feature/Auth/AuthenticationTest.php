@@ -19,10 +19,13 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'username' => 'testuser',
+            'password' => bcrypt('password'),
+        ]);
 
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'username' => 'testuser', // Changed from email to username
             'password' => 'password',
         ]);
 
@@ -32,11 +35,29 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'username' => 'testuser',
+            'password' => bcrypt('password'),
+        ]);
 
         $this->post('/login', [
-            'email' => $user->email,
+            'username' => 'testuser', // Changed from email to username
             'password' => 'wrong-password',
+        ]);
+
+        $this->assertGuest();
+    }
+
+    public function test_users_can_not_authenticate_with_invalid_username(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'testuser',
+            'password' => bcrypt('password'),
+        ]);
+
+        $this->post('/login', [
+            'username' => 'nonexistentuser', // Test invalid username
+            'password' => 'password',
         ]);
 
         $this->assertGuest();
@@ -44,7 +65,9 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_logout(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create([
+            'username' => 'testuser',
+        ]);
 
         $response = $this->actingAs($user)->post('/logout');
 

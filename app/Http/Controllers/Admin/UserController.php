@@ -17,27 +17,27 @@ class UserController extends Controller
     // Form tambah user (optional, atau digabung di index)
     public function create()
     {
+        
         return view('admin.users.create');
     }
 
     // Simpan user baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+   public function store(StoreUserRequest $request)
+{
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user', // default role
-        ]);
+    $user = User::create([
+        'name' => $request->name,
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role,
+        'divisi_id' => $request->divisi_id
+    ]);
+    
 
-        return redirect()->route('admin.staff.index')->with('success', 'User berhasil dibuat.');
-    }
+    return redirect()->route('admin.users.index')
+        ->with('success', 'User berhasil ditambahkan');
+}
 
     // Form edit user
     public function edit($id)

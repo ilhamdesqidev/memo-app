@@ -30,33 +30,23 @@ class StaffController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'email'      => 'required|string|email|max:255|unique:users',
-            'password'   => 'required|string|min:8|confirmed',
-            'jabatan'    => 'required|string|max:255',
-            'divisi_id'  => 'required|exists:divisis,id',
-        ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'jabatan.required' => 'Jabatan wajib diisi.',
-            'divisi_id.required' => 'Divisi wajib dipilih.',
-            'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
-        ]);
 
-        User::create([
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'password'   => Hash::make($request->password),
-            'jabatan'    => $request->jabatan,
-            'role'       => 'user',
-            'divisi_id'  => $request->divisi_id,
-        ]);
+        $request->validate([
+    'name'       => 'required|string|max:255',
+    'username'   => 'required|string|max:255|unique:users', // Ganti email dengan username
+    'password'   => 'required|string|min:8|confirmed',
+    'jabatan'    => 'required|string|max:255',
+    'divisi_id'  => 'required|exists:divisis,id',
+]);
+
+User::create([
+    'name'       => $request->name,
+    'username'   => $request->username, // Ganti email dengan username
+    'password'   => Hash::make($request->password),
+    'jabatan'    => $request->jabatan,
+    'role'       => 'user',
+    'divisi_id'  => $request->divisi_id,
+]);
 
         // Clear cache yang berkaitan dengan statistik dashboard
         $this->clearDashboardCache();
