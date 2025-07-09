@@ -142,61 +142,65 @@
                 <div class="space-y-4">
                     <h4 class="font-medium text-gray-900 border-b border-gray-200 pb-2">Keamanan Akun</h4>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Password -->
-                        <div class="md:col-span-1">
+                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Password -->
+                    <div class="md:col-span-1">
+                        <div class="flex items-baseline">
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                                 Password Baru
-                                <span class="text-gray-500 text-xs">(Kosongkan jika tidak ingin mengubah)</span>
                             </label>
-                            <div class="relative">
-                                <input type="password" 
-                                       name="password" 
-                                       id="password" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('password') border-red-500 @enderror"
-                                       placeholder="Minimal 8 karakter">
-                                <button type="button" 
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        onclick="togglePassword('password')">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            @error('password') 
-                                <p class="text-red-500 text-sm mt-1 flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    {{ $message }}
-                                </p> 
-                            @enderror
+                            <span class="text-gray-500 text-xs ml-1">(Kosongkan jika tidak ingin mengubah)</span>
                         </div>
+                        <div class="relative">
+                            <input type="password" 
+                                name="password" 
+                                id="password" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('password') border-red-500 @enderror"
+                                placeholder="Minimal 8 karakter">
+                            <button type="button" 
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onclick="togglePassword('password')">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        @error('password') 
+                            <p class="text-red-500 text-sm mt-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p> 
+                        @enderror
+                    </div>
 
-                        <!-- Password Confirmation -->
-                        <div class="md:col-span-1">
+                    <!-- Password Confirmation -->
+                    <div class="md:col-span-1">
+                        <div class="flex items-baseline">
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                                 Konfirmasi Password
-                                <span class="text-gray-500 text-xs">(Jika mengubah password)</span>
                             </label>
-                            <div class="relative">
-                                <input type="password" 
-                                       name="password_confirmation" 
-                                       id="password_confirmation" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                       placeholder="Ulangi password baru">
-                                <button type="button" 
-                                        class="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                        onclick="togglePassword('password_confirmation')">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                            </div>
+                            <span class="text-gray-500 text-xs ml-1">(Jika mengubah password)</span>
+                        </div>
+                        <div class="relative">
+                            <input type="password" 
+                                name="password_confirmation" 
+                                id="password_confirmation" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                placeholder="Ulangi password baru">
+                            <button type="button" 
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                    onclick="togglePassword('password_confirmation')">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
+                </div>
 
                     <!-- Password Info -->
                     <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">

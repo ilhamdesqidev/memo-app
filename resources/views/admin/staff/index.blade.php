@@ -8,8 +8,8 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">Manajemen User</h1>
                 <p class="text-gray-600 flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="currentColor" viewBox="0 0 24 24" >
+                        <path d="M5 5A2 2 0 1 0 5 9 2 2 0 1 0 5 5z"></path><path d="m19.5,10h-.7c-.84,0-1.61.42-2.08,1.11l-3.26,4.89h-2.93l-3.26-4.89c-.46-.7-1.24-1.11-2.08-1.11h-.7c-1.38,0-2.5,1.12-2.5,2.5v5.5h5v-3.7l1.87,2.81c.37.56.99.89,1.66.89h2.93c.67,0,1.29-.33,1.66-.89l1.87-2.81v3.7h5v-5.5c0-1.38-1.12-2.5-2.5-2.5Z"></path><path d="M19 5A2 2 0 1 0 19 9 2 2 0 1 0 19 5z"></path><path d="m14.51,10.17c.65-.67.65-1.74,0-2.41-.66-.67-1.69-.67-2.34,0l-.17.17-.17-.17c-.65-.67-1.69-.67-2.34,0-.65.68-.65,1.74,0,2.41l2.51,2.58,2.51-2.58Z"></path>
                     </svg>
                     Kelola pengguna sistem dengan mudah dan efisien
                 </p>
@@ -40,8 +40,8 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-2a2 2 0 00-2-2h-2l-2-2h-3a2 2 0 01-2-2z"></path>
+                        <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="#NaNNaNNaN" viewBox="0 0 24 24" >
+                            <path d="m20,3H4c-1.1,0-2,.9-2,2v14c0,1.1.9,2,2,2h16c1.1,0,2-.9,2-2V5c0-1.1-.9-2-2-2Zm0,5.25h-10v-3.25h10v3.25Zm-10,2h10v3.5s-10,0-10,0v-3.5Zm-2,3.5h-4v-3.5h4v3.5Zm0-8.75v3.25h-4v-3.25h4Zm-4,14v-3.25h4v3.25h-4Zm6,0v-3.25h10v3.25s-10,0-10,0Z"></path>
                         </svg>
                         Daftar User
                     </h3>
