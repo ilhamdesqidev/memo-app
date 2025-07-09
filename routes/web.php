@@ -35,9 +35,11 @@ Route::get('/staff/dashboard', function () {
 
 // Profile Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Admin Routes
@@ -66,5 +68,16 @@ Route::prefix('admin')->middleware(['auth:web'])->group(function () {
 });
 
 Route::get('/staff/memo', [MemoController::class, 'index'])->name('staff.memo');
+
+});
+
+// routes/web.php
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+    
+    // Route lainnya...
+});
 
 });
