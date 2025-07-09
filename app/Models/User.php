@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role',
         'divisi_id',
+        'jabatan',
     ];
     
 

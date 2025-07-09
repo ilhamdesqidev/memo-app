@@ -8,6 +8,7 @@ use App\Models\Divisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
@@ -32,16 +33,29 @@ class StaffController extends Controller
         $request->validate([
             'name'       => 'required|string|max:255',
             'email'      => 'required|string|email|max:255|unique:users',
-            'password'   => 'required|string|min:6|confirmed',
-            'divisi_id' => 'required|exists:divisis,id',
+            'password'   => 'required|string|min:8|confirmed',
+            'jabatan'    => 'required|string|max:255',
+            'divisi_id'  => 'required|exists:divisis,id',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'divisi_id.required' => 'Divisi wajib dipilih.',
+            'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
         ]);
 
         User::create([
             'name'       => $request->name,
             'email'      => $request->email,
             'password'   => Hash::make($request->password),
+            'jabatan'    => $request->jabatan,
             'role'       => 'user',
-            'divisi_id' => $request->divisi_id,
+            'divisi_id'  => $request->divisi_id,
         ]);
 
         // Clear cache yang berkaitan dengan statistik dashboard
@@ -65,13 +79,32 @@ class StaffController extends Controller
 
         $request->validate([
             'name'       => 'required|string|max:255',
-            'email'      => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password'   => 'nullable|string|min:6|confirmed',
-            'divisi_id' => 'required|exists:divisis,id',
+            'email'      => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'password'   => 'nullable|string|min:8|confirmed',
+            'jabatan'    => 'required|string|max:255',
+            'divisi_id'  => 'required|exists:divisis,id',
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan oleh user lain.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'divisi_id.required' => 'Divisi wajib dipilih.',
+            'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
         ]);
 
+        // Update user data
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->jabatan = $request->jabatan;
         $user->divisi_id = $request->divisi_id;
         
         // Only update password if provided
@@ -84,18 +117,23 @@ class StaffController extends Controller
         // Clear cache yang berkaitan dengan statistik dashboard
         $this->clearDashboardCache();
 
-        return redirect()->route('admin.staff.index')->with('success', 'Data staff berhasil diperbarui.');
+        return redirect()->route('admin.staff.index')
+            ->with('success', 'Data staff berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $user = User::findOrFail($id);
         
-        // Optional: Check if user has any related data before deletion
+        // Check if user has any related data before deletion
+        // You can add your own logic here based on your application needs
+        // Example:
         // if ($user->hasRelatedData()) {
-        //     return redirect()->route('admin.staff.index')->with('error', 'Staff tidak dapat dihapus karena memiliki data terkait.');
+        //     return redirect()->route('admin.staff.index')
+        //         ->with('error', 'Staff tidak dapat dihapus karena memiliki data terkait.');
         // }
         
+        $userName = $user->name;
         $user->delete();
 
         // Clear cache yang berkaitan dengan statistik dashboard
@@ -104,7 +142,13 @@ class StaffController extends Controller
         $remainingUsers = User::where('role', 'user')->count();
 
         return redirect()->route('admin.staff.index')
-            ->with('success', 'Staff berhasil dihapus. Total pengguna sekarang: ' . $remainingUsers);
+            ->with('success', "Staff '{$userName}' berhasil dihapus. Total pengguna sekarang: {$remainingUsers}");
+    }
+
+    public function show($id)
+    {
+        $user = User::with('divisi')->findOrFail($id);
+        return view('admin.staff.show', compact('user'));
     }
 
     /**
@@ -116,6 +160,7 @@ class StaffController extends Controller
         Cache::forget('dashboard_total_users');
         Cache::forget('dashboard_active_users_today');
         Cache::forget('dashboard_user_growth_percentage');
+        Cache::forget('dashboard_users_by_divisi');
     }
 
     /**
@@ -130,7 +175,48 @@ class StaffController extends Controller
 
         return response()->json([
             'total_users' => $totalUsers,
-            'active_users_today' => $activeUsersToday
+            'active_users_today' => $activeUsersToday,
+            'users_by_divisi' => User::with('divisi')
+                ->where('role', 'user')
+                ->selectRaw('divisi_id, count(*) as total')
+                ->groupBy('divisi_id')
+                ->get()
         ]);
+    }
+
+    /**
+     * Bulk actions for users
+     */
+    public function bulkAction(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:delete,activate,deactivate',
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'exists:users,id'
+        ]);
+
+        $users = User::whereIn('id', $request->user_ids)->get();
+        $count = $users->count();
+
+        switch ($request->action) {
+            case 'delete':
+                User::whereIn('id', $request->user_ids)->delete();
+                $message = "{$count} staff berhasil dihapus.";
+                break;
+            case 'activate':
+                // Assuming you have an 'active' column
+                User::whereIn('id', $request->user_ids)->update(['active' => true]);
+                $message = "{$count} staff berhasil diaktifkan.";
+                break;
+            case 'deactivate':
+                // Assuming you have an 'active' column
+                User::whereIn('id', $request->user_ids)->update(['active' => false]);
+                $message = "{$count} staff berhasil dinonaktifkan.";
+                break;
+        }
+
+        $this->clearDashboardCache();
+
+        return redirect()->route('admin.staff.index')->with('success', $message);
     }
 }

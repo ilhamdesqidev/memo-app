@@ -13,7 +13,7 @@
                 </a>
                 <h2 class="text-2xl font-bold text-gray-800">Edit User</h2>
             </div>
-            <p class="text-gray-600">Edit informasi user yang sudah ada</p>
+            <p class="text-gray-600">Edit informasi user yang sudah ada dalam sistem</p>
         </div>
 
         <!-- Success Message -->
@@ -89,6 +89,29 @@
                         </div>
                     </div>
 
+                    <!-- Jabatan -->
+                    <div>
+                        <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">
+                            Jabatan
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               name="jabatan" 
+                               id="jabatan" 
+                               required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror" 
+                               value="{{ old('jabatan', $user->jabatan) }}"
+                               placeholder="Masukkan jabatan, contoh: Manager, Staff, Supervisor">
+                        @error('jabatan') 
+                            <p class="text-red-500 text-sm mt-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p> 
+                        @enderror
+                    </div>
+
                     <!-- Position -->
                     <div>
                         <label for="divisi_id" class="block text-sm font-medium text-gray-700 mb-2">
@@ -157,9 +180,9 @@
                         <div class="md:col-span-1">
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">
                                 Konfirmasi Password
+                                <span class="text-gray-500 text-xs">(Jika mengubah password)</span>
                             </label>
                             <div class="relative">
-                                <p class="text-gray-500 text-xs mb-1">(Jika mengubah password)</p>
                                 <input type="password" 
                                        name="password_confirmation" 
                                        id="password_confirmation" 
@@ -174,7 +197,6 @@
                                     </svg>
                                 </button>
                             </div>
-                            
                         </div>
                     </div>
 
@@ -186,10 +208,26 @@
                             </svg>
                             <div>
                                 <h5 class="text-sm font-medium text-amber-800">Informasi Password:</h5>
-                                <p class="text-sm text-amber-700 mt-1">
-                                    Kosongkan field password jika tidak ingin mengubah password saat ini. 
-                                    Jika ingin mengubah, pastikan password baru minimal 8 karakter.
-                                </p>
+                                <ul class="text-sm text-amber-700 mt-1 space-y-1">
+                                    <li class="flex items-center">
+                                        <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Kosongkan field password jika tidak ingin mengubah
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Password baru minimal 8 karakter
+                                    </li>
+                                    <li class="flex items-center">
+                                        <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        Kombinasi huruf dan angka direkomendasikan
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
