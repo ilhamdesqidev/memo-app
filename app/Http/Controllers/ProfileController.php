@@ -14,47 +14,41 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+
+     public function index()
+     {
+         $user = Auth::user();
+         return view('profile.index', compact('user'));
+     }
+
+    public function edit()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
+    }
+
+    public function update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.Auth::id(),
         ]);
+
+        Auth::user()->update($request->only('name', 'email'));
+
+        return back()->with('success', 'Profile updated successfully.');
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        $request->validate([
+            'password' => 'required|current_password',
         ]);
 
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect('/');
     }
 }
