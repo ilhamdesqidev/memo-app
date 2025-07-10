@@ -54,11 +54,20 @@ Route::middleware('auth')->group(function () {
         Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
     });
 
-    // Memo Routes
-    Route::get('/staff/memo', [MemoController::class, 'index'])->name('staff.memo');
+// Memo Routes
+Route::prefix('staff/memo')->name('staff.memo.')->group(function () {
+    Route::get('/', [MemoController::class, 'index'])->name('index');
+    Route::get('/create', [MemoController::class, 'create'])->name('create');
+    Route::post('/', [MemoController::class, 'store'])->name('store');
+    Route::get('/{id}', [MemoController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [MemoController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [MemoController::class, 'update'])->name('update');
+    Route::delete('/{id}', [MemoController::class, 'destroy'])->name('destroy');
 });
 
 // Default dashboard route (bisa dihapus jika tidak digunakan)
 Route::get('/dashboard', function () {
     return redirect()->route('staff.dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+});

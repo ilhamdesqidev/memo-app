@@ -3,62 +3,98 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Memo;
+use Illuminate\Support\Facades\Storage;
 
 class MemoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return view('staff.memo');
+        $memos = Memo::latest()->get();
+        return view('staff.memo.index', compact('memos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('staff.memo.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'nomor' => 'required|string|max:50|unique:memos',
+            'tanggal' => 'required|date',
+            'kepada' => 'required|string|max:100',
+            'dari' => 'required|string|max:100',
+            'perihal' => 'required|string|max:200',
+            'lampiran' => 'nullable|string|max:50',
+            'isi' => 'required|string',
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        if ($request->hasFile('signature')) {
+            $signaturePath = $request->file('signature')->store('signatures', 'public');
+            $validated['signature_path'] = $signaturePath;
+        }
+
+        Memo::create($validated);
+
+        return redirect()->route('staff.memo.index')
+            ->with('success', 'Memo berhasil dibuat!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $memo = Memo::findOrFail($id);
+        return view('staff.memo.show', compact('memo'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $memo = Memo::findOrFail($id);
+        return view('staff.memo.edit', compact('memo'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $memo = Memo::findOrFail($id);
+
+        $validated = $request->validate([
+            'nomor' => 'required|string|max:50|unique:memos,nomor,'.$id,
+            'tanggal' => 'required|date',
+            'kepada' => 'required|string|max:100',
+            'dari' => 'required|string|max:100',
+            'perihal' => 'required|string|max:200',
+            'lampiran' => 'nullable|string|max:50',
+            'isi' => 'required|string',
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        if ($request->hasFile('signature')) {
+            if ($memo->signature_path) {
+                Storage::disk('public')->delete($memo->signature_path);
+            }
+            $signaturePath = $request->file('signature')->store('signatures', 'public');
+            $validated['signature_path'] = $signaturePath;
+        }
+
+        $memo->update($validated);
+
+        return redirect()->route('staff.memo.index')
+            ->with('success', 'Memo berhasil diperbarui!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $memo = Memo::findOrFail($id);
+        
+        if ($memo->signature_path) {
+            Storage::disk('public')->delete($memo->signature_path);
+        }
+        
+        $memo->delete();
+
+        return redirect()->route('staff.memo.index')
+            ->with('success', 'Memo berhasil dihapus!');
     }
 }
