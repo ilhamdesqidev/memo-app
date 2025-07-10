@@ -63,53 +63,51 @@ User::create([
         return view('admin.staff.edit', compact('user', 'divisis'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+   public function update(Request $request, $id)
+{
+    $user = User::findOrFail($id);
 
-        $request->validate([
-            'name'       => 'required|string|max:255',
-            'email'      => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($user->id),
-            ],
-            'password'   => 'nullable|string|min:8|confirmed',
-            'jabatan'    => 'required|string|max:255',
-            'divisi_id'  => 'required|exists:divisis,id',
-        ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah digunakan oleh user lain.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'jabatan.required' => 'Jabatan wajib diisi.',
-            'divisi_id.required' => 'Divisi wajib dipilih.',
-            'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
-        ]);
+    $request->validate([
+        'name'       => 'required|string|max:255',
+        'username'   => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('users')->ignore($user->id),
+        ],
+        'password'   => 'nullable|string|min:8|confirmed',
+        'jabatan'    => 'required|string|max:255',
+        'divisi_id'  => 'required|exists:divisis,id',
+    ], [
+        'name.required' => 'Nama lengkap wajib diisi.',
+        'username.required' => 'Username wajib diisi.',
+        'username.unique' => 'Username sudah digunakan oleh user lain.',
+        'password.min' => 'Password minimal 8 karakter.',
+        'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        'jabatan.required' => 'Jabatan wajib diisi.',
+        'divisi_id.required' => 'Divisi wajib dipilih.',
+        'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
+    ]);
 
-        // Update user data
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->jabatan = $request->jabatan;
-        $user->divisi_id = $request->divisi_id;
-        
-        // Only update password if provided
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        $user->save();
-
-        // Clear cache yang berkaitan dengan statistik dashboard
-        $this->clearDashboardCache();
-
-        return redirect()->route('admin.staff.index')
-            ->with('success', 'Data staff berhasil diperbarui.');
+    // Update user data
+    $user->name = $request->name;
+    $user->username = $request->username;
+    $user->jabatan = $request->jabatan;
+    $user->divisi_id = $request->divisi_id;
+    
+    // Only update password if provided
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
     }
+
+    $user->save();
+
+    // Clear cache yang berkaitan dengan statistik dashboard
+    $this->clearDashboardCache();
+
+    return redirect()->route('admin.staff.index')
+        ->with('success', 'Data staff berhasil diperbarui.');
+}
 
     public function destroy($id)
     {
