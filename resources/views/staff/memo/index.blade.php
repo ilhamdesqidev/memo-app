@@ -264,8 +264,8 @@
         </div>
     @else
         <div class="memo-grid">
-            @foreach($memos as $memo)
-                <div class="memo-card">
+           @foreach($memos as $memo)
+            <div class="memo-card">
                     <div class="memo-header">
                         <div class="memo-number">{{ $memo->nomor }}</div>
                        <div class="memo-date">{{ $memo->tanggal->format('d M Y') }}</div>

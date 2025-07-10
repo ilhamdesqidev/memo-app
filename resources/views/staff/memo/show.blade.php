@@ -3,166 +3,116 @@
 @section('content')
 <div class="p-6">
     <div class="max-w-4xl mx-auto">
-        <!-- Header -->
+        <!-- Header Section -->
         <div class="mb-8">
             <div class="flex items-center mb-4">
-                <a href="{{ route('staff.memo.index') }}" class="text-gray-600 hover:text-gray-800 mr-3 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
+                <a href="{{ route('staff.memo.index') }}" class="text-gray-600 hover:text-gray-800 mr-3">
+                    <i class="fas fa-arrow-left"></i>
                 </a>
                 <h2 class="text-2xl font-bold text-gray-800">Detail Memo</h2>
             </div>
-            <p class="text-gray-600">Lihat informasi lengkap tentang memo ini termasuk tanda tangan digital</p>
         </div>
 
         <!-- Memo Card -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <!-- Header Section -->
-            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <span class="text-lg font-semibold text-gray-800">Memo</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-3">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                            {{ $memo->nomor }}
-                        </span>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 border border-gray-200">
-                            {{ \Carbon\Carbon::parse($memo->tanggal)->format('d F Y') }}
-                        </span>
-                    </div>
+        <div class="bg-white rounded-lg shadow-md border border-gray-200">
+            <!-- Memo Header -->
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="flex justify-between items-center">
+                    <span class="font-semibold text-blue-600">No. {{ $memo->nomor }}</span>
+                    <span class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($memo->tanggal)->format('d F Y') }}</span>
                 </div>
             </div>
 
-            <!-- Content Section -->
+            <!-- Memo Content -->
             <div class="p-6 space-y-6">
-                <!-- Memo Information -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Kepada -->
-                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
-                        <div class="flex items-center mb-2">
-                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                            <span class="text-sm font-medium text-blue-600 uppercase tracking-wide">Kepada</span>
-                        </div>
-                        <p class="text-lg font-semibold text-gray-800">{{ $memo->kepada }}</p>
+                <!-- Basic Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Kepada</p>
+                        <p class="text-lg">{{ $memo->kepada }}</p>
                     </div>
-
-                    <!-- Dari -->
-                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-green-500">
-                        <div class="flex items-center mb-2">
-                            <svg class="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                            <span class="text-sm font-medium text-green-600 uppercase tracking-wide">Dari</span>
-                        </div>
-                        <p class="text-lg font-semibold text-gray-800">{{ $memo->dari }}</p>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Dari</p>
+                        <p class="text-lg">{{ $memo->dari }}</p>
                     </div>
                 </div>
 
                 <!-- Perihal -->
-                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-purple-500">
-                    <div class="flex items-center mb-2">
-                        <svg class="w-4 h-4 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                        </svg>
-                        <span class="text-sm font-medium text-purple-600 uppercase tracking-wide">Perihal</span>
-                    </div>
-                    <p class="text-lg font-semibold text-gray-800">{{ $memo->perihal }}</p>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Perihal</p>
+                    <p class="text-lg font-semibold">{{ $memo->perihal }}</p>
                 </div>
 
                 <!-- Isi Memo -->
-                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <span class="text-sm font-medium text-gray-600 uppercase tracking-wide">Isi Memo</span>
-                    </div>
-                    <div class="prose prose-gray max-w-none">
-                        <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ $memo->isi }}</p>
+                <div class="border-t border-gray-200 pt-4">
+                    <p class="text-sm font-medium text-gray-500 mb-2">Isi Memo</p>
+                    <div class="prose max-w-none">
+                        {!! nl2br(e($memo->isi)) !!}
                     </div>
                 </div>
 
-                <!-- Digital Signature -->
+                <!-- Signature Section -->
                 @if($memo->signature)
-                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                    <div class="flex items-center mb-4">
-                        <svg class="w-5 h-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                        <span class="text-sm font-medium text-indigo-600 uppercase tracking-wide">Tanda Tangan Digital</span>
-                    </div>
-                    <div class="flex justify-end">
-                        <div class="text-center bg-white p-6 rounded-lg border border-gray-200 shadow-sm" style="max-width: 300px;">
-                            @if(pathinfo($memo->signature, PATHINFO_EXTENSION) === 'pdf')
-                                <embed src="{{ asset('storage/' . $memo->signature) }}" 
-                                       type="application/pdf" 
-                                       width="250" 
-                                       height="150" 
-                                       class="border rounded-lg mb-4 shadow-sm">
-                            @else
-                                <img src="{{ asset('storage/' . $memo->signature) }}" 
-                                     alt="Tanda Tangan" 
-                                     class="max-h-32 mx-auto border rounded-lg mb-4 shadow-sm">
-                            @endif
-                            <div class="pt-3 border-t border-gray-200">
-                                <p class="font-semibold text-indigo-600">{{ $memo->dari }}</p>
-                                <p class="text-sm text-gray-500 mt-1">Penandatangan</p>
+                <div class="mt-6 border-t pt-4">
+                    <h3 class="text-lg font-medium mb-2">Tanda Tangan</h3>
+                    
+                    @if(file_exists(storage_path('app/public/'.$memo->signature)))
+                        @if(Str::endsWith($memo->signature, '.pdf'))
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <embed src="{{ url('storage/'.$memo->signature) }}" 
+                                type="application/pdf"
+                                width="100%"
+                                height="300px">
+                            <p class="text-center mt-2 text-sm text-gray-500">
+                                {{ $memo->dari }}
+                            </p>
+                        </div>
+                        @else
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <img src="{{ url('storage/'.$memo->signature) }}" 
+                                alt="Tanda Tangan"
+                                class="max-h-40 mx-auto mb-2">
+                            <p class="text-sm text-gray-500">
+                                {{ $memo->dari }}
+                            </p>
+                        </div>
+                        @endif
+                    @else
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-yellow-700">
+                                    File tanda tangan tidak ditemukan di: 
+                                    <code class="bg-yellow-100 px-1">storage/app/public/{{ $memo->signature }}</code>
+                                </p>
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
                 @endif
             </div>
 
             <!-- Action Buttons -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                <div class="flex flex-wrap justify-end gap-3">
-                    <button onclick="window.print()" 
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                        </svg>
-                        Cetak
+            <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
+                <a href="{{ route('staff.memo.edit', $memo->id) }}" 
+                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                </a>
+                <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" 
+                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')">
+                        <i class="fas fa-trash mr-1"></i> Hapus
                     </button>
-                    
-                    <a href="{{ route('staff.memo.index') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                        Kembali
-                    </a>
-                    
-                    <a href="{{ route('staff.memo.edit', $memo->id) }}" 
-                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        Edit
-                    </a>
-                    
-                    <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                            Hapus
-                        </button>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>

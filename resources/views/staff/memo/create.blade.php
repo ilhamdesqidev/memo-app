@@ -185,6 +185,13 @@
         display: none;
     }
     
+    .signature-preview {
+        max-width: 100%;
+        max-height: 150px;
+        display: block;
+        margin: 0 auto;
+    }
+    
     .form-actions {
         display: flex;
         gap: 15px;
@@ -363,7 +370,7 @@
                 </div>
                 <div class="form-group">
                     <label for="dari">Dari</label>
-                    <input type="text" id="dari" name="dari" placeholder="Nama pengirim memo" required>
+                    <input type="text" id="dari" name="dari" placeholder="Nama pengirim memo" required value="{{ Auth::user()->name }}" readonly>
                 </div>
             </div>
 
@@ -380,8 +387,14 @@
             <div class="signature-upload">
                 <label for="signature">Tanda Tangan Digital</label>
                 <div class="signature-area" onclick="document.getElementById('signature').click()">
-                    <i class="fas fa-signature"></i>
-                    <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
+                    @if(Auth::user()->signature)
+                        <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="signature-preview">
+                        <p class="mt-2">Klik untuk mengganti tanda tangan</p>
+                        <input type="hidden" name="use_profile_signature" value="1">
+                    @else
+                        <i class="fas fa-signature"></i>
+                        <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
+                    @endif
                     <input type="file" id="signature" name="signature" accept=".jpg,.jpeg,.png,.pdf">
                 </div>
             </div>
@@ -463,7 +476,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    });
+        
+        return isValid;
+    }
     
     // Handle signature file input
     const signatureInput = document.getElementById('signature');
@@ -490,18 +505,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            signatureArea.innerHTML = `
-                <i class="fas fa-check-circle" style="color: #10b981; font-size: 2.5rem; margin-bottom: 15px;"></i>
-                <p style="color: #10b981; margin: 0; font-weight: 600;">Tanda tangan berhasil diunggah</p>
-                <p style="color: #6b7280; margin: 5px 0 0 0; font-size: 0.9rem;">${fileName} (${fileSize} MB)</p>
-            `;
-            signatureArea.style.borderColor = '#10b981';
-            signatureArea.style.background = '#f0fdf4';
+            // Preview image if it's an image file
+            if (file.type.includes('image')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    signatureArea.innerHTML = `
+                        <img src="${event.target.result}" alt="Preview Tanda Tangan" class="signature-preview">
+                        <p style="color: #10b981; margin: 5px 0 0 0; font-weight: 600;">${fileName} (${fileSize} MB)</p>
+                    `;
+                    signatureArea.style.borderColor = '#10b981';
+                    signatureArea.style.background = '#f0fdf4';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                signatureArea.innerHTML = `
+                    <i class="fas fa-file-pdf" style="color: #10b981; font-size: 2.5rem; margin-bottom: 15px;"></i>
+                    <p style="color: #10b981; margin: 0; font-weight: 600;">${fileName} (${fileSize} MB)</p>
+                `;
+                signatureArea.style.borderColor = '#10b981';
+                signatureArea.style.background = '#f0fdf4';
+            }
         } else {
-            signatureArea.innerHTML = `
-                <i class="fas fa-signature"></i>
-                <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
-            `;
+            // If no file selected and user has profile signature, show that
+            @if(Auth::user()->signature)
+                signatureArea.innerHTML = `
+                    <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="signature-preview">
+                    <p class="mt-2">Klik untuk mengganti tanda tangan</p>
+                    <input type="hidden" name="use_profile_signature" value="1">
+                `;
+            @else
+                signatureArea.innerHTML = `
+                    <i class="fas fa-signature"></i>
+                    <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
+                `;
+            @endif
             signatureArea.style.borderColor = '#e5e7eb';
             signatureArea.style.background = 'white';
         }
