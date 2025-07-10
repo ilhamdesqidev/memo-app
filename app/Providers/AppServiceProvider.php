@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,8 +18,16 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
+    public function boot()
     {
-        //
+        Validator::extend('username', function ($attribute, $value, $parameters, $validator) {
+            // Contoh validasi: hanya huruf, angka, underscore dan titik
+            return preg_match('/^[a-zA-Z0-9_.]+$/', $value);
+        });
+        
+        // Pesan error custom (opsional)
+        Validator::replacer('username', function ($message, $attribute, $rule, $parameters) {
+            return str_replace(':attribute', $attribute, 'Format :attribute tidak valid.');
+        });
     }
 }

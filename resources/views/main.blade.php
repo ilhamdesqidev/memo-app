@@ -190,11 +190,11 @@
                                             <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
                                             @if(Auth::user()->divisi)
                                                 <span class="ml-2 px-2 py-0.5 text-xs bg-indigo-600 rounded-full">
-                                                    {{ Auth::user()->divisi->nama }}
+                                                    {{ getInitials(Auth::user()->divisi->nama) }}
                                                 </span>
                                             @endif
                                         </div>
-                                        <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
+                                        <div class="text-xs text-indigo-300">{{ Auth::user()->username }}</div>
                                     </div>
                                 </div>
                                 <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

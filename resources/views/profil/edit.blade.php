@@ -38,12 +38,12 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
-                        Email
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
+                        username
                     </label>
                     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                           id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required>
-                    @error('email')
+                           id="username" type="username" name="username" value="{{ old('username', $user->username) }}" required>
+                    @error('username')
                         <p class="text-red-500 text-xs italic">{{ $message }}</p>
                     @enderror
                 </div>
