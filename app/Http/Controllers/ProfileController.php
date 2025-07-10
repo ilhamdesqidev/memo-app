@@ -31,12 +31,12 @@ class ProfileController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,'.Auth::id(),
+            'username' => 'required|string|username|max:255|unique:users,username,'.Auth::id(),
         ]);
 
-        Auth::user()->update($request->only('name', 'email'));
+        Auth::user()->update($request->only('name', 'username'));
 
-        return back()->with('success', 'Profile updated successfully.');
+        return redirect()->route('profile.index')->with('success', 'Profile updated successfully.');
     }
 
     public function destroy(Request $request)

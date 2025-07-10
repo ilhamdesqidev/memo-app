@@ -14,7 +14,7 @@
                 </div>
                 <div>
                     <h3 class="text-xl font-bold">{{ Auth::user()->name }}</h3>
-                    <p class="text-gray-600">{{ Auth::user()->email }}</p>
+                    <p class="text-gray-600">{{ Auth::user()->username }}</p>
                     @if(Auth::user()->divisi)
                         <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-indigo-100 text-indigo-800 rounded-full">
                             {{ Auth::user()->divisi->nama }}
@@ -27,7 +27,7 @@
                 <div class="bg-gray-50 p-4 rounded-lg">
                     <h4 class="font-semibold text-gray-700 mb-2">Personal Information</h4>
                     <p><span class="font-medium">Name:</span> {{ Auth::user()->name }}</p>
-                    <p><span class="font-medium">Email:</span> {{ Auth::user()->email }}</p>
+                    <p><span class="font-medium">username:</span> {{ Auth::user()->username }}</p>
                 </div>
 
                 <div class="bg-gray-50 p-4 rounded-lg">

@@ -185,7 +185,7 @@
                                     </div>
                                     <div class="sidebar-text">
                                         <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
-                                        <div class="text-xs text-indigo-300">{{ Auth::user()->email }}</div>
+                                        <div class="text-xs text-indigo-300">{{ Auth::user()->username }}</div>
                                     </div>
                                 </div>
                                 <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
