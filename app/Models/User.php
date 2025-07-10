@@ -24,6 +24,7 @@ class User extends Authenticatable
     'role',
     'divisi_id',
     'jabatan',
+    'signature',
 ];
     
 

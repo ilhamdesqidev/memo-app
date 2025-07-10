@@ -44,6 +44,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/update', [ProfilController::class, 'update'])->name('profil.update');
         Route::delete('/delete', [ProfilController::class, 'destroy'])->name('profil.destroy');
+
+        // Signature routes
+        Route::post('/profil/signature/upload', [ProfilController::class, 'uploadSignature'])->name('profil.signature.upload');
+        Route::post('/profil/signature/save', [ProfilController::class, 'saveSignature'])->name('profil.signature.save');
+        Route::delete('/profil/signature/delete', [ProfilController::class, 'deleteSignature'])->name('profil.signature.delete');
     });
 
     // Admin Routes
