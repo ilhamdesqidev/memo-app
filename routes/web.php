@@ -18,14 +18,9 @@ Route::get('/welcome2', function () {
 });
 
 // Authentication Routes
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])
-    ->middleware('guest')->name('login');
-
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest');
-
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth')->name('logout');
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
 
 // Staff Dashboard
 Route::get('/staff/dashboard', function () {
@@ -40,6 +35,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
+});
 
 // Profile Routes
 Route::middleware('auth')->group(function () {
