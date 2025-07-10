@@ -9,16 +9,13 @@ class Memo extends Model
 {
 
     use HasFactory;
-    protected $fillable = [
-        'nomor',
-        'tanggal',
-        'kepada',
-        'dari',
-        'perihal',
-        'lampiran',
-        'isi',
-        'signature_path', // Assuming you want to store the path of the signature image
+
+   protected $fillable = [
+        'nomor', 'tanggal', 'kepada', 'dari', 'perihal', 
+        'lampiran', 'isi', 'signature_path'
     ];
+
+    protected $dates = ['tanggal'];
 
     // Optionally, you can define relationships or other model methods here
 }

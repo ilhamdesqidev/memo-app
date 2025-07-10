@@ -268,7 +268,7 @@
                 <div class="memo-card">
                     <div class="memo-header">
                         <div class="memo-number">{{ $memo->nomor }}</div>
-                        <div class="memo-date">{{ $memo->tanggal->format('d M Y') }}</div>
+                       <div class="memo-date">{{ $memo->tanggal->format('d M Y') }}</div>
                     </div>
                     <div class="memo-info">
                         <div class="memo-field">

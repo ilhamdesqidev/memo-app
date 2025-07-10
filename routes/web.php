@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Profile Routes
+// Profil Routes
 Route::middleware('auth')->group(function () {
     Route::prefix('profil')->group(function () {
         Route::get('/', [ProfilController::class, 'index'])->name('profil.index');

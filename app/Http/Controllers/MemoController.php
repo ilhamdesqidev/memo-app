@@ -8,11 +8,16 @@ use Illuminate\Support\Facades\Storage;
 
 class MemoController extends Controller
 {
-    public function index()
-    {
-        $memos = Memo::latest()->get();
-        return view('staff.memo.index', compact('memos'));
-    }
+   public function index()
+{
+    $memos = Memo::latest()->get()->map(function ($memo) {
+        // Ensure tanggal is a Carbon instance
+        $memo->tanggal = \Carbon\Carbon::parse($memo->tanggal);
+        return $memo;
+    });
+    
+    return view('staff.memo.index', compact('memos'));
+}
 
     public function create()
     {
@@ -31,6 +36,7 @@ class MemoController extends Controller
             'isi' => 'required|string',
             'signature' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+        
 
         if ($request->hasFile('signature')) {
             $signaturePath = $request->file('signature')->store('signatures', 'public');
