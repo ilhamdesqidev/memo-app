@@ -1,410 +1,112 @@
 @extends('main')
 @section('content')
 
-<style>
-    .memo-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .header {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3b82f6 100%);
-        color: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 15px 40px rgba(30, 60, 114, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 4s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .header h1 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin: 0 0 10px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin: 0;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .memo-form {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border: 1px solid #e5e7eb;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .memo-form::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
-    }
-    
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-        margin-bottom: 25px;
-    }
-    
-    .form-group {
-        margin-bottom: 25px;
-    }
-    
-    .form-group label {
-        display: block;
-        font-weight: 600;
-        color: #1e40af;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 14px 18px;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: #f8fafc;
-        color: #374151;
-        box-sizing: border-box;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #3b82f6;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        transform: translateY(-1px);
-    }
-    
-    .form-group textarea {
-        min-height: 120px;
-        resize: vertical;
-        line-height: 1.6;
-    }
-    
-    .form-group input::placeholder,
-    .form-group textarea::placeholder {
-        color: #9ca3af;
-        opacity: 1;
-    }
-    
-    .signature-upload {
-        margin-bottom: 25px;
-        padding: 25px;
-        background: #f8fafc;
-        border: 2px dashed #cbd5e1;
-        border-radius: 15px;
-        transition: all 0.3s ease;
-    }
-    
-    .signature-upload:hover {
-        border-color: #3b82f6;
-        background: #f1f5f9;
-    }
-    
-    .signature-upload label {
-        display: block;
-        font-weight: 600;
-        color: #1e40af;
-        margin-bottom: 12px;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .signature-area {
-        text-align: center;
-        padding: 30px;
-        background: white;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .signature-area:hover {
-        border-color: #3b82f6;
-        background: #f9fafb;
-    }
-    
-    .signature-area i {
-        font-size: 2.5rem;
-        color: #6b7280;
-        margin-bottom: 15px;
-    }
-    
-    .signature-area p {
-        color: #6b7280;
-        margin: 0;
-        font-weight: 500;
-    }
-    
-    .signature-area input {
-        display: none;
-    }
-    
-    .signature-preview {
-        max-width: 100%;
-        max-height: 150px;
-        display: block;
-        margin: 0 auto;
-    }
-    
-    .form-actions {
-        display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 35px;
-        padding-top: 25px;
-        border-top: 2px solid #f3f4f6;
-    }
-    
-    .btn {
-        padding: 14px 28px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        transform: translateY(0);
-        min-width: 140px;
-        justify-content: center;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-    
-    .btn-success {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-    }
-    
-    .btn-success:hover {
-        background: linear-gradient(135deg, #059669 0%, #047857 100%);
-    }
-    
-    .btn-danger {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-    }
-    
-    .btn-danger:hover {
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    }
-    
-    /* Enhanced Form Validation Styles */
-    .form-group.error input,
-    .form-group.error select,
-    .form-group.error textarea {
-        border-color: #ef4444;
-        background: #fef2f2;
-    }
-    
-    .form-group.error input:focus,
-    .form-group.error select:focus,
-    .form-group.error textarea:focus {
-        border-color: #ef4444;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-    }
-    
-    .error-message {
-        color: #ef4444;
-        font-size: 0.85rem;
-        margin-top: 5px;
-        font-weight: 500;
-    }
-    
-    /* Success State */
-    .form-group.success input,
-    .form-group.success select,
-    .form-group.success textarea {
-        border-color: #10b981;
-        background: #f0fdf4;
-    }
-    
-    .success-message {
-        color: #10b981;
-        font-size: 0.85rem;
-        margin-top: 5px;
-        font-weight: 500;
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .memo-container {
-            padding: 15px;
-        }
-        
-        .header {
-            padding: 2rem 1.5rem;
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-        }
-        
-        .memo-form {
-            padding: 25px;
-        }
-        
-        .form-row {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        
-        .form-actions {
-            flex-direction: column;
-        }
-        
-        .btn {
-            width: 100%;
-        }
-    }
-    
-    /* Loading Animation */
-    .loading {
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Form Progress Indicator */
-    .form-progress {
-        background: #f3f4f6;
-        height: 4px;
-        border-radius: 2px;
-        margin-bottom: 30px;
-        overflow: hidden;
-    }
-    
-    .form-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
-        width: 0%;
-        transition: width 0.3s ease;
-    }
-</style>
-
-<div class="memo-container loading">
-    <div class="header">
-        <h1><i class="fas fa-plus-circle"></i> Buat Memo Baru</h1>
-        <p>Isi formulir berikut untuk membuat memo baru dengan sistem yang profesional dan terstruktur</p>
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-500 text-white p-10 rounded-2xl shadow-xl mb-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-700 opacity-90"></div>
+        <div class="relative z-10">
+            <h1 class="text-3xl font-bold mb-2 flex items-center">
+                <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Buat Memo Baru
+            </h1>
+            <p class="text-blue-100">Isi formulir berikut untuk membuat memo baru dengan sistem yang profesional dan terstruktur</p>
+        </div>
     </div>
 
-    <div class="memo-form">
-        <div class="form-progress">
-            <div class="form-progress-bar" id="progressBar"></div>
+    <!-- Form Section -->
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 relative">
+        <!-- Progress Bar -->
+        <div class="bg-gray-100 h-1.5 rounded-full mb-8 overflow-hidden">
+            <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-blue-800 transition-all duration-300" style="width: 0%"></div>
         </div>
-        
-        <form method="POST" action="{{ route('staff.memo.store') }}" enctype="multipart/form-data">
+
+        <form method="POST" action="{{ route('staff.memo.store') }}" enctype="multipart/form-data" class="p-8 sm:p-10">
             @csrf
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="nomor">Nomor Memo</label>
-                    <input type="text" id="nomor" name="nomor" placeholder="Contoh: 001/DIR/2024" required>
+            
+            <!-- Form Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Nomor Memo -->
+                <div class="space-y-2">
+                    <label for="nomor" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Nomor Memo</label>
+                    <input type="text" id="nomor" name="nomor" placeholder="Contoh: 001/DIR/2024" required
+                        class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200">
                 </div>
-                <div class="form-group">
-                    <label for="tanggal">Tanggal</label>
-                    <input type="date" id="tanggal" name="tanggal" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="kepada">Kepada</label>
-                    <input type="text" id="kepada" name="kepada" placeholder="Nama penerima memo" required>
-                </div>
-                <div class="form-group">
-                    <label for="dari">Dari</label>
-                    <input type="text" id="dari" name="dari" placeholder="Nama pengirim memo" required value="{{ Auth::user()->name }}" readonly>
+                
+                <!-- Tanggal -->
+                <div class="space-y-2">
+                    <label for="tanggal" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Tanggal</label>
+                    <input type="date" id="tanggal" name="tanggal" required
+                        class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="perihal">Perihal</label>
-                <input type="text" id="perihal" name="perihal" placeholder="Subjek atau topik memo" required>
+            <!-- Second Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Kepada -->
+                <div class="space-y-2">
+                    <label for="kepada" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Kepada</label>
+                    <input type="text" id="kepada" name="kepada" placeholder="Nama penerima memo" required
+                        class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200">
+                </div>
+                
+                <!-- Dari -->
+                <div class="space-y-2">
+                    <label for="dari" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Dari</label>
+                    <input type="text" id="dari" name="dari" placeholder="Nama pengirim memo" required value="{{ Auth::user()->name }}" readonly
+                        class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 cursor-not-allowed">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="isi">Isi Memo</label>
-                <textarea id="isi" name="isi" placeholder="Tuliskan isi memo dengan jelas dan lengkap..." required></textarea>
+            <!-- Perihal -->
+            <div class="space-y-2 mb-6">
+                <label for="perihal" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Perihal</label>
+                <input type="text" id="perihal" name="perihal" placeholder="Subjek atau topik memo" required
+                    class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200">
             </div>
 
-            <div class="signature-upload">
-                <label for="signature">Tanda Tangan Digital</label>
-                <div class="signature-area" onclick="document.getElementById('signature').click()">
+            <!-- Isi Memo -->
+            <div class="space-y-2 mb-6">
+                <label for="isi" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Isi Memo</label>
+                <textarea id="isi" name="isi" rows="6" placeholder="Tuliskan isi memo dengan jelas dan lengkap..." required
+                    class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200"></textarea>
+                <div id="charCounter" class="text-right text-sm text-gray-500 mt-1">0/2000 karakter</div>
+            </div>
+
+            <!-- Signature Upload -->
+            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 mb-6 bg-gray-50 hover:border-blue-500 hover:bg-gray-100 transition-all duration-200">
+                <label class="block text-sm font-semibold text-blue-800 uppercase tracking-wider mb-3">Tanda Tangan Digital</label>
+                <div id="signatureArea" class="text-center bg-white rounded-lg p-6 border border-gray-200 cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-all duration-200"
+                     onclick="document.getElementById('signature').click()">
                     @if(Auth::user()->signature)
-                        <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="signature-preview">
-                        <p class="mt-2">Klik untuk mengganti tanda tangan</p>
+                        <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="max-h-40 mx-auto">
+                        <p class="mt-3 text-gray-600">Klik untuk mengganti tanda tangan</p>
                         <input type="hidden" name="use_profile_signature" value="1">
                     @else
-                        <i class="fas fa-signature"></i>
-                        <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
+                        <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        <p class="mt-3 text-gray-600">Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
                     @endif
-                    <input type="file" id="signature" name="signature" accept=".jpg,.jpeg,.png,.pdf">
+                    <input type="file" id="signature" name="signature" accept=".jpg,.jpeg,.png,.pdf" class="hidden">
                 </div>
             </div>
 
-            <div class="form-actions">
-                <a href="{{ route('staff.memo.index') }}" class="btn btn-danger">
-                    <i class="fas fa-times"></i> Batal
+            <!-- Form Actions -->
+            <div class="flex flex-col sm:flex-row justify-end gap-4 pt-6 mt-8 border-t-2 border-gray-100">
+                <a href="{{ route('staff.memo.index') }}" class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Batal
                 </a>
-                <button type="submit" class="btn btn-success">
-                    <i class="fas fa-save"></i> Simpan Memo
+                <button type="submit" class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold shadow-md hover:from-green-600 hover:to-green-700 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    </svg>
+                    Simpan Memo
                 </button>
             </div>
         </form>
@@ -412,11 +114,7 @@
 </div>
 
 <script>
-// Document ready
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.querySelector('.memo-container');
-    container.classList.add('loading');
-    
     // Auto-fill current date
     const dateInput = document.getElementById('tanggal');
     const today = new Date().toISOString().split('T')[0];
@@ -447,42 +145,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial progress update
     updateProgress();
     
-    // Enhanced form validation
-    function validateForm() {
-        let isValid = true;
-        
-        formInputs.forEach(input => {
-            const formGroup = input.closest('.form-group');
-            const errorMessage = formGroup.querySelector('.error-message');
-            
-            if (input.value.trim() === '') {
-                formGroup.classList.add('error');
-                formGroup.classList.remove('success');
-                
-                if (!errorMessage) {
-                    const error = document.createElement('div');
-                    error.className = 'error-message';
-                    error.textContent = 'Field ini wajib diisi';
-                    formGroup.appendChild(error);
-                }
-                
-                isValid = false;
-            } else {
-                formGroup.classList.remove('error');
-                formGroup.classList.add('success');
-                
-                if (errorMessage) {
-                    errorMessage.remove();
-                }
-            }
-        });
-        
-        return isValid;
-    }
-    
     // Handle signature file input
     const signatureInput = document.getElementById('signature');
-    const signatureArea = document.querySelector('.signature-area');
+    const signatureArea = document.getElementById('signatureArea');
     
     signatureInput.addEventListener('change', function(e) {
         if (e.target.files.length > 0) {
@@ -510,115 +175,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     signatureArea.innerHTML = `
-                        <img src="${event.target.result}" alt="Preview Tanda Tangan" class="signature-preview">
-                        <p style="color: #10b981; margin: 5px 0 0 0; font-weight: 600;">${fileName} (${fileSize} MB)</p>
+                        <img src="${event.target.result}" alt="Preview Tanda Tangan" class="max-h-40 mx-auto">
+                        <p class="mt-3 text-green-600 font-semibold">${fileName} (${fileSize} MB)</p>
                     `;
-                    signatureArea.style.borderColor = '#10b981';
-                    signatureArea.style.background = '#f0fdf4';
+                    signatureArea.classList.add('border-green-500', 'bg-green-50');
                 };
                 reader.readAsDataURL(file);
             } else {
                 signatureArea.innerHTML = `
-                    <i class="fas fa-file-pdf" style="color: #10b981; font-size: 2.5rem; margin-bottom: 15px;"></i>
-                    <p style="color: #10b981; margin: 0; font-weight: 600;">${fileName} (${fileSize} MB)</p>
+                    <svg class="w-12 h-12 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                    <p class="mt-3 text-green-600 font-semibold">${fileName} (${fileSize} MB)</p>
                 `;
-                signatureArea.style.borderColor = '#10b981';
-                signatureArea.style.background = '#f0fdf4';
+                signatureArea.classList.add('border-green-500', 'bg-green-50');
             }
         } else {
             // If no file selected and user has profile signature, show that
             @if(Auth::user()->signature)
                 signatureArea.innerHTML = `
-                    <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="signature-preview">
-                    <p class="mt-2">Klik untuk mengganti tanda tangan</p>
+                    <img src="{{ asset('storage/' . Auth::user()->signature) }}" alt="Tanda Tangan" class="max-h-40 mx-auto">
+                    <p class="mt-3 text-gray-600">Klik untuk mengganti tanda tangan</p>
                     <input type="hidden" name="use_profile_signature" value="1">
                 `;
             @else
                 signatureArea.innerHTML = `
-                    <i class="fas fa-signature"></i>
-                    <p>Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
+                    <svg class="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    <p class="mt-3 text-gray-600">Klik untuk mengunggah tanda tangan digital (JPG, PNG, PDF)</p>
                 `;
             @endif
-            signatureArea.style.borderColor = '#e5e7eb';
-            signatureArea.style.background = 'white';
+            signatureArea.classList.remove('border-green-500', 'bg-green-50');
         }
-    });
-    
-    // Auto-save draft functionality (optional)
-    let autoSaveTimeout;
-    const autoSaveInputs = document.querySelectorAll('input, textarea');
-    
-    function autoSave() {
-        const formData = {};
-        autoSaveInputs.forEach(input => {
-            if (input.type !== 'file') {
-                formData[input.name] = input.value;
-            }
-        });
-        
-        // Save to localStorage (in a real application, you'd save to server)
-        localStorage.setItem('memo_draft', JSON.stringify(formData));
-        
-        // Show auto-save indicator
-        const indicator = document.createElement('div');
-        indicator.innerHTML = '<i class="fas fa-save"></i> Draft disimpan otomatis';
-        indicator.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #10b981;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            animation: slideIn 0.3s ease;
-        `;
-        
-        document.body.appendChild(indicator);
-        
-        setTimeout(() => {
-            indicator.remove();
-        }, 2000);
-    }
-    
-    // Auto-save every 30 seconds
-    autoSaveInputs.forEach(input => {
-        input.addEventListener('input', () => {
-            clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(autoSave, 30000);
-        });
-    });
-    
-    // Load draft on page load
-    const savedDraft = localStorage.getItem('memo_draft');
-    if (savedDraft) {
-        const draftData = JSON.parse(savedDraft);
-        Object.keys(draftData).forEach(key => {
-            const input = document.querySelector(`[name="${key}"]`);
-            if (input && input.type !== 'file') {
-                input.value = draftData[key];
-            }
-        });
-        updateProgress();
-    }
-    
-    // Clear draft on successful submission
-    form.addEventListener('submit', function() {
-        localStorage.removeItem('memo_draft');
     });
     
     // Character counter for textarea
     const textarea = document.getElementById('isi');
-    const charCounter = document.createElement('div');
-    charCounter.style.cssText = `
-        text-align: right;
-        font-size: 0.8rem;
-        color: #6b7280;
-        margin-top: 5px;
-    `;
-    textarea.parentNode.appendChild(charCounter);
+    const charCounter = document.getElementById('charCounter');
     
     function updateCharCounter() {
         const length = textarea.value.length;
@@ -628,47 +222,78 @@ document.addEventListener('DOMContentLoaded', function() {
         charCounter.textContent = `${length}/${maxLength} karakter`;
         
         if (length < minLength) {
-            charCounter.style.color = '#ef4444';
+            charCounter.classList.add('text-red-500');
+            charCounter.classList.remove('text-green-500');
             charCounter.textContent += ` (minimal ${minLength} karakter)`;
         } else if (length > maxLength) {
-            charCounter.style.color = '#ef4444';
+            charCounter.classList.add('text-red-500');
+            charCounter.classList.remove('text-green-500');
             charCounter.textContent += ' (terlalu panjang)';
         } else {
-            charCounter.style.color = '#10b981';
+            charCounter.classList.remove('text-red-500');
+            charCounter.classList.add('text-green-500');
         }
     }
     
     textarea.addEventListener('input', updateCharCounter);
     updateCharCounter();
     
-    // Smooth transitions for form groups
-    const formGroups = document.querySelectorAll('.form-group');
-    formGroups.forEach((group, index) => {
-        group.style.animationDelay = `${index * 0.1}s`;
-        group.classList.add('loading');
+    // Form validation
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        formInputs.forEach(input => {
+            const formGroup = input.closest('.space-y-2');
+            
+            if (input.value.trim() === '') {
+                formGroup.classList.add('error');
+                input.classList.add('border-red-500', 'bg-red-50');
+                input.classList.remove('border-gray-200', 'bg-gray-50');
+                
+                // Add error message if not exists
+                if (!formGroup.querySelector('.error-message')) {
+                    const error = document.createElement('p');
+                    error.className = 'error-message text-red-500 text-sm mt-1';
+                    error.textContent = 'Field ini wajib diisi';
+                    formGroup.appendChild(error);
+                }
+                
+                isValid = false;
+            } else {
+                formGroup.classList.remove('error');
+                input.classList.remove('border-red-500', 'bg-red-50');
+                input.classList.add('border-gray-200', 'bg-gray-50');
+                
+                // Remove error message if exists
+                const errorMessage = formGroup.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.remove();
+                }
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            // Scroll to first error
+            const firstError = document.querySelector('.error');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     });
 });
+</script>
 
-// Add CSS for additional animations
-const additionalCSS = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out forwards;
     }
     
-    .form-group.loading {
-        animation: fadeInUp 0.6s ease forwards;
-    }
-    
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(30px); }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
-`;
-
-const style = document.createElement('style');
-style.textContent = additionalCSS;
-document.head.appendChild(style);
-</script>
+</style>
 
 @endsection

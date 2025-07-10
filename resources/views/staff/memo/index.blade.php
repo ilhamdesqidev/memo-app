@@ -1,301 +1,101 @@
 @extends('main')
 
 @section('content')
-<style>
-    .memo-container {
-        width: 100%;
-        padding: 1.5rem;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .header {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3b82f6 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 15px 40px rgba(30, 60, 114, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 4s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .header h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin: 0 0 0.5rem 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .header p {
-        font-size: 0.9rem;
-        opacity: 0.9;
-        margin: 0;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .memo-actions {
-        margin-bottom: 1.5rem;
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.75rem;
-    }
-    
-    .btn {
-        padding: 0.5rem 1rem;
-        border-radius: 0.5rem;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 0.875rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .btn-success {
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white;
-    }
-    
-    .btn-warning {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-    }
-    
-    .btn-danger {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
-        background: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border: 2px dashed #e5e7eb;
-    }
-    
-    .empty-state i {
-        font-size: 3rem;
-        color: #9ca3af;
-        margin-bottom: 1rem;
-    }
-    
-    .empty-state h3 {
-        color: #374151;
-        font-size: 1.25rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-    }
-    
-    .empty-state p {
-        color: #6b7280;
-        font-size: 0.875rem;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-    
-    .memo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-    }
-    
-    .memo-card {
-        background: white;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        border-left: 4px solid #3b82f6;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .memo-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
-    }
-    
-    .memo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 0.75rem;
-        border-bottom: 1px solid #f3f4f6;
-    }
-    
-    .memo-number {
-        font-size: 0.875rem;
-        font-weight: 700;
-        color: #1e40af;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        border: 1px solid #93c5fd;
-    }
-    
-    .memo-date {
-        font-size: 0.75rem;
-        color: #6b7280;
-        font-weight: 500;
-        background: #f9fafb;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.75rem;
-        border: 1px solid #e5e7eb;
-    }
-    
-    .memo-info {
-        margin-bottom: 1.5rem;
-    }
-    
-    .memo-field {
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 0.75rem;
-        padding: 0.75rem;
-        background: #f8fafc;
-        border-radius: 0.5rem;
-        border-left: 3px solid #3b82f6;
-    }
-    
-    .memo-field strong {
-        color: #1e40af;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .memo-field span {
-        color: #374151;
-        font-size: 0.875rem;
-        font-weight: 500;
-        line-height: 1.4;
-    }
-    
-    .card-actions {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-    }
-    
-    .card-actions .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-        border-radius: 0.375rem;
-        flex: 1;
-        min-width: 60px;
-        justify-content: center;
-    }
-    
-    @media (max-width: 768px) {
-        .memo-container {
-            padding: 1rem;
-        }
-        
-        .header {
-            padding: 1rem;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-        }
-        
-        .memo-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<div class="memo-container">
-    <div class="header">
-        <h1><i class="fas fa-file-alt mr-2"></i> Sistem Memo</h1>
-        <p>Kelola surat-menyurat dan memo perusahaan dengan sistem yang profesional dan efisien</p>
+<div class="w-full p-6 font-sans">
+    <!-- Header Section -->
+    <div class="bg-gradient-to-r from-blue-900 via-blue-700 to-blue-500 text-white p-6 rounded-xl shadow-lg mb-6 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-blue-700 opacity-90"></div>
+        <div class="relative z-10">
+            <h1 class="text-2xl font-bold mb-2 flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Sistem Memo
+            </h1>
+            <p class="text-blue-100 text-sm">Kelola surat-menyurat dan memo perusahaan dengan sistem yang profesional dan efisien</p>
+        </div>
     </div>
 
-    <div class="memo-actions">
-        <a href="{{ route('staff.memo.create') }}" class="btn btn-success">
-            <i class="fas fa-plus mr-1"></i> Buat Memo Baru
+    <!-- Action Buttons -->
+    <div class="flex justify-end mb-6 gap-3">
+        <a href="{{ route('staff.memo.create') }}" class="inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold shadow-md hover:from-green-600 hover:to-green-700 hover:shadow-lg transition-all duration-200">
+            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Buat Memo Baru
         </a>
     </div>
 
     @if($memos->isEmpty())
-        <div class="empty-state">
-            <i class="fas fa-file-alt"></i>
-            <h3>Tidak Ada Memo</h3>
-            <p>Belum ada memo yang tersedia. Klik "Buat Memo Baru" untuk membuat memo pertama Anda.</p>
+        <!-- Empty State -->
+        <div class="text-center bg-white p-12 rounded-xl shadow-md border-2 border-dashed border-gray-200">
+            <svg class="w-16 h-16 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="text-xl text-gray-700 font-semibold mt-4 mb-1">Tidak Ada Memo</h3>
+            <p class="text-gray-500 text-sm max-w-md mx-auto">Belum ada memo yang tersedia. Klik "Buat Memo Baru" untuk membuat memo pertama Anda.</p>
         </div>
     @else
-        <div class="memo-grid">
-           @foreach($memos as $memo)
-            <div class="memo-card">
-                    <div class="memo-header">
-                        <div class="memo-number">{{ $memo->nomor }}</div>
-                       <div class="memo-date">{{ $memo->tanggal->format('d M Y') }}</div>
+        <!-- Memo Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            @foreach($memos as $memo)
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-200 border-l-4 border-blue-500 relative overflow-hidden group">
+                    <!-- Gradient top border -->
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-800"></div>
+                    
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
+                        <span class="text-sm font-bold text-blue-800 bg-gradient-to-r from-blue-100 to-blue-200 px-3 py-1 rounded-full border border-blue-200">
+                            {{ $memo->nomor }}
+                        </span>
+                        <span class="text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg border border-gray-200">
+                            {{ $memo->tanggal->format('d M Y') }}
+                        </span>
                     </div>
-                    <div class="memo-info">
-                        <div class="memo-field">
-                            <strong>Kepada:</strong>
-                            <span>{{ $memo->kepada }}</span>
+                    
+                    <!-- Memo Info -->
+                    <div class="mb-6 space-y-3">
+                        <div class="flex flex-col px-3 py-2 bg-blue-50 rounded-lg border-l-3 border-blue-500">
+                            <strong class="text-xs text-blue-700 uppercase tracking-wider mb-1">Kepada:</strong>
+                            <span class="text-sm text-gray-700">{{ $memo->kepada }}</span>
                         </div>
-                        <div class="memo-field">
-                            <strong>Dari:</strong>
-                            <span>{{ $memo->dari }}</span>
+                        
+                        <div class="flex flex-col px-3 py-2 bg-blue-50 rounded-lg border-l-3 border-blue-500">
+                            <strong class="text-xs text-blue-700 uppercase tracking-wider mb-1">Dari:</strong>
+                            <span class="text-sm text-gray-700">{{ $memo->dari }}</span>
                         </div>
-                        <div class="memo-field">
-                            <strong>Perihal:</strong>
-                            <span>{{ $memo->perihal }}</span>
+                        
+                        <div class="flex flex-col px-3 py-2 bg-blue-50 rounded-lg border-l-3 border-blue-500">
+                            <strong class="text-xs text-blue-700 uppercase tracking-wider mb-1">Perihal:</strong>
+                            <span class="text-sm text-gray-700">{{ $memo->perihal }}</span>
                         </div>
                     </div>
-                    <div class="card-actions">
-                        <a href="{{ route('staff.memo.show', $memo->id) }}" class="btn btn-primary">
-                            <i class="fas fa-eye mr-1"></i> Lihat
+                    
+                    <!-- Actions -->
+                    <div class="flex gap-2 flex-wrap">
+                        <a href="{{ route('staff.memo.show', $memo->id) }}" class="flex-1 inline-flex items-center justify-center px-3 py-1 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Lihat
                         </a>
-                        <a href="{{ route('staff.memo.edit', $memo->id) }}" class="btn btn-warning">
-                            <i class="fas fa-edit mr-1"></i> Edit
+                        
+                        <a href="{{ route('staff.memo.edit', $memo->id) }}" class="flex-1 inline-flex items-center justify-center px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-xs font-semibold hover:from-yellow-600 hover:to-yellow-700 transition-all">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit
                         </a>
-                        <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="inline">
+                        
+                        <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="flex-1">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')">
-                                <i class="fas fa-trash mr-1"></i> Hapus
+                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')" class="w-full inline-flex items-center justify-center px-3 py-1 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-semibold hover:from-red-600 hover:to-red-700 transition-all">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Hapus
                             </button>
                         </form>
                     </div>
@@ -308,15 +108,15 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Add hover effects to memo cards
-    document.querySelectorAll('.memo-card').forEach(card => {
+    document.querySelectorAll('.group').forEach(card => {
         card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.boxShadow = '0 15px 40px rgba(59, 130, 246, 0.15)';
+            this.classList.add('transform', '-translate-y-1');
+            this.classList.add('shadow-lg');
         });
         
         card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-            this.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)';
+            this.classList.remove('transform', '-translate-y-1');
+            this.classList.remove('shadow-lg');
         });
     });
 });
