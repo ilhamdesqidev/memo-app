@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProfilController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
@@ -40,6 +41,15 @@ Route::middleware('auth')->group(function () {
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+// Profile Routes
+Route::middleware('auth')->group(function () {
+    Route::prefix('profil')->group(function () {
+        Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
+        Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
+        Route::patch('/update', [ProfilController::class, 'update'])->name('profil.update');
+        Route::delete('/delete', [ProfilController::class, 'destroy'])->name('profil.destroy');
+    });
+
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
         // Admin Dashboard
@@ -62,3 +72,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/dashboard', function () {
     return redirect()->route('staff.dashboard');
 })->middleware(['auth'])->name('dashboard');
+
+});
