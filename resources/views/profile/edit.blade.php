@@ -39,13 +39,28 @@
 
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
-                        username
+                        Username
                     </label>
                     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                           id="username" type="username" name="username" value="{{ old('username', $user->username) }}" required>
+                           id="username" type="text" name="username" value="{{ old('username', $user->username) }}" required>
                     @error('username')
                         <p class="text-red-500 text-xs italic">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="divisi_id">
+                        Division
+                    </label>
+                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100 leading-tight focus:outline-none focus:shadow-outline" 
+                           id="divisi_id" name="divisi_id" disabled>
+                        @foreach($divisis as $divisi)
+                            <option value="{{ $divisi->id }}" {{ $user->divisi_id == $divisi->id ? 'selected' : '' }}>
+                                {{ $divisi->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <p class="text-gray-500 text-xs italic mt-1">To change division, please contact administrator.</p>
                 </div>
 
                 <div class="flex items-center justify-end mt-6">

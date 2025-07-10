@@ -48,14 +48,27 @@
                 <!-- Kepada -->
                 <div class="space-y-2">
                     <label for="kepada" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Kepada</label>
-                    <input type="text" id="kepada" name="kepada" placeholder="Nama penerima memo" required
-                        class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200">
+                    <div class="relative">
+                        <select id="kepada" name="kepada" required
+                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white transition-all duration-200 appearance-none">
+                            <option value="">Pilih Divisi</option>
+                            @foreach(\App\Models\Divisi::orderBy('urutan')->get() as $divisi)
+                                <option value="{{ $divisi->nama }}">{{ $divisi->nama }}</option>
+                            @endforeach
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Dari -->
                 <div class="space-y-2">
                     <label for="dari" class="block text-sm font-semibold text-blue-800 uppercase tracking-wider">Dari</label>
-                    <input type="text" id="dari" name="dari" placeholder="Nama pengirim memo" required value="{{ Auth::user()->name }}" readonly
+                    <input type="text" id="dari" name="dari" required 
+                        value="{{ Auth::user()->divisi ? Auth::user()->divisi->nama : 'Divisi Tidak Diketahui' }}" readonly
                         class="w-full px-4 py-3 rounded-lg border-2 border-gray-200 bg-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 cursor-not-allowed">
                 </div>
             </div>
@@ -113,15 +126,28 @@
     </div>
 </div>
 
+<!-- Include Select2 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<!-- Include Select2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2 for the dropdown
+    $('#kepada').select2({
+        placeholder: "Pilih Divisi",
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('#kepada').parent()
+    });
+
     // Auto-fill current date
     const dateInput = document.getElementById('tanggal');
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     
     // Form progress tracking
-    const formInputs = document.querySelectorAll('input[required], textarea[required]');
+    const formInputs = document.querySelectorAll('input[required], textarea[required], select[required]');
     const progressBar = document.getElementById('progressBar');
     
     function updateProgress() {
@@ -248,8 +274,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (input.value.trim() === '') {
                 formGroup.classList.add('error');
-                input.classList.add('border-red-500', 'bg-red-50');
-                input.classList.remove('border-gray-200', 'bg-gray-50');
+                if (input.tagName === 'SELECT') {
+                    input.nextElementSibling.classList.add('border-red-500', 'bg-red-50');
+                    input.nextElementSibling.classList.remove('border-gray-200', 'bg-gray-50');
+                } else {
+                    input.classList.add('border-red-500', 'bg-red-50');
+                    input.classList.remove('border-gray-200', 'bg-gray-50');
+                }
                 
                 // Add error message if not exists
                 if (!formGroup.querySelector('.error-message')) {
@@ -262,8 +293,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValid = false;
             } else {
                 formGroup.classList.remove('error');
-                input.classList.remove('border-red-500', 'bg-red-50');
-                input.classList.add('border-gray-200', 'bg-gray-50');
+                if (input.tagName === 'SELECT') {
+                    input.nextElementSibling.classList.remove('border-red-500', 'bg-red-50');
+                    input.nextElementSibling.classList.add('border-gray-200', 'bg-gray-50');
+                } else {
+                    input.classList.remove('border-red-500', 'bg-red-50');
+                    input.classList.add('border-gray-200', 'bg-gray-50');
+                }
                 
                 // Remove error message if exists
                 const errorMessage = formGroup.querySelector('.error-message');
@@ -293,6 +329,40 @@ document.addEventListener('DOMContentLoaded', function() {
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Select2 customization to match our theme */
+    .select2-container--default .select2-selection--single {
+        height: auto;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        background-color: #f9fafb;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 100%;
+        right: 8px;
+    }
+    
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding-left: 0;
+        color: #374151;
+    }
+    
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    .select2-dropdown {
+        border: 2px solid #e5e7eb;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: #3b82f6;
     }
 </style>
 
