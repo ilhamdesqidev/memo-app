@@ -4,74 +4,99 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         <div class="bg-indigo-800 px-6 py-4">
-            <h2 class="text-xl font-semibold text-white">My Profile</h2>
+            <h2 class="text-xl font-semibold text-white">Create Digital Signature</h2>
         </div>
         
         <div class="p-6">
-            <div class="flex items-center mb-6">
-                <div class="user-avatar text-2xl">
-                    {{ substr(Auth::user()->name, 0, 1) }}
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold">{{ Auth::user()->name }}</h3>
-                    <p class="text-gray-600">{{ Auth::user()->username }}</p>
-                    @if(Auth::user()->divisi)
-                        <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-indigo-100 text-indigo-800 rounded-full">
-                            {{ Auth::user()->divisi->nama }}
-                        </span>
-                    @endif
-                </div>
+            <!-- Navigation Tabs -->
+            <div class="mb-4">
+                <nav class="flex space-x-4 border-b border-gray-200">
+                    <button id="draw-tab" class="py-2 px-4 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600">
+                        Draw Signature
+                    </button>
+                    <button id="upload-tab" class="py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Upload Image
+                    </button>
+                </nav>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-gray-700 mb-2">Personal Information</h4>
-                    <p><span class="font-medium">Name:</span> {{ Auth::user()->name }}</p>
-                    <p><span class="font-medium">username:</span> {{ Auth::user()->username }}</p>
-                </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-gray-700 mb-2">Account Actions</h4>
-                    <div class="space-y-2">
-                        <a href="{{ route('profil.edit') }}" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                            Edit Profile
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST" class="inline-block">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                                Logout
-                            </button>
-                        </form>
+            <!-- Draw Signature Panel -->
+            <div id="draw-panel" class="signature-panel">
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 mb-2">Draw your signature below:</p>
+                    <div class="border-2 border-gray-300 rounded-lg bg-white">
+                        <canvas id="signature-canvas" width="400" height="200" class="w-full cursor-crosshair"></canvas>
                     </div>
-                </div>
-            </div>
-
-            <!-- Signature Section -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h4 class="font-semibold text-gray-700 mb-4">Digital Signature</h4>
-                
-                @if(Auth::user()->signature)
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Current Signature:</p>
-                        <div class="border-2 border-gray-200 rounded-lg p-4 bg-white">
-                            <img src="{{ asset('storage/' . Auth::user()->signature) }}" 
-                                alt="Digital Signature" 
-                                class="max-w-full h-auto max-h-32 mx-auto">
+                    <div class="mt-2 flex justify-between items-center">
+                        <div class="flex space-x-2">
+                            <button id="clear-signature" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                                Clear
+                            </button>
+                            <button id="undo-signature" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+                                Undo
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <label class="text-sm text-gray-600">Pen Size:</label>
+                            <input type="range" id="pen-size" min="1" max="5" value="2" class="w-20">
                         </div>
                     </div>
-                @else
-                    <p class="text-sm text-gray-500 mb-4">No signature created yet.</p>
-                @endif
-
-                <a href="{{ route('profil.signature.index') }}" 
-                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                    Manage Signature
-                </a>
+                </div>
+                
+                <form id="signature-form" action="{{ route('profil.signature.save') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <input type="hidden" id="signature-data" name="signature_data">
+                    <div class="flex space-x-2">
+                        <button type="submit" id="save-signature" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition" disabled>
+                            Save Signature
+                        </button>
+                        <a href="{{ route('profil.signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
+
+            <!-- Upload Signature Panel -->
+            <div id="upload-panel" class="signature-panel hidden">
+                <form action="{{ route('profil.signature.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Upload Signature Image (PNG, JPG, JPEG - Max 2MB)
+                        </label>
+                        <input type="file" 
+                               name="signature" 
+                               accept="image/png,image/jpg,image/jpeg" 
+                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                               required>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
+                            Upload Signature
+                        </button>
+                        <a href="{{ route('profil.signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            @if($errors->any())
+                <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
+<!-- Script untuk canvas signature (sama seperti sebelumnya) -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching

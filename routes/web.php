@@ -40,15 +40,18 @@ Route::middleware('auth')->group(function () {
 // Profil Routes
 Route::middleware('auth')->group(function () {
     Route::prefix('profil')->group(function () {
+        // Route profil utama
         Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
         Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/update', [ProfilController::class, 'update'])->name('profil.update');
         Route::delete('/delete', [ProfilController::class, 'destroy'])->name('profil.destroy');
 
-        // Signature routes
-        Route::post('/profil/signature/upload', [ProfilController::class, 'uploadSignature'])->name('profil.signature.upload');
-        Route::post('/profil/signature/save', [ProfilController::class, 'saveSignature'])->name('profil.signature.save');
-        Route::delete('/profil/signature/delete', [ProfilController::class, 'deleteSignature'])->name('profil.signature.delete');
+        // Route tanda tangan yang dipisah
+        Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('profil.signature.index');
+        Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('profil.signature.create');
+        Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('profil.signature.upload');
+        Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('profil.signature.save');
+        Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('profil.signature.delete');
     });
 
     // Admin Routes

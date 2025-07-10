@@ -45,6 +45,18 @@ class ProfilController extends Controller
         return redirect('/');
     }
 
+    //bagian tanda tangan 
+    public function signatureIndex()
+    {
+        $user = Auth::user();
+        return view('profil.signature.index', compact('user'));
+    }
+
+    public function createSignature()
+    {
+        return view('profil.signature.create');
+    }
+
     public function uploadSignature(Request $request)
     {
         $request->validate([
