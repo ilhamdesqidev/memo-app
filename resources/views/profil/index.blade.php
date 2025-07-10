@@ -2,71 +2,82 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="bg-indigo-800 px-6 py-4">
-            <h2 class="text-xl font-semibold text-white">My Profile</h2>
-        </div>
-        
-        <div class="p-6">
-            <div class="flex items-center mb-6">
-                <div class="user-avatar text-2xl">
-                    {{ substr(Auth::user()->name, 0, 1) }}
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold">{{ Auth::user()->name }}</h3>
-                    <p class="text-gray-600">{{ Auth::user()->username }}</p>
-                    @if(Auth::user()->divisi)
-                        <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold bg-indigo-100 text-indigo-800 rounded-full">
-                            {{ Auth::user()->divisi->nama }}
-                        </span>
-                    @endif
-                </div>
+    <div class="max-w-4xl mx-auto">
+        <!-- Profile Card -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="bg-indigo-600 px-6 py-4">
+                <h1 class="text-xl font-semibold text-white">My Profile</h1>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-gray-700 mb-2">Personal Information</h4>
-                    <p><span class="font-medium">Name:</span> {{ Auth::user()->name }}</p>
-                    <p><span class="font-medium">username:</span> {{ Auth::user()->username }}</p>
-                </div>
-
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-gray-700 mb-2">Account Actions</h4>
-                    <div class="space-y-2">
-                        <a href="{{ route('profil.edit') }}" class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                            Edit Profile
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST" class="inline-block">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                                Logout
-                            </button>
-                        </form>
+            
+            <!-- Content -->
+            <div class="p-6">
+                <!-- Profile Info -->
+                <div class="flex items-center mb-6">
+                    <div class="w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
+                        {{ substr(Auth::user()->name, 0, 1) }}
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">{{ Auth::user()->name }}</h2>
+                        @if(Auth::user()->divisi)
+                            <span class="inline-block mt-2 px-3 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">
+                                {{ Auth::user()->divisi->nama }}
+                            </span>
+                        @endif
                     </div>
                 </div>
-            </div>
 
-            <!-- Signature Section -->
-            <div class="bg-gray-50 p-4 rounded-lg">
-                <h4 class="font-semibold text-gray-700 mb-4">Digital Signature</h4>
-                
-                @if(Auth::user()->signature)
-                    <div class="mb-4">
-                        <p class="text-sm text-gray-600 mb-2">Current Signature:</p>
-                        <div class="border-2 border-gray-200 rounded-lg p-4 bg-white">
-                            <img src="{{ asset('storage/' . Auth::user()->signature) }}" 
-                                alt="Digital Signature" 
-                                class="max-w-full h-auto max-h-32 mx-auto">
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Personal Info -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700 mb-3">Personal Information</h3>
+                        <div class="space-y-2 text-sm">
+                            <div><span class="text-gray-500">Name:</span> {{ Auth::user()->name }}</div>
+                            <div><span class="text-gray-500">Username:</span> {{ Auth::user()->username }}</div>
+                            <div><span class="text-gray-500">Jabatan:</span> {{ Auth::user()->jabatan }}</div>
                         </div>
                     </div>
-                @else
-                    <p class="text-sm text-gray-500 mb-4">No signature created yet.</p>
-                @endif
 
-                <a href="{{ route('profil.signature.index') }}" 
-                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                    Manage Signature
-                </a>
+                    <!-- Signature -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700 mb-3">Digital Signature</h3>
+                        
+                        @if(Auth::user()->signature)
+                            <div class="w-full h-32 border border-gray-300 rounded bg-white flex items-center justify-center overflow-hidden">
+                                <img src="{{ asset('storage/' . Auth::user()->signature) }}" 
+                                     alt="Signature" 
+                                     class="w-full h-full object-contain">
+                            </div>
+                        @else
+                            <div class="w-full h-32 border border-dashed border-gray-300 rounded bg-white flex items-center justify-center">
+                                <span class="text-gray-400 text-base">No signature</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <h3 class="font-semibold text-gray-700 mb-3">Actions</h3>
+                        <div class="space-y-2">
+                            <a href="{{ route('profil.edit') }}" 
+                               class="block w-full px-4 py-2 bg-indigo-600 text-white text-center rounded hover:bg-indigo-700 transition">
+                                Edit Profile
+                            </a>
+                            <a href="{{ route('profil.signature.index') }}" 
+                               class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded hover:bg-green-700 transition">
+                                Manage Signature
+                            </a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" 
+                                        class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                                    Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -80,26 +91,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const drawPanel = document.getElementById('draw-panel');
     const uploadPanel = document.getElementById('upload-panel');
 
-    drawTab.addEventListener('click', function() {
-        drawTab.classList.add('text-indigo-600', 'border-indigo-600');
-        drawTab.classList.remove('text-gray-500');
-        uploadTab.classList.add('text-gray-500');
-        uploadTab.classList.remove('text-indigo-600', 'border-indigo-600');
-        drawPanel.classList.remove('hidden');
-        uploadPanel.classList.add('hidden');
-    });
+    if (drawTab && uploadTab) {
+        drawTab.addEventListener('click', function() {
+            drawTab.classList.add('text-indigo-600', 'border-indigo-600');
+            drawTab.classList.remove('text-gray-500');
+            uploadTab.classList.add('text-gray-500');
+            uploadTab.classList.remove('text-indigo-600', 'border-indigo-600');
+            drawPanel.classList.remove('hidden');
+            uploadPanel.classList.add('hidden');
+        });
 
-    uploadTab.addEventListener('click', function() {
-        uploadTab.classList.add('text-indigo-600', 'border-indigo-600');
-        uploadTab.classList.remove('text-gray-500');
-        drawTab.classList.add('text-gray-500');
-        drawTab.classList.remove('text-indigo-600', 'border-indigo-600');
-        uploadPanel.classList.remove('hidden');
-        drawPanel.classList.add('hidden');
-    });
+        uploadTab.addEventListener('click', function() {
+            uploadTab.classList.add('text-indigo-600', 'border-indigo-600');
+            uploadTab.classList.remove('text-gray-500');
+            drawTab.classList.add('text-gray-500');
+            drawTab.classList.remove('text-indigo-600', 'border-indigo-600');
+            uploadPanel.classList.remove('hidden');
+            drawPanel.classList.add('hidden');
+        });
+    }
 
     // Signature canvas
     const canvas = document.getElementById('signature-canvas');
+    if (!canvas) return;
+
     const ctx = canvas.getContext('2d');
     const clearButton = document.getElementById('clear-signature');
     const undoButton = document.getElementById('undo-signature');
@@ -112,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let paths = [];
     let currentPath = [];
 
-    // Set canvas size
     function resizeCanvas() {
         const rect = canvas.getBoundingClientRect();
         canvas.width = rect.width;
@@ -125,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Drawing functions
     function startDrawing(e) {
         isDrawing = true;
         currentPath = [];
@@ -145,12 +158,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        ctx.lineWidth = penSizeSlider.value;
+        ctx.lineWidth = penSizeSlider ? penSizeSlider.value : 2;
         ctx.lineTo(x, y);
         ctx.stroke();
         
         currentPath.push({x, y, type: 'draw'});
-        enableSaveButton();
+        if (saveButton) enableSaveButton();
     }
 
     function stopDrawing() {
@@ -160,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function() {
         currentPath = [];
     }
 
-    // Touch events for mobile
     function getTouchPos(e) {
         const rect = canvas.getBoundingClientRect();
         return {
@@ -195,37 +207,36 @@ document.addEventListener('DOMContentLoaded', function() {
         canvas.dispatchEvent(mouseEvent);
     }
 
-    // Event listeners
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseout', stopDrawing);
 
-    // Touch events
     canvas.addEventListener('touchstart', touchStart);
     canvas.addEventListener('touchmove', touchMove);
     canvas.addEventListener('touchend', touchEnd);
 
-    // Clear canvas
-    clearButton.addEventListener('click', function() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        paths = [];
-        currentPath = [];
-        disableSaveButton();
-    });
+    if (clearButton) {
+        clearButton.addEventListener('click', function() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            paths = [];
+            currentPath = [];
+            if (saveButton) disableSaveButton();
+        });
+    }
 
-    // Undo last stroke
-    undoButton.addEventListener('click', function() {
-        if (paths.length > 0) {
-            paths.pop();
-            redrawCanvas();
-            if (paths.length === 0) {
-                disableSaveButton();
+    if (undoButton) {
+        undoButton.addEventListener('click', function() {
+            if (paths.length > 0) {
+                paths.pop();
+                redrawCanvas();
+                if (paths.length === 0 && saveButton) {
+                    disableSaveButton();
+                }
             }
-        }
-    });
+        });
+    }
 
-    // Redraw canvas
     function redrawCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
@@ -244,31 +255,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Save signature
-    signatureForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (paths.length === 0) {
-            alert('Please draw your signature first.');
-            return;
-        }
+    if (signatureForm) {
+        signatureForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (paths.length === 0) {
+                alert('Please draw your signature first.');
+                return;
+            }
 
-        // Convert canvas to base64
-        const dataURL = canvas.toDataURL('image/png');
-        signatureData.value = dataURL;
-        
-        // Submit form
-        this.submit();
-    });
+            const dataURL = canvas.toDataURL('image/png');
+            if (signatureData) {
+                signatureData.value = dataURL;
+            }
+            
+            this.submit();
+        });
+    }
 
     function enableSaveButton() {
-        saveButton.disabled = false;
-        saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
     }
 
     function disableSaveButton() {
-        saveButton.disabled = true;
-        saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.classList.add('opacity-50', 'cursor-not-allowed');
+        }
     }
 });
 </script>
