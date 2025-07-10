@@ -1,683 +1,324 @@
 @extends('main')
-@section('content')
 
+@section('content')
 <style>
     .memo-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
+        width: 100%;
+        padding: 1.5rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
+    
     .header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3b82f6 100%);
         color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 15px 40px rgba(30, 60, 114, 0.3);
+        position: relative;
+        overflow: hidden;
     }
-
+    
+    .header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: pulse 4s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
     .header h1 {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        text-align: center;
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 1;
     }
-
+    
     .header p {
-        text-align: center;
+        font-size: 0.9rem;
         opacity: 0.9;
-        font-size: 1.1rem;
+        margin: 0;
+        position: relative;
+        z-index: 1;
     }
-
-    .nav-tabs {
+    
+    .memo-actions {
+        margin-bottom: 1.5rem;
         display: flex;
-        background: white;
-        border-radius: 10px;
-        padding: 5px;
-        margin-bottom: 30px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        justify-content: flex-end;
+        gap: 0.75rem;
     }
-
-    .nav-tab {
-        flex: 1;
-        padding: 15px 20px;
-        text-align: center;
-        cursor: pointer;
-        border-radius: 8px;
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
         transition: all 0.3s ease;
-        font-weight: 500;
-        display: flex;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        gap: 10px;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-
-    .nav-tab.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    .btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
     }
-
-    .nav-tab:hover:not(.active) {
-        background: #f8f9fa;
-        transform: translateY(-1px);
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
     }
-
-    .tab-content {
-        display: none;
-        animation: fadeIn 0.3s ease-in-out;
+    
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
     }
-
-    .tab-content.active {
-        display: block;
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
     }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        border: 2px dashed #e5e7eb;
     }
-
-    /* INDEX STYLES */
+    
+    .empty-state i {
+        font-size: 3rem;
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        color: #374151;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .empty-state p {
+        color: #6b7280;
+        font-size: 0.875rem;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
     .memo-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 25px;
-        margin-top: 20px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
     }
-
+    
     .memo-card {
         background: white;
-        border-radius: 15px;
-        padding: 25px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         transition: all 0.3s ease;
-        border-left: 5px solid #667eea;
+        border-left: 4px solid #3b82f6;
+        position: relative;
+        overflow: hidden;
     }
-
-    .memo-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    
+    .memo-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
     }
-
+    
     .memo-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 15px;
-    }
-
-    .memo-number {
-        background: #667eea;
-        color: white;
-        padding: 8px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: bold;
-    }
-
-    .memo-date {
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    .memo-info {
-        margin-bottom: 15px;
-    }
-
-    .memo-field {
-        margin-bottom: 8px;
-        display: flex;
-        align-items: start;
-    }
-
-    .memo-field strong {
-        min-width: 80px;
-        color: #333;
-        font-weight: 600;
-    }
-
-    .memo-field span {
-        color: #666;
-        flex: 1;
-    }
-
-    .memo-content {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 8px;
-        margin: 15px 0;
-    }
-
-    .memo-content h4 {
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    .memo-content p {
-        line-height: 1.6;
-        color: #555;
-    }
-
-    .memo-signature {
-        text-align: right;
-        margin-top: 15px;
-        padding-top: 15px;
-        border-top: 1px solid #eee;
-    }
-
-    .memo-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .btn {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: inline-flex;
         align-items: center;
-        gap: 5px;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f3f4f6;
     }
-
-    .btn-primary {
-        background: #667eea;
-        color: white;
+    
+    .memo-number {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: #1e40af;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        border: 1px solid #93c5fd;
     }
-
-    .btn-primary:hover {
-        background: #5a6fd8;
-        transform: translateY(-2px);
+    
+    .memo-date {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 500;
+        background: #f9fafb;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.75rem;
+        border: 1px solid #e5e7eb;
     }
-
-    .btn-success {
-        background: #28a745;
-        color: white;
+    
+    .memo-info {
+        margin-bottom: 1.5rem;
     }
-
-    .btn-success:hover {
-        background: #218838;
-        transform: translateY(-2px);
-    }
-
-    .btn-warning {
-        background: #ffc107;
-        color: #333;
-    }
-
-    .btn-warning:hover {
-        background: #e0a800;
-        transform: translateY(-2px);
-    }
-
-    .btn-danger {
-        background: #dc3545;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #c82333;
-        transform: translateY(-2px);
-    }
-
-    /* CREATE FORM STYLES */
-    .memo-form {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .form-row {
+    
+    .memo-field {
         display: flex;
-        gap: 20px;
-        margin-bottom: 20px;
+        flex-direction: column;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        border-left: 3px solid #3b82f6;
     }
-
-    .form-group {
-        flex: 1;
-    }
-
-    .form-group.full-width {
-        width: 100%;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
+    
+    .memo-field strong {
+        color: #1e40af;
+        font-size: 0.75rem;
         font-weight: 600;
-        color: #333;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
-
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: #fff;
+    
+    .memo-field span {
+        color: #374151;
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.4;
     }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-group textarea {
-        resize: vertical;
-        min-height: 120px;
-    }
-
-    .signature-area {
-        border: 2px dashed #ddd;
-        border-radius: 8px;
-        padding: 40px;
-        text-align: center;
-        background: #f8f9fa;
-        margin: 20px 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .signature-area:hover {
-        border-color: #667eea;
-        background: rgba(102, 126, 234, 0.05);
-    }
-
-    .signature-area i {
-        font-size: 3rem;
-        color: #ddd;
-        margin-bottom: 15px;
-    }
-
-    .signature-area p {
-        color: #666;
-        font-size: 1.1rem;
-        margin: 0;
-    }
-
-    .form-actions {
+    
+    .card-actions {
         display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #666;
+    
+    .card-actions .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 0.375rem;
+        flex: 1;
+        min-width: 60px;
+        justify-content: center;
     }
-
-    .empty-state i {
-        font-size: 4rem;
-        color: #ddd;
-        margin-bottom: 20px;
-    }
-
-    .empty-state h3 {
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    .empty-state p {
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-    }
-
-    .search-box {
-        max-width: 400px;
-        margin: 0 auto 30px;
-        position: relative;
-    }
-
-    .search-box input {
-        width: 100%;
-        padding: 15px 50px 15px 20px;
-        border: 2px solid #e9ecef;
-        border-radius: 25px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-    }
-
-    .search-box input:focus {
-        outline: none;
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .search-box i {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #666;
-    }
-
+    
     @media (max-width: 768px) {
-        .nav-tabs {
-            flex-direction: column;
-            gap: 5px;
+        .memo-container {
+            padding: 1rem;
         }
-
-        .form-row {
-            flex-direction: column;
-            gap: 0;
+        
+        .header {
+            padding: 1rem;
         }
-
+        
+        .header h1 {
+            font-size: 1.5rem;
+        }
+        
         .memo-grid {
             grid-template-columns: 1fr;
-        }
-
-        .form-actions {
-            flex-direction: column;
         }
     }
 </style>
 
 <div class="memo-container">
     <div class="header">
-        <h1><i class="fas fa-file-alt"></i> Sistem Memo</h1>
-        <p>Kelola surat-menyurat dan memo perusahaan dengan mudah</p>
+        <h1><i class="fas fa-file-alt mr-2"></i> Sistem Memo</h1>
+        <p>Kelola surat-menyurat dan memo perusahaan dengan sistem yang profesional dan efisien</p>
     </div>
 
-    <div class="nav-tabs">
-        <div class="nav-tab active" onclick="showTab('index')">
-            <i class="fas fa-list"></i>
-            Daftar Memo
-        </div>
-        <div class="nav-tab" onclick="showTab('create')">
-            <i class="fas fa-plus"></i>
-            Buat Memo Baru
-        </div>
+    <div class="memo-actions">
+        <a href="{{ route('staff.memo.create') }}" class="btn btn-success">
+            <i class="fas fa-plus mr-1"></i> Buat Memo Baru
+        </a>
     </div>
 
-    <!-- INDEX TAB -->
-    <div id="index" class="tab-content active">
-        <div class="search-box">
-            <input type="text" placeholder="Cari memo berdasarkan nomor, perihal, atau pengirim...">
-            <i class="fas fa-search"></i>
+    @if($memos->isEmpty())
+        <div class="empty-state">
+            <i class="fas fa-file-alt"></i>
+            <h3>Tidak Ada Memo</h3>
+            <p>Belum ada memo yang tersedia. Klik "Buat Memo Baru" untuk membuat memo pertama Anda.</p>
         </div>
-
+    @else
         <div class="memo-grid">
-            <!-- Sample Memo Card 1 -->
-            <div class="memo-card">
-                <div class="memo-header">
-                    <div class="memo-number">001/DIR/2024</div>
-                    <div class="memo-date">08 Juli 2025</div>
-                </div>
-                <div class="memo-info">
-                    <div class="memo-field">
-                        <strong>Kepada:</strong>
-                        <span>Kepala Bagian HRD</span>
+            @foreach($memos as $memo)
+                <div class="memo-card">
+                    <div class="memo-header">
+                        <div class="memo-number">{{ $memo->nomor }}</div>
+                        <div class="memo-date">{{ $memo->tanggal->format('d M Y') }}</div>
                     </div>
-                    <div class="memo-field">
-                        <strong>Dari:</strong>
-                        <span>Direktur Utama</span>
+                    <div class="memo-info">
+                        <div class="memo-field">
+                            <strong>Kepada:</strong>
+                            <span>{{ $memo->kepada }}</span>
+                        </div>
+                        <div class="memo-field">
+                            <strong>Dari:</strong>
+                            <span>{{ $memo->dari }}</span>
+                        </div>
+                        <div class="memo-field">
+                            <strong>Perihal:</strong>
+                            <span>{{ $memo->perihal }}</span>
+                        </div>
                     </div>
-                    <div class="memo-field">
-                        <strong>Perihal:</strong>
-                        <span>Evaluasi Kinerja Karyawan Q2 2025</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Lampiran:</strong>
-                        <span>2 berkas</span>
-                    </div>
-                </div>
-                <div class="memo-content">
-                    <h4>Isi Memo:</h4>
-                    <p>Dengan hormat, dalam rangka evaluasi kinerja karyawan untuk kuartal kedua tahun 2025, dimohon untuk mempersiapkan laporan evaluasi...</p>
-                </div>
-                <div class="memo-signature">
-                    <strong>Direktur Utama</strong><br>
-                    <em>Ahmad Wijaya</em>
-                </div>
-                <div class="memo-actions">
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-eye"></i> Lihat
-                    </a>
-                    <a href="#" class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <a href="#" class="btn btn-success">
-                        <i class="fas fa-download"></i> Download
-                    </a>
-                    <a href="#" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Hapus
-                    </a>
-                </div>
-            </div>
-
-            <!-- Sample Memo Card 2 -->
-            <div class="memo-card">
-                <div class="memo-header">
-                    <div class="memo-number">002/IT/2024</div>
-                    <div class="memo-date">07 Juli 2025</div>
-                </div>
-                <div class="memo-info">
-                    <div class="memo-field">
-                        <strong>Kepada:</strong>
-                        <span>Seluruh Staff IT</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Dari:</strong>
-                        <span>Kepala Divisi IT</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Perihal:</strong>
-                        <span>Pemeliharaan Server Mingguan</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Lampiran:</strong>
-                        <span>1 berkas</span>
+                    <div class="card-actions">
+                        <a href="{{ route('staff.memo.show', $memo->id) }}" class="btn btn-primary">
+                            <i class="fas fa-eye mr-1"></i> Lihat
+                        </a>
+                        <a href="{{ route('staff.memo.edit', $memo->id) }}" class="btn btn-warning">
+                            <i class="fas fa-edit mr-1"></i> Edit
+                        </a>
+                        <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')">
+                                <i class="fas fa-trash mr-1"></i> Hapus
+                            </button>
+                        </form>
                     </div>
                 </div>
-                <div class="memo-content">
-                    <h4>Isi Memo:</h4>
-                    <p>Kepada seluruh staff IT, diberitahukan bahwa akan dilakukan pemeliharaan server rutin setiap hari Minggu mulai pukul 02:00 WIB...</p>
-                </div>
-                <div class="memo-signature">
-                    <strong>Kepala Divisi IT</strong><br>
-                    <em>Budi Santoso</em>
-                </div>
-                <div class="memo-actions">
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-eye"></i> Lihat
-                    </a>
-                    <a href="#" class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <a href="#" class="btn btn-success">
-                        <i class="fas fa-download"></i> Download
-                    </a>
-                    <a href="#" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Hapus
-                    </a>
-                </div>
-            </div>
-
-            <!-- Sample Memo Card 3 -->
-            <div class="memo-card">
-                <div class="memo-header">
-                    <div class="memo-number">003/FIN/2024</div>
-                    <div class="memo-date">06 Juli 2025</div>
-                </div>
-                <div class="memo-info">
-                    <div class="memo-field">
-                        <strong>Kepada:</strong>
-                        <span>Kepala Bagian Accounting</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Dari:</strong>
-                        <span>Manajer Keuangan</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Perihal:</strong>
-                        <span>Laporan Keuangan Bulanan</span>
-                    </div>
-                    <div class="memo-field">
-                        <strong>Lampiran:</strong>
-                        <span>-</span>
-                    </div>
-                </div>
-                <div class="memo-content">
-                    <h4>Isi Memo:</h4>
-                    <p>Dimohon untuk segera menyiapkan laporan keuangan bulanan untuk periode Juni 2025 dan diserahkan selambat-lambatnya tanggal 10 Juli 2025...</p>
-                </div>
-                <div class="memo-signature">
-                    <strong>Manajer Keuangan</strong><br>
-                    <em>Sari Dewi</em>
-                </div>
-                <div class="memo-actions">
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-eye"></i> Lihat
-                    </a>
-                    <a href="#" class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-                    <a href="#" class="btn btn-success">
-                        <i class="fas fa-download"></i> Download
-                    </a>
-                    <a href="#" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Hapus
-                    </a>
-                </div>
-            </div>
+            @endforeach
         </div>
-    </div>
-
-    <!-- CREATE TAB -->
-    <div id="create" class="tab-content">
-        <div class="memo-form">
-            <h2 style="margin-bottom: 30px; color: #333; text-align: center;">
-                <i class="fas fa-plus-circle"></i> Buat Memo Baru
-            </h2>
-
-            <form>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nomor">Nomor Memo</label>
-                        <input type="text" id="nomor" name="nomor" placeholder="Contoh: 001/DIR/2024" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="tanggal">Tanggal</label>
-                        <input type="date" id="tanggal" name="tanggal" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="kepada">Kepada</label>
-                        <input type="text" id="kepada" name="kepada" placeholder="Nama/Divisi penerima memo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dari">Dari</label>
-                        <input type="text" id="dari" name="dari" placeholder="Nama/Divisi pengirim memo" required>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="perihal">Perihal</label>
-                        <input type="text" id="perihal" name="perihal" placeholder="Subjek atau topik memo" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lampiran">Lampiran</label>
-                        <input type="text" id="lampiran" name="lampiran" placeholder="Jumlah lampiran (contoh: 2 berkas)">
-                    </div>
-                </div>
-
-                <div class="form-group full-width">
-                    <label for="isi">Isi Memo</label>
-                    <textarea id="isi" name="isi" placeholder="Tulis isi memo di sini..." rows="8" required></textarea>
-                </div>
-
-                <div class="form-group full-width">
-                    <label>Tanda Tangan</label>
-                    <div class="signature-area" onclick="document.getElementById('signature').click()">
-                        <i class="fas fa-signature"></i>
-                        <p>Klik untuk menambahkan tanda tangan digital</p>
-                        <input type="file" id="signature" name="signature" accept="image/*" style="display: none;">
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="btn btn-primary">
-                        <i class="fas fa-eye"></i> Preview
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> Simpan Memo
-                    </button>
-                    <button type="button" class="btn btn-warning">
-                        <i class="fas fa-file-pdf"></i> Simpan sebagai PDF
-                    </button>
-                    <button type="reset" class="btn btn-danger">
-                        <i class="fas fa-times"></i> Batal
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    @endif
 </div>
 
 <script>
-function showTab(tabName) {
-    // Hide all tab contents
-    const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(content => content.classList.remove('active'));
-    
-    // Remove active class from all tabs
-    const tabs = document.querySelectorAll('.nav-tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
-    
-    // Show selected tab content
-    document.getElementById(tabName).classList.add('active');
-    
-    // Add active class to clicked tab
-    event.target.classList.add('active');
-}
-
-// Handle signature file input
-document.getElementById('signature').addEventListener('change', function(e) {
-    const signatureArea = document.querySelector('.signature-area');
-    if (e.target.files.length > 0) {
-        signatureArea.innerHTML = `
-            <i class="fas fa-check-circle" style="color: #28a745;"></i>
-            <p style="color: #28a745;">Tanda tangan berhasil diunggah: ${e.target.files[0].name}</p>
-        `;
-    }
-});
-
-// Auto-fill current date
-document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
-
-// Simple search functionality
-document.querySelector('.search-box input').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const memoCards = document.querySelectorAll('.memo-card');
-    
-    memoCards.forEach(card => {
-        const cardText = card.textContent.toLowerCase();
-        if (cardText.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to memo cards
+    document.querySelectorAll('.memo-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+            this.style.boxShadow = '0 15px 40px rgba(59, 130, 246, 0.15)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 10px 30px rgba(0,0,0,0.08)';
+        });
     });
 });
 </script>
-
 @endsection
