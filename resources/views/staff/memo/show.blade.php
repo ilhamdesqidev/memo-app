@@ -1,418 +1,251 @@
 @extends('main')
+
 @section('content')
-<style>
-    .memo-detail-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .header {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #3b82f6 100%);
-        color: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 15px 40px rgba(30, 60, 114, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: pulse 4s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    .header h1 {
-        font-size: 2.2rem;
-        font-weight: 700;
-        margin: 0 0 10px 0;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        position: relative;
-        z-index: 1;
-    }
-    
-    .header p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        margin: 0;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .memo-detail-card {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        border: 1px solid #e5e7eb;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 30px;
-    }
-    
-    .memo-detail-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
-    }
-    
-    .memo-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f3f4f6;
-    }
-    
-    .memo-number {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #1e40af;
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        padding: 8px 20px;
-        border-radius: 20px;
-        border: 1px solid #93c5fd;
-    }
-    
-    .memo-date {
-        font-size: 1rem;
-        color: #6b7280;
-        font-weight: 500;
-        background: #f9fafb;
-        padding: 8px 20px;
-        border-radius: 20px;
-        border: 1px solid #e5e7eb;
-    }
-    
-    .memo-detail-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-        margin-bottom: 25px;
-    }
-    
-    .memo-detail-field {
-        margin-bottom: 20px;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 15px;
-        border-left: 3px solid #3b82f6;
-    }
-    
-    .memo-detail-field strong {
-        color: #1e40af;
-        font-size: 0.9rem;
-        font-weight: 600;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        display: block;
-    }
-    
-    .memo-detail-field span {
-        color: #374151;
-        font-size: 1.1rem;
-        font-weight: 500;
-        line-height: 1.6;
-    }
-    
-    .memo-content {
-        margin: 30px 0;
-        padding: 30px;
-        background: #f8fafc;
-        border-radius: 15px;
-        border: 1px solid #e5e7eb;
-        white-space: pre-line;
-    }
-    
-    .memo-content-title {
-        color: #1e40af;
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 15px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .signature-section {
-        margin-top: 40px;
-        padding-top: 30px;
-        border-top: 2px solid #f3f4f6;
-    }
-    
-    .signature-container {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-    }
-    
-    .signature-box {
-        text-align: center;
-        max-width: 300px;
-    }
-    
-    .signature-image {
-        max-width: 100%;
-        max-height: 150px;
-        margin-bottom: 15px;
-        border: 1px solid #e5e7eb;
-        border-radius: 5px;
-    }
-    
-    .signature-name {
-        font-weight: 600;
-        color: #1e40af;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #e5e7eb;
-    }
-    
-    .action-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: flex-end;
-        margin-top: 30px;
-    }
-    
-    .btn {
-        padding: 12px 24px;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-    }
-    
-    .btn-warning {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-    }
-    
-    .btn-warning:hover {
-        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-    }
-    
-    .btn-danger {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-    }
-    
-    .btn-danger:hover {
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .memo-detail-container {
-            padding: 15px;
-        }
-        
-        .header {
-            padding: 2rem 1.5rem;
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-        }
-        
-        .memo-detail-card {
-            padding: 25px;
-        }
-        
-        .memo-detail-row {
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        
-        .action-buttons {
-            flex-direction: column;
-        }
-        
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-    
-    /* Loading Animation */
-    .loading {
-        opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-
-<div class="memo-detail-container loading">
-    <div class="header">
-        <h1><i class="fas fa-file-alt"></i> Detail Memo</h1>
-        <p>Lihat informasi lengkap tentang memo ini termasuk tanda tangan digital</p>
-    </div>
-
-    <div class="memo-detail-card">
-        <div class="memo-header">
-            <div class="memo-number">{{ $memo->nomor }}</div>
-            <div class="memo-date">{{ \Carbon\Carbon::parse($memo->tanggal)->format('d F Y') }}</div>
-        </div>
-
-        <div class="memo-detail-row">
-            <div class="memo-detail-field">
-                <strong>Kepada</strong>
-                <span>{{ $memo->kepada }}</span>
+<div class="p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="{{ route('staff.memo.index') }}" class="text-gray-600 hover:text-gray-800 mr-3 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <h2 class="text-2xl font-bold text-gray-800">Detail Memo</h2>
             </div>
-            <div class="memo-detail-field">
-                <strong>Dari</strong>
-                <span>{{ $memo->dari }}</span>
-            </div>
+            <p class="text-gray-600">Lihat informasi lengkap tentang memo ini termasuk tanda tangan digital</p>
         </div>
 
-        <div class="memo-detail-field">
-            <strong>Perihal</strong>
-            <span>{{ $memo->perihal }}</span>
-        </div>
-
-        <div class="memo-content">
-            <div class="memo-content-title">Isi Memo</div>
-            <p>{{ $memo->isi }}</p>
-        </div>
-
-        @if($memo->signature)
-        <div class="signature-section">
-            <div class="memo-detail-field">
-                <strong>Tanda Tangan Digital</strong>
-                <div class="signature-container">
-                    <div class="signature-box">
-                        @if(pathinfo($memo->signature, PATHINFO_EXTENSION) === 'pdf')
-                            <embed src="{{ asset('storage/' . $memo->signature) }}" type="application/pdf" width="250" height="150">
-                        @else
-                            <img src="{{ asset('storage/' . $memo->signature) }}" alt="Tanda Tangan" class="signature-image">
-                        @endif
-                        <div class="signature-name">{{ $memo->dari }}</div>
+        <!-- Memo Card -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <!-- Header Section -->
+            <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="text-lg font-semibold text-gray-800">Memo</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                            {{ $memo->nomor }}
+                        </span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 border border-gray-200">
+                            {{ \Carbon\Carbon::parse($memo->tanggal)->format('d F Y') }}
+                        </span>
                     </div>
                 </div>
             </div>
-        </div>
-        @endif
 
-        <div class="action-buttons">
-            <a href="{{ route('staff.memo.index') }}" class="btn btn-primary">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
-            <a href="{{ route('staff.memo.edit', $memo->id) }}" class="btn btn-warning">
-                <i class="fas fa-edit"></i> Edit
-            </a>
-            <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" style="display: inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')">
-                    <i class="fas fa-trash"></i> Hapus
-                </button>
-            </form>
+            <!-- Content Section -->
+            <div class="p-6 space-y-6">
+                <!-- Memo Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Kepada -->
+                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-blue-600 uppercase tracking-wide">Kepada</span>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-800">{{ $memo->kepada }}</p>
+                    </div>
+
+                    <!-- Dari -->
+                    <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-green-500">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-4 h-4 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-green-600 uppercase tracking-wide">Dari</span>
+                        </div>
+                        <p class="text-lg font-semibold text-gray-800">{{ $memo->dari }}</p>
+                    </div>
+                </div>
+
+                <!-- Perihal -->
+                <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-purple-500">
+                    <div class="flex items-center mb-2">
+                        <svg class="w-4 h-4 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-purple-600 uppercase tracking-wide">Perihal</span>
+                    </div>
+                    <p class="text-lg font-semibold text-gray-800">{{ $memo->perihal }}</p>
+                </div>
+
+                <!-- Isi Memo -->
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-gray-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-600 uppercase tracking-wide">Isi Memo</span>
+                    </div>
+                    <div class="prose prose-gray max-w-none">
+                        <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ $memo->isi }}</p>
+                    </div>
+                </div>
+
+                <!-- Digital Signature -->
+                @if($memo->signature)
+                <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div class="flex items-center mb-4">
+                        <svg class="w-5 h-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-indigo-600 uppercase tracking-wide">Tanda Tangan Digital</span>
+                    </div>
+                    <div class="flex justify-end">
+                        <div class="text-center bg-white p-6 rounded-lg border border-gray-200 shadow-sm" style="max-width: 300px;">
+                            @if(pathinfo($memo->signature, PATHINFO_EXTENSION) === 'pdf')
+                                <embed src="{{ asset('storage/' . $memo->signature) }}" 
+                                       type="application/pdf" 
+                                       width="250" 
+                                       height="150" 
+                                       class="border rounded-lg mb-4 shadow-sm">
+                            @else
+                                <img src="{{ asset('storage/' . $memo->signature) }}" 
+                                     alt="Tanda Tangan" 
+                                     class="max-h-32 mx-auto border rounded-lg mb-4 shadow-sm">
+                            @endif
+                            <div class="pt-3 border-t border-gray-200">
+                                <p class="font-semibold text-indigo-600">{{ $memo->dari }}</p>
+                                <p class="text-sm text-gray-500 mt-1">Penandatangan</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                <div class="flex flex-wrap justify-end gap-3">
+                    <button onclick="window.print()" 
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        Cetak
+                    </button>
+                    
+                    <a href="{{ route('staff.memo.index') }}" 
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Kembali
+                    </a>
+                    
+                    <a href="{{ route('staff.memo.edit', $memo->id) }}" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit
+                    </a>
+                    
+                    <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" 
+                                onclick="return confirm('Apakah Anda yakin ingin menghapus memo ini?')"
+                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Animation for elements
-    const elements = document.querySelectorAll('.memo-header, .memo-detail-row, .memo-detail-field, .memo-content, .signature-section');
+    // Smooth entrance animation
+    const elements = document.querySelectorAll('.bg-gray-50, .bg-white');
     elements.forEach((el, index) => {
-        el.style.animationDelay = `${index * 0.1}s`;
-        el.classList.add('loading');
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = `all 0.5s ease ${index * 0.1}s`;
+        
+        setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, 50);
     });
-
-    // Print functionality
-    const printButton = document.createElement('button');
-    printButton.className = 'btn btn-primary';
-    printButton.innerHTML = '<i class="fas fa-print"></i> Cetak';
-    printButton.style.marginRight = 'auto';
-    printButton.onclick = function() {
-        window.print();
-    };
     
-    document.querySelector('.action-buttons').prepend(printButton);
-
-    // Add CSS for animations
-    const additionalCSS = `
-        .memo-header.loading,
-        .memo-detail-row.loading,
-        .memo-detail-field.loading,
-        .memo-content.loading,
-        .signature-section.loading {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+    // Enhanced print styles
+    const printStyles = document.createElement('style');
+    printStyles.textContent = `
         @media print {
-            .header, .action-buttons {
-                display: none;
+            .p-6 { padding: 0 !important; }
+            
+            /* Hide navigation and buttons */
+            .flex.items-center.mb-4,
+            .px-6.py-4.bg-gray-50.border-t.border-gray-200 {
+                display: none !important;
             }
             
-            .memo-detail-card {
-                box-shadow: none;
-                border: none;
-                padding: 0;
+            /* Clean up layout for print */
+            .bg-white.rounded-lg.shadow-sm.border.border-gray-200 {
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
+                border-radius: 0 !important;
             }
             
-            .memo-detail-field {
+            /* Remove background colors for print */
+            .bg-gray-50,
+            .bg-gradient-to-r.from-blue-50.to-indigo-50 {
+                background-color: transparent !important;
+            }
+            
+            /* Ensure text is black */
+            .text-gray-800,
+            .text-gray-700,
+            .text-gray-600 {
+                color: #000 !important;
+            }
+            
+            /* Signature styling for print */
+            .bg-white.p-6.rounded-lg.border.border-gray-200.shadow-sm {
+                background-color: transparent !important;
+                border: 1px solid #000 !important;
+                box-shadow: none !important;
+            }
+            
+            /* Optimize signature size for print */
+            img, embed {
+                max-height: 80px !important;
+            }
+            
+            /* Page break control */
+            .space-y-6 > div {
                 page-break-inside: avoid;
-            }
-            
-            .signature-image {
-                max-height: 100px;
             }
         }
     `;
-
-    const style = document.createElement('style');
-    style.textContent = additionalCSS;
-    document.head.appendChild(style);
+    document.head.appendChild(printStyles);
+    
+    // Add hover effects for interactive elements
+    const buttons = document.querySelectorAll('button, a');
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-1px)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
 });
 </script>
-
 @endsection
