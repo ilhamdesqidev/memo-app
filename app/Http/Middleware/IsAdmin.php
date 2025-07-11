@@ -13,22 +13,19 @@ class IsAdmin
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
+   // app/Http/Middleware/IsAdmin.php
+public function handle(Request $request, Closure $next)
+{
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
 
-        if (Auth::user()->role !== 'admin') {
-            // Redirect non-admin users to their dashboard
-            return redirect()->route('staff.dashboard')->with('error', 'Akses ditolak. Anda tidak memiliki izin admin.');
-        }
-
+    // Cek role admin saja, abaikan divisi
+    if (Auth::user()->role === 'admin') {
         return $next($request);
     }
 
-        protected $middlewareAliases = [
-    // ... middleware lainnya
-    'admin' => \App\Http\Middleware\AdminMiddleware::class,
-];
+    return redirect()->route('staff.dashboard')
+           ->with('error', 'Akses admin diperlukan');
+}
 }

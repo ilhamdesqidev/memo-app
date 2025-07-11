@@ -39,9 +39,40 @@
         <!-- Memo Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             @foreach($memos as $memo)
-                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-200 border-l-4 border-blue-500 relative overflow-hidden group">
+                <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-200 border-l-4 @if($memo->status === 'approved') border-green-500 @elseif($memo->status === 'rejected') border-red-500 @else border-blue-500 @endif relative overflow-hidden group">
+                    <!-- Status Badge -->
+                    <div class="absolute top-4 right-4">
+                        @if($memo->status === 'approved')
+                            <span class="px-3 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Disetujui
+                            </span>
+                        @elseif($memo->status === 'rejected')
+                            <span class="px-3 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Ditolak
+                            </span>
+                            @if($memo->rejection_reason)
+                                <div class="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+                                    <strong>Alasan:</strong> {{ $memo->rejection_reason }}
+                                </div>
+                            @endif
+                        @else
+                            <span class="px-3 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded-full flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Menunggu
+                            </span>
+                        @endif
+                    </div>
+                    
                     <!-- Gradient top border -->
-                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-800"></div>
+                    <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r @if($memo->status === 'approved') from-green-500 to-green-800 @elseif($memo->status === 'rejected') from-red-500 to-red-800 @else from-blue-500 to-blue-800 @endif"></div>
                     
                     <!-- Header -->
                     <div class="flex justify-between items-center mb-4 pb-3 border-b border-gray-100">
@@ -81,13 +112,16 @@
                             Lihat
                         </a>
                         
+                        @if($memo->status !== 'approved')
                         <a href="{{ route('staff.memo.edit', $memo->id) }}" class="flex-1 inline-flex items-center justify-center px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-xs font-semibold hover:from-yellow-600 hover:to-yellow-700 transition-all">
                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                             Edit
                         </a>
+                        @endif
                         
+                        @if($memo->status !== 'approved')
                         <form action="{{ route('staff.memo.destroy', $memo->id) }}" method="POST" class="flex-1">
                             @csrf
                             @method('DELETE')
@@ -98,6 +132,7 @@
                                 Hapus
                             </button>
                         </form>
+                        @endif
                     </div>
                 </div>
             @endforeach

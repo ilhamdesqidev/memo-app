@@ -22,7 +22,7 @@ class User extends Authenticatable
     'email',
     'password',
     'role',
-    'divisi_id',
+    'divisi',
     'jabatan',
     'signature',
 ];
@@ -57,8 +57,15 @@ class User extends Authenticatable
     return $this->role === 'admin';
 }
 
-        public function divisi()
-    {
-        return $this->belongsTo(Divisi::class, 'divisi_id'); // Sesuaikan foreign key jika berbeda
-    }
+       // app/Models/User.php
+public function divisi()
+{
+    return $this->belongsTo(Divisi::class)->withDefault();
+}
+
+// Atau lebih aman:
+public function getDivisiNameAttribute()
+{
+    return $this->divisi ? $this->divisi->nama : null;
+}
 }

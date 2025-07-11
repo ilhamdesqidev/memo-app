@@ -3,8 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Routing\Router;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\CheckDivisi;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -13,11 +13,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\IsAdmin::class,
-        ]);    
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    $middleware->alias([
+        'role' => \App\Http\Middleware\CheckRole::class,
+        'divisi' => \App\Http\Middleware\CheckDivisi::class,
+    ]);
+})
+        
+        // You can add other middleware groups or modifications here if needed
+        // $middleware->web(append: [
+        //     \App\Http\Middleware\SomeMiddleware::class,
+        // ]);
 
+    ->withExceptions(function (Exceptions $exceptions) {
+        // Configure exception handling here if needed
+    })
+    ->create();

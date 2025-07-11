@@ -23,7 +23,8 @@ class MemoController extends Controller
         return view('staff.memo.create');
     }
 
-  public function store(Request $request)
+ // app/Http/Controllers/MemoController.php (update store method)
+public function store(Request $request)
 {
     $validated = $request->validate([
         'nomor' => 'required|string|max:50|unique:memos',
@@ -35,37 +36,18 @@ class MemoController extends Controller
         'signature' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:2048'
     ]);
 
-    // Debug sebelum proses
-    logger()->info('Signature upload attempt', [
-        'hasFile' => $request->hasFile('signature'),
-        'fileValid' => $request->file('signature')?->isValid(),
-        'originalName' => $request->file('signature')?->getClientOriginalName()
-    ]);
+    // Set default status to pending
+    $validated['status'] = 'pending';
 
     if ($request->hasFile('signature') && $request->file('signature')->isValid()) {
-        try {
-            $path = $request->file('signature')->store('memo_signatures', 'public');
-            $validated['signature'] = $path;
-            
-            logger()->info('File stored successfully', [
-                'path' => $path,
-                'full_path' => storage_path('app/public/'.$path)
-            ]);
-        } catch (\Exception $e) {
-            logger()->error('File storage failed', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-        }
+        $path = $request->file('signature')->store('memo_signatures', 'public');
+        $validated['signature'] = $path;
     }
 
     $memo = Memo::create($validated);
     
-    // Debug setelah create
-    logger()->info('Memo created', $memo->toArray());
-    
-    return redirect()->route('staff.memo.show', $memo->id)
-           ->with('success', 'Memo berhasil dibuat!');
+    return redirect()->route('staff.memo.index')
+           ->with('success', 'Memo berhasil dibuat dan menunggu persetujuan!');
 }
 
     public function show($id)

@@ -17,10 +17,21 @@ class Memo extends Model
         'kepada',
         'dari',
         'perihal',
-        'lampiran',
         'isi',
-        'signature_path', // Assuming you want to store the path of the signature image
+        'signature',
+        'status',
+        'approved_by',
+        'approval_date',
+        'rejection_reason'
     ];
 
-    // Optionally, you can define relationships or other model methods here
+    protected $casts = [
+        'tanggal' => 'date',
+        'approval_date' => 'datetime'
+    ];
+
+    public function approver()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'approved_by');
+    }
 }

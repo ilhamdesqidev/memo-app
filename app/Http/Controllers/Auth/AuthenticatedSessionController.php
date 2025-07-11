@@ -9,13 +9,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-
 class AuthenticatedSessionController extends Controller
 {
     /**
      * Display the login view.
      */
-      public function create(): View
+    public function create(): View
     {
         return view('auth.login');
     }
@@ -23,17 +22,33 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request)
+   // app/Http/Controllers/Auth/AuthenticatedSessionController.php
+// app/Http/Controllers/Auth/AuthenticatedSessionController.php
+public function store(LoginRequest $request): RedirectResponse
 {
     $request->authenticate();
-
     $request->session()->regenerate();
 
-    // Redirect berdasarkan role
-    if (auth()->user()->role === 'admin') {
+    $user = auth()->user();
+    
+    // Debug log
+    \Log::info('Login Process', [
+        'user_id' => $user->id,
+        'role' => $user->role,
+        'divisi' => $user->divisi_id
+    ]);
+
+    // 1. Prioritas untuk admin (tanpa perlu cek divisi)
+    if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
 
+    // 2. Cek untuk manager (jika ada divisi)
+    if ($user->divisi && strtolower($user->divisi->nama) === 'manager') {
+        return redirect()->route('manager.dashboard');
+    }
+
+    // 3. Default untuk staff
     return redirect()->intended('staff/dashboard');
 }
 

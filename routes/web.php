@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\MemoController;
+use App\Http\Controllers\Manager\DashboardController;
+use App\Http\Controllers\Manager\MemoController as ManagerMemoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,31 +24,24 @@ Route::get('/login', [AuthenticatedSessionController::class, 'create'])->middlew
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
 
-// Staff Dashboard
-Route::get('/staff/dashboard', function () {
-    return view('staff.dashboard');
-})->middleware(['auth', 'verified'])->name('staff.dashboard');
-
-// Profile Routes
-Route::middleware('auth')->group(function () {
+// Authenticated Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Profile Routes (accessible to all authenticated users)
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/update', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
-});
 
-// Profil Routes
-Route::middleware('auth')->group(function () {
+    // Profil Routes (I'm keeping both for compatibility)
     Route::prefix('profil')->group(function () {
-        // Route profil utama
         Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
         Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/update', [ProfilController::class, 'update'])->name('profil.update');
         Route::delete('/delete', [ProfilController::class, 'destroy'])->name('profil.destroy');
 
-        // Route tanda tangan yang dipisah
+        // Signature Routes
         Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('profil.signature.index');
         Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('profil.signature.create');
         Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('profil.signature.upload');
@@ -54,12 +49,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('profil.signature.delete');
     });
 
-    // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
-        // Admin Dashboard
+    // Admin Routes (role-based)
+    Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
         
-        // Staff Management
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
         Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
         Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
@@ -68,20 +61,46 @@ Route::middleware('auth')->group(function () {
         Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
     });
 
-// Memo Routes
-Route::prefix('staff/memo')->name('staff.memo.')->group(function () {
-    Route::get('/', [MemoController::class, 'index'])->name('index');
-    Route::get('/create', [MemoController::class, 'create'])->name('create');
-    Route::post('/', [MemoController::class, 'store'])->name('store');
-    Route::get('/{id}', [MemoController::class, 'show'])->name('show');
-    Route::get('/{id}/edit', [MemoController::class, 'edit'])->name('edit');
-    Route::put('/{id}', [MemoController::class, 'update'])->name('update');
-    Route::delete('/{id}', [MemoController::class, 'destroy'])->name('destroy');
-});
+    // Manager Routes (divisi-based)
+    Route::prefix('manager')->middleware(['divisi:Manager'])->name('manager.')->group(function() {
+        Route::get('dashboard', [\App\Http\Controllers\Manager\DashboardController::class, 'index'])
+             ->name('dashboard');
+            
+        Route::get('memo', [ManagerMemoController::class, 'index'])->name('memo.index');
+        Route::get('memo/{id}', [ManagerMemoController::class, 'show'])->name('memo.show');
+        Route::post('memo/{id}/approve', [ManagerMemoController::class, 'approve'])->name('memo.approve');
+        Route::put('memo/{id}/reject', [ManagerMemoController::class, 'reject'])->name('memo.reject');
+    });
 
-// Default dashboard route (bisa dihapus jika tidak digunakan)
-Route::get('/dashboard', function () {
-    return redirect()->route('staff.dashboard');
-})->middleware(['auth'])->name('dashboard');
+    // Staff Routes (default for authenticated users)
+    Route::prefix('staff')->name('staff.')->group(function() {
+        Route::get('dashboard', function () {
+            return view('staff.dashboard');
+        })->name('dashboard');
 
+        Route::resource('memo', MemoController::class)->names([
+            'index' => 'memo.index',
+            'create' => 'memo.create',
+            'store' => 'memo.store',
+            'show' => 'memo.show',
+            'edit' => 'memo.edit',
+            'update' => 'memo.update',
+            'destroy' => 'memo.destroy'
+        ]);
+    });
+
+    // Default dashboard fallback
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } 
+        
+        if ($user->divisi && $user->divisi->nama === 'Manager') {
+            return redirect()->route('manager.dashboard');
+        }
+        
+        return redirect()->route('staff.dashboard');
+    })->name('dashboard');
 });
