@@ -11,20 +11,15 @@ class CekDivisi
     {
         $user = auth()->user();
 
-        // Jika belum login, abaikan pengecekan (hindari error 403 sebelum login)
+        // Cek login
         if (!$user) {
             return redirect()->route('login');
         }
 
-        // Debug (sementara)
-        // dd([
-        //     'user' => $user->name,
-        //     'user_divisi' => $user->divisi?->nama,
-        //     'expected_divisi' => $divisi
-        // ]);
+        // Jika divisi adalah relasi, bandingkan berdasarkan nama
+        $userDivisiNama = optional($user->divisi)->nama;
 
-        // Bandingkan dengan lebih fleksibel (case-insensitive)
-        if ($user->divisi && Str::lower($user->divisi->nama) === Str::lower($divisi)) {
+        if (Str::lower($userDivisiNama) === Str::lower($divisi)) {
             return $next($request);
         }
 
