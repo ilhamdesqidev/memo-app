@@ -21,7 +21,7 @@
                         <h2 class="text-xl font-bold text-gray-800">{{ Auth::user()->name }}</h2>
                         @if(Auth::user()->divisi)
                             <span class="inline-block mt-2 px-3 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">
-                                {{ Auth::user()->divisi->nama }}
+                                {{ Auth::user()->divisi }}
                             </span>
                         @endif
                     </div>

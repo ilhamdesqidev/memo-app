@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
         'role' => \App\Http\Middleware\CheckRole::class,
         'divisi' => \App\Http\Middleware\CheckDivisi::class,
+        'divisi' => \App\Http\Middleware\CekDivisi::class,
     ]);
 })
         

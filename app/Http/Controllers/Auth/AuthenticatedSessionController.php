@@ -29,27 +29,38 @@ public function store(LoginRequest $request): RedirectResponse
     $request->authenticate();
     $request->session()->regenerate();
 
-    $user = auth()->user();
-    
-    // Debug log
-    \Log::info('Login Process', [
-        'user_id' => $user->id,
-        'role' => $user->role,
-        'divisi' => $user->divisi_id
-    ]);
+    $user = Auth::user();
 
-    // 1. Prioritas untuk admin (tanpa perlu cek divisi)
     if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
 
-    // 2. Cek untuk manager (jika ada divisi)
-    if ($user->divisi && strtolower($user->divisi->nama) === 'manager') {
-        return redirect()->route('manager.dashboard');
+    if ($user->role === 'user') {
+        switch ($user->divisi) {
+            case 'Pengembangan Bisnis':
+                return redirect()->route('pengembangan.dashboard');
+            case 'Manager':
+                return redirect()->route('manager.dashboard');
+            case 'Operasional Wilayah I':
+                return redirect()->route('opwil1.dashboard');
+            case 'Operasional Wilayah II':
+                return redirect()->route('opwil2.dashboard');
+            case 'Umum dan Legal':
+                return redirect()->route('umumlegal.dashboard');
+            case 'Administrasi dan Keuangan':
+                return redirect()->route('adminkeu.dashboard');
+            case 'Infrastruktur dan Sipil':
+                return redirect()->route('sipil.dashboard');
+            case 'Food Beverage':
+                return redirect()->route('food.dashboard');
+            case 'Marketing dan Sales':
+                return redirect()->route('marketing.dashboard');
+            default:
+                abort(403);
+        }
     }
 
-    // 3. Default untuk staff
-    return redirect()->intended('staff/dashboard');
+    abort(403);
 }
 
     /**

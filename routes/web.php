@@ -1,32 +1,43 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\MemoController;
-use App\Http\Controllers\Manager\DashboardController;
-use App\Http\Controllers\Manager\MemoController as ManagerMemoController;
+
+// Controller per divisi (user)
+use App\Http\Controllers\Divisi\PengembanganController;
+use App\Http\Controllers\Divisi\ManagerController;
+use App\Http\Controllers\Divisi\OpWil1Controller;
+use App\Http\Controllers\Divisi\OpWil2Controller;
+use App\Http\Controllers\Divisi\UmumLegalController;
+use App\Http\Controllers\Divisi\AdminKeuController;
+use App\Http\Controllers\Divisi\SipilController;
+use App\Http\Controllers\Divisi\FoodController;
+use App\Http\Controllers\Divisi\MarketingController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/welcome2', function () {
+Route::get('welcome2', function () {
     return view('welcome2');
 });
 
-// Authentication Routes
+// Auth Routes
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware('guest');
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
 
-// Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Profile Routes (accessible to all authenticated users)
+
+    // === Profile ===
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -34,14 +45,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
-    // Profil Routes (I'm keeping both for compatibility)
+    // === Profil (with Signature) ===
     Route::prefix('profil')->group(function () {
         Route::get('/', [ProfilController::class, 'index'])->name('profil.index');
         Route::get('/edit', [ProfilController::class, 'edit'])->name('profil.edit');
         Route::patch('/update', [ProfilController::class, 'update'])->name('profil.update');
         Route::delete('/delete', [ProfilController::class, 'destroy'])->name('profil.destroy');
-
-        // Signature Routes
         Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('profil.signature.index');
         Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('profil.signature.create');
         Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('profil.signature.upload');
@@ -49,58 +58,83 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('profil.signature.delete');
     });
 
-    // Admin Routes (role-based)
+    // === Admin ===
     Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
-        
-        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-        Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
-        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-        Route::get('/staff/{id}/edit', [StaffController::class, 'edit'])->name('staff.edit');
-        Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
-        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
-    });
 
-    // Manager Routes (divisi-based)
-    Route::prefix('manager')->middleware(['divisi:Manager'])->name('manager.')->group(function() {
-        Route::get('dashboard', [\App\Http\Controllers\Manager\DashboardController::class, 'index'])
-             ->name('dashboard');
-            
-        Route::get('memo', [ManagerMemoController::class, 'index'])->name('memo.index');
-        Route::get('memo/{id}', [ManagerMemoController::class, 'show'])->name('memo.show');
-        Route::post('memo/{id}/approve', [ManagerMemoController::class, 'approve'])->name('memo.approve');
-        Route::put('memo/{id}/reject', [ManagerMemoController::class, 'reject'])->name('memo.reject');
-    });
-
-    // Staff Routes (default for authenticated users)
-    Route::prefix('staff')->name('staff.')->group(function() {
-        Route::get('dashboard', function () {
-            return view('staff.dashboard');
-        })->name('dashboard');
-
-        Route::resource('memo', MemoController::class)->names([
-            'index' => 'memo.index',
-            'create' => 'memo.create',
-            'store' => 'memo.store',
-            'show' => 'memo.show',
-            'edit' => 'memo.edit',
-            'update' => 'memo.update',
-            'destroy' => 'memo.destroy'
+        Route::resource('staff', StaffController::class)->names([
+            'index' => 'staff.index',
+            'create' => 'staff.create',
+            'store' => 'staff.store',
+            'edit' => 'staff.edit',
+            'update' => 'staff.update',
+            'destroy' => 'staff.destroy'
         ]);
     });
 
-    // Default dashboard fallback
+    // === Divisi User ===
+    Route::prefix('pengembangan')->middleware('divisi:Pengembangan Bisnis')->name('pengembangan.')->group(function () {
+        Route::get('/dashboard', [PengembanganController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('manager')->middleware('divisi:Manager')->name('manager.')->group(function () {
+        Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('opwil1')->middleware('divisi:Operasional Wilayah I')->name('opwil1.')->group(function () {
+        Route::get('/dashboard', [OpWil1Controller::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('opwil2')->middleware('divisi:Operasional Wilayah II')->name('opwil2.')->group(function () {
+        Route::get('/dashboard', [OpWil2Controller::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('umumlegal')->middleware('divisi:Umum dan Legal')->name('umumlegal.')->group(function () {
+        Route::get('/dashboard', [UmumLegalController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('adminkeu')->middleware('divisi:Administrasi dan Keuangan')->name('adminkeu.')->group(function () {
+        Route::get('/dashboard', [AdminKeuController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('sipil')->middleware('divisi:Infrastruktur dan Sipil')->name('sipil.')->group(function () {
+        Route::get('/dashboard', [SipilController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('food')->middleware('divisi:Food Beverage')->name('food.')->group(function () {
+        Route::get('/dashboard', [FoodController::class, 'index'])->name('dashboard');
+    });
+
+    Route::prefix('marketing')->middleware('divisi:Marketing dan Sales')->name('marketing.')->group(function () {
+        Route::get('/dashboard', [MarketingController::class, 'index'])->name('dashboard');
+    });
+
+    // === Fallback Redirect Dashboard ===
     Route::get('/dashboard', function () {
         $user = auth()->user();
-        
+
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
-        } 
-        
-        if ($user->divisi && $user->divisi->nama === 'Manager') {
-            return redirect()->route('manager.dashboard');
         }
-        
-        return redirect()->route('staff.dashboard');
+
+        $divisiRoutes = [
+            'Pengembangan Bisnis' => 'pengembangan.dashboard',
+            'Manager' => 'manager.dashboard',
+            'Operasional Wilayah I' => 'opwil1.dashboard',
+            'Operasional Wilayah II' => 'opwil2.dashboard',
+            'Umum dan Legal' => 'umumlegal.dashboard',
+            'Administrasi dan Keuangan' => 'adminkeu.dashboard',
+            'Infrastruktur dan Sipil' => 'sipil.dashboard',
+            'Food Beverage' => 'food.dashboard',
+            'Marketing dan Sales' => 'marketing.dashboard',
+        ];
+
+        return redirect()->route($divisiRoutes[$user->divisi] ?? 'login');
+    })->name('dashboard');
+});
+
+Route::prefix('staff')->middleware('divisi:STAFF_DIVISI_JIKA_ADA')->name('staff.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('staff.dashboard');
     })->name('dashboard');
 });
