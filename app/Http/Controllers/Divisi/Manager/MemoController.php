@@ -1,17 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Manager;
+namespace App\Http\Controllers\Divisi\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class MemoController extends Controller
 {
-    /**
-     * Display a listing of pending memos
-     */
     public function index()
     {
         $memos = Memo::where('status', 'pending')
@@ -22,7 +18,7 @@ class MemoController extends Controller
                         return $memo;
                     });
 
-        return view('manager.memo.index', compact('memos'));
+        return view('divisi.manager.memo.index', compact('memos'));
     }
 
     /**
@@ -76,3 +72,4 @@ class MemoController extends Controller
                ->with('success', 'Memo berhasil ditolak!');
     }
 }
+

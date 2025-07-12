@@ -9,17 +9,17 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
-use App\Http\Controllers\MemoController;
-
+use App\Http\Controllers\Divisi\Manager\MemoController;
+use App\Http\Controllers\Divisi\Food\MemoController as FoodMemoController;
 // Controller per divisi (user)
 use App\Http\Controllers\Divisi\PengembanganController;
-use App\Http\Controllers\Divisi\ManagerController;
+use App\Http\Controllers\Divisi\Manager\DashboardManagerController;
 use App\Http\Controllers\Divisi\OpWil1Controller;
 use App\Http\Controllers\Divisi\OpWil2Controller;
 use App\Http\Controllers\Divisi\UmumLegalController;
 use App\Http\Controllers\Divisi\AdminKeuController;
 use App\Http\Controllers\Divisi\SipilController;
-use App\Http\Controllers\Divisi\FoodController;
+use App\Http\Controllers\Divisi\Food\DashboardFoodController;
 use App\Http\Controllers\Divisi\MarketingController;
 
 Route::get('/', function () {
@@ -78,7 +78,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('manager')->middleware('divisi:Manager')->name('manager.')->group(function () {
-        Route::get('/dashboard', [ManagerController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
     });
 
     Route::prefix('opwil1')->middleware('divisi:Operasional Wilayah I')->name('opwil1.')->group(function () {
@@ -102,7 +102,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('food')->middleware('divisi:Food Beverage')->name('food.')->group(function () {
-        Route::get('/dashboard', [FoodController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
     });
 
     Route::prefix('marketing')->middleware('divisi:Marketing dan Sales')->name('marketing.')->group(function () {
@@ -139,3 +139,25 @@ Route::prefix('staff')->middleware('divisi:STAFF_DIVISI_JIKA_ADA')->name('staff.
         return view('staff.dashboard');
     })->name('dashboard');
 });
+
+Route::prefix('manager')
+->middleware('divisi:Manager')
+->name('manager.')
+->group(function () {
+    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+
+    // Ubah nama route jadi:
+    Route::get('/memo', [MemoController::class, 'index'])->name('memo.index');
+    Route::get('/memo/{id}', [MemoController::class, 'show'])->name('memo.show');
+});
+
+Route::prefix('food')
+    ->middleware('divisi:Food Beverage')
+    ->name('food.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
+
+        // Tambahkan route memo
+        Route::get('/memo', [FoodMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [FoodMemoController::class, 'show'])->name('memo.show');
+    });

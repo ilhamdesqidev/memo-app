@@ -1,4 +1,4 @@
-@extends('main1')
+@extends('layouts.divisi')
 
 @section('content')
 <div class="p-6">
@@ -86,7 +86,7 @@
 
             <!-- Action Buttons -->
             <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
-                <form action="{{ route('manager.memo.approve', $memo->id) }}" method="POST">
+                <form action="#" method="POST">
                     @csrf
                     <button type="submit" 
                             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center">

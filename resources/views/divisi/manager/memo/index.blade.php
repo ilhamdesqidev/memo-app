@@ -1,4 +1,4 @@
-@extends('main1')
+@extends('layouts.divisi')
 
 @section('content')
 <div class="w-full p-6 font-sans">
@@ -71,7 +71,7 @@
                             Review
                         </a>
                         
-                        <form action="{{ route('manager.memo.approve', $memo->id) }}" method="POST" class="flex-1">
+                        <form action="#" method="POST" class="flex-1">
                             @csrf
                             <button type="submit" class="w-full inline-flex items-center justify-center px-3 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-semibold hover:from-green-600 hover:to-green-700 transition-all">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Divisi;
+namespace App\Http\Controllers\Divisi\food;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class FoodController extends Controller
+class DashboardFoodController extends Controller
 {
     public function index()
     {
