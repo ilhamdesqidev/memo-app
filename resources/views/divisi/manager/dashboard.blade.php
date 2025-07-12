@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 @extends('layouts.divisi')
+=======
+@extends('manager')
+
+>>>>>>> 61812e36742b93c23999ba57e6fedff286b2e057
 @section('content')
 <div class="py-12">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
