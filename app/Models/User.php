@@ -57,12 +57,12 @@ class User extends Authenticatable
     return $this->role === 'admin';
 }
 
-       // app/Models/User.php
-       public function divisi()
-       {
-           return $this->belongsTo(Divisi::class);
-       }
-       
+public function divisi()
+{
+    return $this->belongsTo(Divisi::class)->withDefault([
+        'nama' => 'TIDAK ADA DIVISI'
+    ]);
+} 
 
 // Atau lebih aman:
 public function getDivisiNameAttribute()

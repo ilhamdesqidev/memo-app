@@ -34,33 +34,28 @@ public function store(LoginRequest $request): RedirectResponse
     if ($user->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
-
+    
     if ($user->role === 'user') {
-        switch ($user->divisi) {
-            case 'Pengembangan Bisnis':
-                return redirect()->route('pengembangan.dashboard');
-            case 'Manager':
-                return redirect()->route('manager.dashboard');
-            case 'Operasional Wilayah I':
-                return redirect()->route('opwil1.dashboard');
-            case 'Operasional Wilayah II':
-                return redirect()->route('opwil2.dashboard');
-            case 'Umum dan Legal':
-                return redirect()->route('umumlegal.dashboard');
-            case 'Administrasi dan Keuangan':
-                return redirect()->route('adminkeu.dashboard');
-            case 'Infrastruktur dan Sipil':
-                return redirect()->route('sipil.dashboard');
-            case 'Food Beverage':
-                return redirect()->route('food.dashboard');
-            case 'Marketing dan Sales':
-                return redirect()->route('marketing.dashboard');
-            default:
-                abort(403);
-        }
+        // pastikan relasi divisi termuat
+        $divisi = $user->divisi->nama ?? null;
+    
+        $divisiRoutes = [
+            'Pengembangan Bisnis' => 'pengembangan.dashboard',
+            'Manager' => 'manager.dashboard',
+            'Operasional Wilayah I' => 'opwil1.dashboard',
+            'Operasional Wilayah II' => 'opwil2.dashboard',
+            'Umum dan Legal' => 'umumlegal.dashboard',
+            'Administrasi dan Keuangan' => 'adminkeu.dashboard',
+            'Infrastruktur dan Sipil' => 'sipil.dashboard',
+            'Food Beverage' => 'food.dashboard',
+            'Marketing dan Sales' => 'marketing.dashboard',
+        ];
+    
+        return redirect()->route($divisiRoutes[$divisi] ?? 'login');
     }
-
+    
     abort(403);
+    
 }
 
     /**
