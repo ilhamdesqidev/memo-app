@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 @extends('layouts.divisi')
-=======
-@extends('main2')
->>>>>>> 61812e36742b93c23999ba57e6fedff286b2e057
 
 @section('content')
     <div class="container">
