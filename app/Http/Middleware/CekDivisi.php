@@ -3,23 +3,31 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 class CekDivisi
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle($request, Closure $next, $divisi)
     {
-        if (auth()->check() && auth()->user()->divisi === $divisi) {
+        $user = auth()->user();
+
+        // Jika belum login, abaikan pengecekan (hindari error 403 sebelum login)
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Debug (sementara)
+        // dd([
+        //     'user' => $user->name,
+        //     'user_divisi' => $user->divisi?->nama,
+        //     'expected_divisi' => $divisi
+        // ]);
+
+        // Bandingkan dengan lebih fleksibel (case-insensitive)
+        if ($user->divisi && Str::lower($user->divisi->nama) === Str::lower($divisi)) {
             return $next($request);
         }
-    
-        abort(403, 'Akses ditolak.');
+
+        abort(403, 'AKSES DITOLAK.');
     }
-    
 }

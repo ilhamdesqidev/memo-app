@@ -109,14 +109,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [MarketingController::class, 'index'])->name('dashboard');
     });
 
-    // === Fallback Redirect Dashboard ===
     Route::get('/dashboard', function () {
         $user = auth()->user();
-
+    
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         }
-
+    
         $divisiRoutes = [
             'Pengembangan Bisnis' => 'pengembangan.dashboard',
             'Manager' => 'manager.dashboard',
@@ -128,8 +127,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'Food Beverage' => 'food.dashboard',
             'Marketing dan Sales' => 'marketing.dashboard',
         ];
-
-        return redirect()->route($divisiRoutes[$user->divisi] ?? 'login');
+    
+        $divisiNama = $user->divisi->nama ?? '';
+    
+        return redirect()->route($divisiRoutes[$divisiNama] ?? 'login');
     })->name('dashboard');
 });
 

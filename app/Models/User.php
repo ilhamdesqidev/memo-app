@@ -22,7 +22,7 @@ class User extends Authenticatable
     'email',
     'password',
     'role',
-    'divisi',
+    'divisi_id',
     'jabatan',
     'signature',
 ];
@@ -58,10 +58,11 @@ class User extends Authenticatable
 }
 
        // app/Models/User.php
-public function divisi()
-{
-    return $this->belongsTo(Divisi::class)->withDefault();
-}
+       public function divisi()
+       {
+           return $this->belongsTo(Divisi::class);
+       }
+       
 
 // Atau lebih aman:
 public function getDivisiNameAttribute()
