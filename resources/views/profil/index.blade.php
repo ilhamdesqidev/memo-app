@@ -1,82 +1,223 @@
-@extends('main')
+@extends('layouts.divisi')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
-        <!-- Profile Card -->
-        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-            <!-- Header -->
-            <div class="bg-indigo-600 px-6 py-4">
-                <h1 class="text-xl font-semibold text-white">My Profile</h1>
-            </div>
-            
-            <!-- Content -->
-            <div class="p-6">
-                <!-- Profile Info -->
-                <div class="flex items-center mb-6">
-                    <div class="w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-bold mr-4">
-                        {{ substr(Auth::user()->name, 0, 1) }}
+    <div class="max-w-5xl mx-auto">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p class="text-gray-600">Manage your personal information and account settings</p>
+        </div>
+
+        <!-- Main Profile Card -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <!-- Header with Gradient -->
+            <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 px-8 py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 bg-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mr-6 ring-4 ring-indigo-300">
+                            {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">{{ Auth::user()->name }}</h2>
+                            <p class="text-indigo-100 mt-1">{{ Auth::user()->jabatan }}</p>
+                            @if(Auth::user()->divisi && Auth::user()->divisi->nama === 'Manager')
+                                <span class="inline-block mt-2 px-3 py-1 text-xs bg-indigo-400 text-white rounded-full font-medium">
+                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Manager
+                                </span>
+                            @endif
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-gray-800">{{ Auth::user()->name }}</h2>
-                        @if(Auth::user()->divisi)
-                            <span class="inline-block mt-2 px-3 py-1 text-xs bg-indigo-100 text-indigo-800 rounded-full">
-                                {{ Auth::user()->divisi }}
-                            </span>
-                        @endif
+                    <div class="text-right">
+                        <div class="text-indigo-100 text-sm">Member since</div>
+                        <div class="text-white font-semibold">{{ Auth::user()->created_at->format('M Y') }}</div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Info Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Personal Info -->
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-700 mb-3">Personal Information</h3>
-                        <div class="space-y-2 text-sm">
-                            <div><span class="text-gray-500">Name:</span> {{ Auth::user()->name }}</div>
-                            <div><span class="text-gray-500">Username:</span> {{ Auth::user()->username }}</div>
-                            <div><span class="text-gray-500">Jabatan:</span> {{ Auth::user()->jabatan }}</div>
+            <!-- Content Section -->
+            <div class="p-8">
+                <!-- Profile Information Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Personal Information -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800">Personal Information</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500">Full Name</div>
+                                    <div class="font-medium text-gray-800">{{ Auth::user()->name }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500">Username</div>
+                                    <div class="font-medium text-gray-800">{{ Auth::user()->username }}</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500">Position</div>
+                                    <div class="font-medium text-gray-800">{{ Auth::user()->jabatan }}</div>
+                                </div>
+                            </div>
+                            @if(Auth::user()->divisi)
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm text-gray-500">Division</div>
+                                    <div class="font-medium text-gray-800">{{ Auth::user()->divisi->nama }}</div>
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
-                    <!-- Signature -->
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-700 mb-3">Digital Signature</h3>
+                    <!-- Digital Signature -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800">Digital Signature</h3>
+                        </div>
                         
-                        @if(Auth::user()->signature)
-                            <div class="w-full h-32 border border-gray-300 rounded bg-white flex items-center justify-center overflow-hidden">
-                                <img src="{{ asset('storage/' . Auth::user()->signature) }}" 
-                                     alt="Signature" 
-                                     class="w-full h-full object-contain">
-                            </div>
-                        @else
-                            <div class="w-full h-32 border border-dashed border-gray-300 rounded bg-white flex items-center justify-center">
-                                <span class="text-gray-400 text-base">No signature</span>
-                            </div>
-                        @endif
+                        <div class="space-y-4">
+                            @if(Auth::user()->signature)
+                                <div class="relative">
+                                    <div class="w-full h-40 border-2 border-dashed border-indigo-200 rounded-lg bg-white flex items-center justify-center overflow-hidden">
+                                        <img src="{{ asset('storage/' . Auth::user()->signature) }}" 
+                                             alt="Digital Signature" 
+                                             class="w-full h-full object-contain">
+                                    </div>
+                                    <div class="absolute top-2 right-2">
+                                        <span class="inline-flex items-center px-2 py-1 text-xs bg-green-100 text-green-800 rounded-full">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Active
+                                        </span>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg bg-white flex flex-col items-center justify-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    <span class="text-gray-500 text-sm">No signature uploaded</span>
+                                    <span class="text-gray-400 text-xs mt-1">Click "Manage Signature" to add one</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="font-semibold text-gray-700 mb-3">Actions</h3>
-                        <div class="space-y-2">
+                    <!-- Quick Actions -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center mb-4">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800">Quick Actions</h3>
+                        </div>
+                        <div class="space-y-3">
                             <a href="{{ route('profil.edit') }}" 
-                               class="block w-full px-4 py-2 bg-indigo-600 text-white text-center rounded hover:bg-indigo-700 transition">
+                               class="flex items-center w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 group">
+                                <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
                                 Edit Profile
                             </a>
                             <a href="{{ route('profil.signature.index') }}" 
-                               class="block w-full px-4 py-2 bg-green-600 text-white text-center rounded hover:bg-green-700 transition">
+                               class="flex items-center w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 group">
+                                <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
                                 Manage Signature
                             </a>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" 
-                                        class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                                    Logout
-                                </button>
-                            </form>
+                        </div>
+
+                       <!-- Account Stats -->
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="text-sm text-gray-500 mb-2">Account Statistics</div>
+                        <div class="flex justify-between">
+                            <div class="text-center">
+                                <div class="text-lg font-medium text-indigo-600">
+                                    {{ Auth::user()->created_at->diffInDays(now()) }}
+                                </div>
+                                <div class="text-xs text-gray-500">Days Active</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-medium text-green-600">
+                                    {{ Auth::user()->signature ? '1' : '0' }}
+                                </div>
+                                <div class="text-xs text-gray-500">Signatures</div>
+                            </div>
                         </div>
                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Session Management</h3>
+                            <p class="text-sm text-gray-600">Securely end your current session</p>
+                        </div>
+                    </div>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" 
+                                class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 group">
+                            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -111,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Signature canvas
+    // Signature canvas functionality (existing code remains the same)
     const canvas = document.getElementById('signature-canvas');
     if (!canvas) return;
 

@@ -30,4 +30,8 @@ class AppServiceProvider extends ServiceProvider
             return str_replace(':attribute', $attribute, 'Format :attribute tidak valid.');
         });
     }
+    
+protected $policies = [
+    \App\Models\User::class => \App\Policies\UserPolicy::class,
+];
 }

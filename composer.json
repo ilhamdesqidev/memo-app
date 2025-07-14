@@ -13,6 +13,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1"
     },
+
+   
     "require-dev": {
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.3",
@@ -30,8 +32,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/DivisiHelper.php"
-        ]
+        "app/Helpers/DivisiHelper.php"
+    ]
     },
     "autoload-dev": {
         "psr-4": {

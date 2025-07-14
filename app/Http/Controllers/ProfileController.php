@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Divisi;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -24,7 +25,8 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        $divisis = Divisi::all(); // ambil semua divisi dari database
+        return view('profile.edit', compact('user', 'divisis'));
     }
 
     public function update(Request $request)
