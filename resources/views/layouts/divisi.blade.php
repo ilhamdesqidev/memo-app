@@ -119,6 +119,44 @@
             bottom: 100%;
             margin-bottom: 8px;
         }
+        /* Responsive Header Styles */
+        .header-section {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed .header-section {
+            padding: 1rem 0.5rem;
+            text-align: center;
+        }
+        .sidebar.collapsed .header-content {
+            display: none;
+        }
+        .sidebar.collapsed .header-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .sidebar:not(.collapsed) .header-logo {
+            display: flex;
+        }
+        .sidebar.collapsed .header-logo {
+            display: flex;
+            margin-right: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -134,9 +172,19 @@
                 </button>
                 
                 <!-- Divisi Info Section -->
-                <div class="p-4 border-b border-indigo-700">
-                    <h2 class="text-xl font-bold text-white">Mestakara</h2>
-                    <p class="text-sm text-indigo-300">Agro gunung mas</p>
+                <div class="header-section p-4 border-b border-indigo-700 tooltip">
+                    <div class="flex items-center ml-2">
+                        <div class="header-logo">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                            </svg>
+                        </div>
+                        <div class="header-content">
+                            <h2 class="text-xl font-bold text-white">Mestakara</h2>
+                            <p class="text-sm text-indigo-300">Agro gunung mas</p>
+                        </div>
+                    </div>
+                    <span class="tooltip-text">Mestakara - Agro gunung mas</span>
                 </div>
                
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto">
@@ -182,7 +230,7 @@
                             @case('Pengembangan Bisnis')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                         </svg>
                                         <span class="sidebar-text">Proyek Bisnis</span>
@@ -193,7 +241,7 @@
                             @case('Manager')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
                                         <span class="sidebar-text">Laporan Staff</span>
@@ -204,7 +252,7 @@
                             @case('Operasional Wilayah I')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
@@ -216,7 +264,7 @@
                             @case('Operasional Wilayah II')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
@@ -228,7 +276,7 @@
                             @case('Umum dan Legal')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                         </svg>
                                         <span class="sidebar-text">Arsip Hukum</span>
@@ -239,7 +287,7 @@
                             @case('Administrasi dan Keuangan')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <span class="sidebar-text">Transaksi Keuangan</span>
@@ -250,7 +298,7 @@
                             @case('Infrastruktur dan Sipil')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                         </svg>
                                         <span class="sidebar-text">Proyek Sipil</span>
@@ -261,7 +309,7 @@
                             @case('Food Beverage')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m-8-13v13m16 0V8M4 8l8-4 8 4"></path>
                                         </svg>
                                         <span class="sidebar-text">Manajemen Menu</span>
@@ -272,7 +320,7 @@
                             @case('Marketing dan Sales')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                         </svg>
                                         <span class="sidebar-text">Target Penjualan</span>
