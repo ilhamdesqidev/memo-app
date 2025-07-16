@@ -100,6 +100,44 @@
             bottom: 100%;
             margin-bottom: 8px;
         }
+        /* Responsive Header Styles */
+        .header-section {
+            transition: all 0.3s ease;
+        }
+        .sidebar.collapsed .header-section {
+            padding: 1rem 0.5rem;
+            text-align: center;
+        }
+        .sidebar.collapsed .header-content {
+            display: none;
+        }
+        .sidebar.collapsed .header-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        .sidebar:not(.collapsed) .header-logo {
+            display: flex;
+        }
+        .sidebar.collapsed .header-logo {
+            display: flex;
+            margin-right: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -113,9 +151,21 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </button>
-                <div class="flex items-center justify-center h-16 bg-indigo-900">
-                    <span class="sidebar-text text-white font-bold text-xl">Mestakara</span>
-                    <span class="sidebar-icon hidden text-white font-bold text-xl">MST</span>
+                
+                <!-- Divisi Info Section -->
+                <div class="header-section p-4 border-b border-indigo-700 tooltip">
+                    <div class="flex items-center ml-2">
+                        <div class="header-logo">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                            </svg>
+                        </div>
+                        <div class="header-content">
+                            <h2 class="text-xl font-bold text-white">Mestakara</h2>
+                            <p class="text-sm text-indigo-300">Agro Wisata Gn.mas</p>
+                        </div>
+                    </div>
+                    <span class="tooltip-text">Mestakara</span>
                 </div>
                
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto">
@@ -184,7 +234,14 @@
                                         {{ substr(Auth::user()->name, 0, 1) }}
                                     </div>
                                     <div class="sidebar-text">
-                                        <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
+                                        <div class="flex items-center">
+                                            <div class="font-medium text-sm">{{ Auth::user()->name }}</div>
+                                            @if(Auth::user()->divisi)
+                                                <span class="ml-2 px-2 py-0.5 text-xs bg-indigo-600 rounded-full">
+                                                    {{ getInitials(Auth::user()->divisi->nama) }}
+                                                </span>
+                                            @endif
+                                        </div>
                                         <div class="text-xs text-indigo-300">{{ Auth::user()->username }}</div>
                                     </div>
                                 </div>
@@ -229,9 +286,9 @@
         </div>
         
         <!-- Main Content -->
-        <div class="flex flex-col flex-1 overflow-y-auto">
+        <main class="flex-1 overflow-y-auto p-6">
             @yield('content')
-        </div>
+        </main>
     </div>
 
     <script>
@@ -241,13 +298,10 @@
             
             // Update icon visibility
             const sidebarTexts = document.querySelectorAll('.sidebar-text');
-            const sidebarIcon = document.querySelector('.sidebar-icon');
             
             if (sidebar.classList.contains('collapsed')) {
-                sidebarIcon.classList.remove('hidden');
                 sidebarTexts.forEach(text => text.style.display = 'none');
             } else {
-                sidebarIcon.classList.add('hidden');
                 sidebarTexts.forEach(text => text.style.display = 'inline');
             }
             
