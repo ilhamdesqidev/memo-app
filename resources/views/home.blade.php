@@ -114,8 +114,8 @@
                     </svg>
                 </button>
                 <div class="flex items-center justify-center h-16 bg-indigo-900">
-                    <span class="sidebar-text text-white font-bold text-xl">Grand Luxury Hotel</span>
-                    <span class="sidebar-icon hidden text-white font-bold text-xl">GLH</span>
+                    <span class="sidebar-text text-white font-bold text-xl">Mestakara</span>
+                    <span class="sidebar-icon hidden text-white font-bold text-xl">MST</span>
                 </div>
                
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto">

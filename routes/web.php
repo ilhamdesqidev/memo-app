@@ -92,8 +92,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'middleware' => 'divisi:Pengembangan Bisnis',
             'controller' => DashboardPengembanganController::class, // <-- Tambahkan koma di sini
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [PengembanganMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [PengembanganMemoController::class, 'show'], 'memo.show']
             ]
         ],
         'manager' => [
@@ -108,40 +108,40 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'middleware' => 'divisi:Operasional Wilayah I',
             'controller' => DashboardOp1Controller::class,
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [Op1MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [Op1MemoController::class, 'show'], 'memo.show']
             ]
         ],
         'opwil2' => [
             'middleware' => 'divisi:Operasional Wilayah II',
             'controller' => DashboardOp2Controller::class,
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [Op2MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [Op2MemoController::class, 'show'], 'memo.show']
             ]
         ],
         'umumlegal' => [
             'middleware' => 'divisi:Umum dan Legal',
             'controller' => DashboardUmumLegalController::class,
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [UmumLegalMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [UmumLegalMemoController::class, 'show'], 'memo.show']
             ]
         ],
         'adminkeu' => [
             'middleware' => 'divisi:Administrasi dan Keuangan',
             'controller' => DashboardAdminKeuController::class,
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [UmumLegalMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [UmumLegalMemoController::class, 'show'], 'memo.show']
             ]
         ],
         'sipil' => [
             'middleware' => 'divisi:Infrastruktur dan Sipil',
             'controller' => DashboardSipilController::class,
             'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [SipilMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [SipilMemoController::class, 'show'], 'memo.show']
             ]
         ],
         'food' => [
