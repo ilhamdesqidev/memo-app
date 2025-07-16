@@ -12,15 +12,36 @@ use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
-    public function index()
-    {
-        $users = User::with('divisi')
-            ->where('role', 'user')
-            ->orderBy('name')
-            ->get();
+   public function index(Request $request)
+{
+    // Start building the query
+    $query = User::with('divisi')
+                ->where('role', 'user')
+                ->orderBy('name');
 
-        return view('admin.staff.index', compact('users'));
+    // Apply search filter if provided
+    if ($request->has('search') && !empty($request->search)) {
+        $searchTerm = $request->search;
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('name', 'like', "%$searchTerm%")
+              ->orWhere('username', 'like', "%$searchTerm%")
+              ->orWhere('jabatan', 'like', "%$searchTerm%")
+              ->orWhereHas('divisi', function($q) use ($searchTerm) {
+                  $q->where('nama', 'like', "%$searchTerm%");
+              });
+        });
     }
+
+    // Paginate the results (5 items per page)
+    $users = $query->paginate(5);
+
+    // Pass the search term back to view to repopulate the search input
+    if ($request->has('search')) {
+        $users->appends(['search' => $request->search]);
+    }
+
+    return view('admin.staff.index', compact('users'));
+}
 
     public function create()
     {

@@ -8,8 +8,11 @@
             <div>
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">Manajemen User</h1>
                 <p class="text-gray-600 flex items-center">
-                    <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="currentColor" viewBox="0 0 24 24" >
-                        <path d="M5 5A2 2 0 1 0 5 9 2 2 0 1 0 5 5z"></path><path d="m19.5,10h-.7c-.84,0-1.61.42-2.08,1.11l-3.26,4.89h-2.93l-3.26-4.89c-.46-.7-1.24-1.11-2.08-1.11h-.7c-1.38,0-2.5,1.12-2.5,2.5v5.5h5v-3.7l1.87,2.81c.37.56.99.89,1.66.89h2.93c.67,0,1.29-.33,1.66-.89l1.87-2.81v3.7h5v-5.5c0-1.38-1.12-2.5-2.5-2.5Z"></path><path d="M19 5A2 2 0 1 0 19 9 2 2 0 1 0 19 5z"></path><path d="m14.51,10.17c.65-.67.65-1.74,0-2.41-.66-.67-1.69-.67-2.34,0l-.17.17-.17-.17c-.65-.67-1.69-.67-2.34,0-.65.68-.65,1.74,0,2.41l2.51,2.58,2.51-2.58Z"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 5A2 2 0 1 0 5 9 2 2 0 1 0 5 5z"></path>
+                        <path d="m19.5,10h-.7c-.84,0-1.61.42-2.08,1.11l-3.26,4.89h-2.93l-3.26-4.89c-.46-.7-1.24-1.11-2.08-1.11h-.7c-1.38,0-2.5,1.12-2.5,2.5v5.5h5v-3.7l1.87,2.81c.37.56.99.89,1.66.89h2.93c.67,0,1.29-.33,1.66-.89l1.87-2.81v3.7h5v-5.5c0-1.38-1.12-2.5-2.5-2.5Z"></path>
+                        <path d="M19 5A2 2 0 1 0 19 9 2 2 0 1 0 19 5z"></path>
+                        <path d="m14.51,10.17c.65-.67.65-1.74,0-2.41-.66-.67-1.69-.67-2.34,0l-.17.17-.17-.17c-.65-.67-1.69-.67-2.34,0-.65.68-.65,1.74,0,2.41l2.51,2.58,2.51-2.58Z"></path>
                     </svg>
                     Kelola pengguna sistem dengan mudah dan efisien
                 </p>
@@ -25,7 +28,7 @@
                         </div>
                         <div class="ml-3">
                             <p class="text-sm font-medium text-gray-600">Total User</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $users->count() }}</p>
+                            <p class="text-lg font-semibold text-gray-900">{{ $users->total() }}</p>
                         </div>
                     </div>
                 </div>
@@ -40,27 +43,28 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  fill="#NaNNaNNaN" viewBox="0 0 24 24" >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#NaNNaNNaN" viewBox="0 0 24 24">
                             <path d="m20,3H4c-1.1,0-2,.9-2,2v14c0,1.1.9,2,2,2h16c1.1,0,2-.9,2-2V5c0-1.1-.9-2-2-2Zm0,5.25h-10v-3.25h10v3.25Zm-10,2h10v3.5s-10,0-10,0v-3.5Zm-2,3.5h-4v-3.5h4v3.5Zm0-8.75v3.25h-4v-3.25h4Zm-4,14v-3.25h4v3.25h-4Zm6,0v-3.25h10v3.25s-10,0-10,0Z"></path>
                         </svg>
                         Daftar User
                     </h3>
-                    <p class="text-sm text-gray-500 mt-1">Menampilkan semua pengguna yang terdaftar dalam sistem</p>
+                    <p class="text-sm text-gray-500 mt-1">Menampilkan {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }} pengguna</p>
                 </div>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
                     <!-- Search Box -->
-                    <div class="relative w-full sm:w-64">
+                    <form method="GET" action="{{ route('admin.staff.index') }}" class="relative w-full sm:w-64">
                         <input type="text" 
+                               name="search"
                                id="searchInput"
+                               value="{{ request('search') }}"
                                placeholder="Cari user..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                               onkeyup="searchUsers()">
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                    </div>
+                    </form>
                     <!-- Add User Button -->
                     <a href="{{ route('admin.staff.create') }}" 
                        class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
@@ -78,22 +82,8 @@
             <table class="w-full">
                 <thead class="bg-gray-50 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center">
-                                No
-                                <svg class="w-3 h-3 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                </svg>
-                            </div>
-                        </th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                            <div class="flex items-center">
-                                Nama
-                                <svg class="w-3 h-3 ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                                </svg>
-                            </div>
-                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Username</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Jabatan</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
@@ -101,17 +91,12 @@
                         <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($users as $user)
-                    <tr class="user-row hover:bg-gray-50 transition-all duration-200 group" 
-                        data-name="{{ strtolower($user->name) }}"
-                        data-username="{{ strtolower($user->username) }}"
-                        data-jabatan="{{ strtolower($user->jabatan ?? '') }}"
-                        data-role="{{ strtolower($user->role) }}"
-                        data-divisi="{{ strtolower($user->divisi->nama ?? '') }}"></tr>
+                    <tr class="hover:bg-gray-50 transition-all duration-200 group">
                         <td class="px-4 py-3 whitespace-nowrap">
                             <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors duration-200">
-                                {{ $loop->iteration }}
+                                {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}
                             </div>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
@@ -205,86 +190,13 @@
         </div>
         
         <!-- Pagination -->
-        @if(method_exists($users, 'links'))
+        @if($users->hasPages())
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-            {{ $users->links() }}
+            {{ $users->withQueryString()->links() }}
         </div>
         @endif
     </div>
 </div>
-
-<script>
-function searchUsers() {
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
-    const rows = document.querySelectorAll('.user-row');
-    let hasVisibleRows = false;
-    const emptyState = document.querySelector('.empty-state');
-
-    // Jika search kosong, tampilkan semua row dan hapus empty state jika ada
-    if (filter === '') {
-        rows.forEach(row => {
-            row.style.display = '';
-        });
-        if (emptyState) {
-            emptyState.remove();
-        }
-        return;
-    }
-
-    rows.forEach(row => {
-        const name = row.getAttribute('data-name');
-        const username = row.getAttribute('data-username');
-        const jabatan = row.getAttribute('data-jabatan');
-        const role = row.getAttribute('data-role');
-        const divisi = row.getAttribute('data-divisi');
-        
-        if (name.includes(filter) || 
-            username.includes(filter) || 
-            jabatan.includes(filter) || 
-            role.includes(filter) || 
-            divisi.includes(filter)) {
-            row.style.display = '';
-            hasVisibleRows = true;
-        } else {
-            row.style.display = 'none';
-        }
-    });
-
-    // Tampilkan pesan jika tidak ada hasil
-    const tbody = document.getElementById('usersTableBody');
-    if (!hasVisibleRows && rows.length > 0) {
-        if (!emptyState) {
-            tbody.insertAdjacentHTML('beforeend', `
-                <tr class="empty-state">
-                    <td colspan="7" class="px-6 py-16 text-center">
-                        <div class="text-gray-500">
-                            <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Tidak ditemukan hasil</h3>
-                            <p class="text-sm text-gray-500 mb-4">Tidak ada user yang sesuai dengan pencarian "${filter}"</p>
-                            <button onclick="clearSearch()" class="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-md border border-gray-300 transition-colors duration-200">
-                                Reset Pencarian
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `);
-        }
-    } else if (emptyState && hasVisibleRows) {
-        emptyState.remove();
-    }
-}
-
-function clearSearch() {
-    const input = document.getElementById('searchInput');
-    input.value = '';
-    searchUsers();
-}
-</script>
 
 <style>
     .group:hover .group-hover\:bg-blue-100 {
@@ -309,6 +221,57 @@ function clearSearch() {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+    }
+    
+    /* Pagination Styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 0;
+    }
+    
+    .pagination li {
+        margin: 0 4px;
+    }
+    
+    .pagination li a, 
+    .pagination li span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        background-color: white;
+        color: #4b5563;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .pagination li a:hover {
+        background-color: #f3f4f6;
+        border-color: #9ca3af;
+    }
+    
+    .pagination li.active span {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    .pagination li.disabled span {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+        width: auto;
+        padding: 0 12px;
     }
 </style>
 @endsection

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Divisi;
+namespace App\Http\Controllers\Divisi\umumlegal;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class UmumLegalController extends Controller
+class DashboardUmumLegalController extends Controller
 {
     public function index()
     {

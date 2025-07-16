@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Divisi;
+namespace App\Http\Controllers\Divisi\marketing;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class MarketingController extends Controller
+class DashboardMarketingController extends Controller
 {
-    public function index()
+     public function index()
     {
         return view('divisi.marketing.dashboard', ['divisi' => 'Marketing dan Sales']);
     }

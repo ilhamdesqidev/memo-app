@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -8,16 +9,24 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
 use App\Http\Controllers\Divisi\Manager\MemoController;
-use App\Http\Controllers\Divisi\Food\MemoController as FoodMemoController;
-use App\Http\Controllers\Divisi\PengembanganController;
 use App\Http\Controllers\Divisi\Manager\DashboardManagerController;
-use App\Http\Controllers\Divisi\OpWil1Controller;
-use App\Http\Controllers\Divisi\OpWil2Controller;
-use App\Http\Controllers\Divisi\UmumLegalController;
-use App\Http\Controllers\Divisi\AdminKeuController;
-use App\Http\Controllers\Divisi\SipilController;
 use App\Http\Controllers\Divisi\Food\DashboardFoodController;
-use App\Http\Controllers\Divisi\MarketingController;
+use App\Http\Controllers\Divisi\marketing\DashboardMarketingController;
+use App\Http\Controllers\Divisi\pengembangan\DashboardPengembanganController;
+use App\Http\Controllers\Divisi\op1\DashboardOp1Controller;
+use App\Http\Controllers\Divisi\op2\DashboardOp2Controller;
+use App\Http\Controllers\Divisi\adminkeu\DashboardAdminkeuController;
+use App\Http\Controllers\Divisi\umumlegal\DashboardUmumLegalController;
+use App\Http\Controllers\Divisi\sipil\DashboardSipilController;
+use App\Http\Controllers\Divisi\marketing\MemoController as MarketingMemoController;
+use App\Http\Controllers\Divisi\pengembangan\MemoController as PengembanganMemoController;
+use App\Http\Controllers\Divisi\Food\MemoController as FoodMemoController;
+use App\Http\Controllers\Divisi\op1\MemoController as Op1MemoController;
+use App\Http\Controllers\Divisi\op2\MemoController as Op2MemoController;
+use App\Http\Controllers\Divisi\adminkeu\MemoController as AdminKeuMemoController;
+use App\Http\Controllers\Divisi\umumlegal\MemoController as UmumLegalMemoController;
+use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
+
 
 // Public Routes
 Route::get('/', function () {
@@ -81,7 +90,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     $divisionRoutes = [
         'pengembangan' => [
             'middleware' => 'divisi:Pengembangan Bisnis',
-            'controller' => PengembanganController::class
+            'controller' => DashboardPengembanganController::class, // <-- Tambahkan koma di sini
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'manager' => [
             'middleware' => 'divisi:Manager',
@@ -93,23 +106,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ],
         'opwil1' => [
             'middleware' => 'divisi:Operasional Wilayah I',
-            'controller' => OpWil1Controller::class
+            'controller' => DashboardOp1Controller::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'opwil2' => [
             'middleware' => 'divisi:Operasional Wilayah II',
-            'controller' => OpWil2Controller::class
+            'controller' => DashboardOp2Controller::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'umumlegal' => [
             'middleware' => 'divisi:Umum dan Legal',
-            'controller' => UmumLegalController::class
+            'controller' => DashboardUmumLegalController::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'adminkeu' => [
             'middleware' => 'divisi:Administrasi dan Keuangan',
-            'controller' => AdminKeuController::class
+            'controller' => DashboardAdminKeuController::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'sipil' => [
             'middleware' => 'divisi:Infrastruktur dan Sipil',
-            'controller' => SipilController::class
+            'controller' => DashboardSipilController::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
+            ]
         ],
         'food' => [
             'middleware' => 'divisi:Food Beverage',
@@ -119,12 +152,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ['GET', '/memo/{id}', [FoodMemoController::class, 'show'], 'memo.show']
             ]
         ],
-        'marketing' => [
+       'marketing' => [
             'middleware' => 'divisi:Marketing dan Sales',
-            'controller' => MarketingController::class
-        ]
+            'controller' => DashboardMarketingController::class,
+            'extra_routes' => [
+                ['GET', '/memo', [MarketingMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [MarketingMemoController::class, 'show'], 'memo.show']
+            ]
+            ]
     ];
-
+ 
     foreach ($divisionRoutes as $prefix => $config) {
         Route::prefix($prefix)
             ->middleware($config['middleware'])

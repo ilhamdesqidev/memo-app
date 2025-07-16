@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Divisi;
+namespace App\Http\Controllers\Divisi\sipil;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class SipilController extends Controller
+class DashboardSipilController extends Controller
 {
     public function index()
     {

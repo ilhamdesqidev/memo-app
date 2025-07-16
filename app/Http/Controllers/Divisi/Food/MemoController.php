@@ -18,7 +18,7 @@ class MemoController extends Controller
                         return $memo;
                     });
 
-        return view('divisi.manager.memo.index', compact('memos'));
+        return view('divisi.food.memo.index', compact('memos'));
     }
 
     /**
@@ -29,7 +29,7 @@ class MemoController extends Controller
         $memo = Memo::findOrFail($id);
         $memo->tanggal = \Carbon\Carbon::parse($memo->tanggal);
 
-        return view('manager.memo.show', compact('memo'));
+        return view('food.memo.show', compact('memo'));
     }
 
     /**
@@ -68,7 +68,7 @@ class MemoController extends Controller
             'rejection_reason' => $request->rejection_reason
         ]);
 
-        return redirect()->route('manager.memo.index')
+        return redirect()->route('food.memo.index')
                ->with('success', 'Memo berhasil ditolak!');
     }
 }

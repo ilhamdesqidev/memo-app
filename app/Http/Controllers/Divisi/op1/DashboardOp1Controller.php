@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Divisi;
+namespace App\Http\Controllers\Divisi\op1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class OpWil1Controller extends Controller
+class DashboardOp1Controller extends Controller
 {
-    public function index()
+     public function index()
     {
         return view('divisi.opwil1.dashboard', ['divisi' => 'Operasional Wilayah I']);
     }
