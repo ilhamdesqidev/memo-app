@@ -244,9 +244,9 @@
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
-                                        <span class="sidebar-text">Laporan Staff</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Laporan Staff</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Operasional Wilayah I')
@@ -331,7 +331,7 @@
                         @endswitch
                     </div>
 
-                    <!-- User Profile Section -->
+                    <!-- User Profil Section -->
                     <div class="mt-auto mb-4 px-4">
                         <div class="dropdown tooltip relative">
                             <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
