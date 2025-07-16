@@ -28,36 +28,36 @@ use App\Http\Controllers\Divisi\umumlegal\MemoController as UmumLegalMemoControl
 use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
 
 
-// Public Routes
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('welcome2', function () {
-    return view('welcome2');
-});
-
-// Authentication Routes
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])
-    ->middleware('guest')
-    ->name('login');
-
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest');
-
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('logout');
-
-// Authenticated Routes
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Profile Routes (English)
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/', [ProfileController::class, 'index'])->name('index');
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ProfileController::class, 'update'])->name('update');
-        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
+    // Public Routes
+    Route::get('/', function () {
+        return view('welcome');
     });
+
+    Route::get('welcome2', function () {
+        return view('welcome2');
+    });
+
+    // Authentication Routes
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+        ->middleware('guest')
+        ->name('login');
+
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('guest');
+
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->middleware('auth')
+        ->name('logout');
+
+    // Authenticated Routes
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Profile Routes (English)
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [ProfileController::class, 'index'])->name('index');
+            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+            Route::patch('/update', [ProfileController::class, 'update'])->name('update');
+            Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
+        });
 
     // Profil Routes (with Signature - Indonesian)
     Route::prefix('profil')->name('profil.')->group(function () {
