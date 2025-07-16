@@ -89,9 +89,7 @@
 
                 <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ route('login') }}" class="bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition-all duration-300 shadow-lg hover:shadow-xl">Login</a>
-                     <a href="#" class="bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition-all duration-300 shadow-lg hover:shadow-xl">dashboard</a>
-                    <a href="#" class="bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition-all duration-300 shadow-lg hover:shadow-xl">Register</a>
+                    <a href="{{ route('login') }}" class="bg-primary-600 text-white px-6 py-2 rounded-full hover:bg-primary-700 transition-all duration-300 shadow-lg hover:shadow-xl">Login</a>                    
                 </div>
 
                 <!-- Mobile menu button -->
