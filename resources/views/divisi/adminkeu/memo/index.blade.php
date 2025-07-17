@@ -1,8 +1,8 @@
 @extends('layouts.divisi')
 @section('content')
     <div class="container">
-        <h1>Memo Food Beverage</h1>
-        <p>Selamat datang di halaman memo Admin Keuangan.</p>
-        <!-- Add your memo content here -->
+        <h1>Memo Admin Keuangan</h1>
+        <p>Daftar memo yang dikelola oleh Admin Keuangan.</p>
+        <!-- Tambahkan konten memo di sini -->
     </div>
 @endsection

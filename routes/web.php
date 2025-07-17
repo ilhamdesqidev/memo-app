@@ -132,8 +132,8 @@ use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
             'middleware' => 'divisi:Administrasi dan Keuangan',
             'controller' => DashboardAdminKeuController::class,
             'extra_routes' => [
-                ['GET', '/memo', [UmumLegalMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [UmumLegalMemoController::class, 'show'], 'memo.show']
+                ['GET', '/memo', [AdminKeuMemoController::class, 'index'], 'memo.index'],
+                ['GET', '/memo/{id}', [AdminKeuMemoController::class, 'show'], 'memo.show']
             ]
         ],
         'sipil' => [
