@@ -115,6 +115,11 @@
             margin-right: 12px;
             flex-shrink: 0;
         }
+
+        .sidebar.collapsed .dropdown-toggle .user-avatar {
+            margin: 0 auto;
+        }
+
         .user-dropdown-content {
             bottom: 100%;
             margin-bottom: 8px;
@@ -184,7 +189,7 @@
                             <p class="text-sm text-indigo-300">Agro gunung mas</p>
                         </div>
                     </div>
-                    <span class="tooltip-text">Mestakara - Agro gunung mas</span>
+                    <span class="tooltip-text">Mestakara</span>
                 </div>
                
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto">
