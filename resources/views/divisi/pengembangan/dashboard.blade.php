@@ -1,470 +1,316 @@
 @extends('layouts.divisi')
 
 @section('content')
-<style>
-    :root {
-        --primary: #2c3e50;
-        --primary-light: #3d566e;
-        --secondary: #3498db;
-        --success: #27ae60;
-        --warning: #f39c12;
-        --danger: #e74c3c;
-        --light: #f8f9fa;
-        --dark: #212529;
-        --gray: #6c757d;
-        --light-gray: #e9ecef;
-        --border: #dee2e6;
-    }
-
-    .dashboard-container {
-        max-width: 1600px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-        display: grid;
-        grid-template-columns: 1fr 300px;
-        gap: 25px;
-    }
-
-    .main-content {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-
-    .sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 25px;
-    }
-
-    /* Header Section */
-    .dashboard-header {
-        background: var(--primary);
-        color: white;
-        padding: 25px 30px;
-        grid-column: 1 / -1;
-        border-bottom: 4px solid var(--secondary);
-    }
-
-    .dashboard-header h1 {
-        font-size: 2.2rem;
-        margin-bottom: 5px;
-        font-weight: 600;
-        letter-spacing: -0.5px;
-    }
-
-    .dashboard-header p {
-        font-size: 1rem;
-        opacity: 0.9;
-        margin: 0;
-    }
-
-    /* Stats Grid */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border: 1px solid var(--border);
-        transition: all 0.2s ease;
-        height: 150px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .stat-card:hover {
-        border-color: var(--secondary);
-    }
-
-    .stat-card.wide {
-        grid-column: span 2;
-    }
-
-    .stat-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .stat-icon {
-        width: 44px;
-        height: 44px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.2rem;
-        color: white;
-    }
-
-    .stat-icon.pending {
-        background: var(--warning);
-    }
-
-    .stat-icon.approved {
-        background: var(--success);
-    }
-
-    .stat-icon.rejected {
-        background: var(--danger);
-    }
-
-    .stat-icon.info {
-        background: var(--secondary);
-    }
-
-    .stat-number {
-        font-size: 2.2rem;
-        font-weight: 600;
-        color: var(--dark);
-        line-height: 1;
-        margin: auto 0 5px 0;
-    }
-
-    .stat-label {
-        font-size: 0.9rem;
-        color: var(--gray);
-        font-weight: 500;
-    }
-
-    .stat-change {
-        font-size: 0.8rem;
-        font-weight: 500;
-        padding: 3px 8px;
-    }
-
-    .stat-change.positive {
-        color: var(--success);
-        background: rgba(39, 174, 96, 0.1);
-    }
-
-    .stat-change.negative {
-        color: var(--danger);
-        background: rgba(231, 76, 60, 0.1);
-    }
-
-    /* Activity Section */
-    .activity-section {
-        background: white;
-        padding: 20px;
-        border: 1px solid var(--border);
-    }
-
-    .section-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: var(--dark);
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .activity-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .activity-item {
-        display: flex;
-        gap: 15px;
-        padding: 12px 0;
-        border-bottom: 1px solid var(--light-gray);
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-icon {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.95rem;
-        color: white;
-        flex-shrink: 0;
-    }
-
-    .activity-content {
-        flex: 1;
-    }
-
-    .activity-title {
-        font-weight: 500;
-        color: var(--dark);
-        margin-bottom: 3px;
-        font-size: 0.95rem;
-    }
-
-    .activity-time {
-        font-size: 0.8rem;
-        color: var(--gray);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    /* Quick Actions */
-    .quick-actions {
-        background: white;
-        padding: 20px;
-        border: 1px solid var(--border);
-    }
-
-    .actions-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-
-    .action-btn {
-        background: white;
-        border: 1px solid var(--border);
-        padding: 15px;
-        text-decoration: none;
-        color: var(--dark);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-        transition: all 0.2s ease;
-        text-align: center;
-        height: 100%;
-    }
-
-    .action-btn:hover {
-        border-color: var(--secondary);
-        background: var(--light);
-    }
-
-    .action-icon {
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
-        color: white;
-        border-radius: 4px;
-    }
-
-    .action-text {
-        font-weight: 500;
-        font-size: 0.9rem;
-    }
-
-    /* Charts Section */
-    .charts-section {
-        background: white;
-        padding: 20px;
-        border: 1px solid var(--border);
-        height: 100%;
-    }
-
-    .chart-placeholder {
-        background: var(--light);
-        height: 250px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--gray);
-        font-size: 0.9rem;
-        margin-top: 15px;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 1200px) {
-        .dashboard-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    'amber': {
+                        50: '#fffbeb',
+                        100: '#fef3c7',
+                        400: '#fbbf24',
+                        600: '#d97706',
+                        700: '#b45309',
+                    },
+                    'emerald': {
+                        50: '#ecfdf5',
+                        100: '#d1fae5',
+                        400: '#34d399',
+                        600: '#059669',
+                        700: '#047857',
+                    },
+                    'red': {
+                        50: '#fef2f2',
+                        400: '#f87171',
+                        600: '#dc2626',
+                    },
+                    'blue': {
+                        50: '#eff6ff',
+                        400: '#60a5fa',
+                        600: '#2563eb',
+                        700: '#1d4ed8',
+                    },
+                    'purple': {
+                        50: '#faf5ff',
+                        100: '#f3e8ff',
+                        600: '#9333ea',
+                        700: '#7c3aed',
+                    }
+                }
+            }
         }
     }
+</script>
 
-    @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .actions-grid {
-            grid-template-columns: 1fr;
-        }
-        
-        .stat-card.wide {
-            grid-column: span 1;
-        }
-    }
-</style>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-<div class="dashboard-container">
-    <!-- Header -->
-    <div class="dashboard-header">
-        <h1>DASHBOARD {{ strtoupper($divisi ?? 'divisi') }}</h1>
-        <p>Selamat datang kembali. Terakhir login: 05 Jun 2024, 08:45</p>
-    </div>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-icon pending">
-                        <i class="fas fa-clock"></i>
+<div class="min-h-screen bg-gray-50">
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header Section -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Pengembangan Dashboard</h1>
+                        <p class="mt-2 text-sm text-gray-600">Welcome back! Here's your memo management overview.</p>
                     </div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i> +12%
-                    </div>
-                </div>
-                <div class="stat-number">15</div>
-                <div class="stat-label">MENUNGGU</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-icon approved">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i> +8%
-                    </div>
-                </div>
-                <div class="stat-number">42</div>
-                <div class="stat-label">DISETUJUI</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-icon rejected">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <div class="stat-change negative">
-                        <i class="fas fa-arrow-down"></i> -3%
-                    </div>
-                </div>
-                <div class="stat-number">5</div>
-                <div class="stat-label">DITOLAK</div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-header">
-                    <div class="stat-icon info">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i> +5%
-                    </div>
-                </div>
-                <div class="stat-number">28</div>
-                <div class="stat-label">PENGAJUAN</div>
-            </div>
-        </div>
-
-        <!-- Activity Section -->
-        <div class="activity-section">
-            <h2 class="section-title">
-                <i class="fas fa-list" style="color: var(--secondary);"></i>
-                AKTIVITAS TERAKHIR
-            </h2>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: var(--success);">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Memo #2024-015 (Pengajuan dana proyek Q2) telah disetujui</div>
-                        <div class="activity-time"><i class="far fa-clock"></i> 12:45 - 05 Jun 2024</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: var(--warning);">
-                        <i class="fas fa-exclamation"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Memo #2024-016 (Pembelian peralatan kantor) membutuhkan review Anda</div>
-                        <div class="activity-time"><i class="far fa-clock"></i> 10:30 - 05 Jun 2024</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: var(--danger);">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Memo #2024-014 (Perjalanan dinas ke Bandung) ditolak - Melebihi budget</div>
-                        <div class="activity-time"><i class="far fa-clock"></i> 09:15 - 05 Jun 2024</div>
-                    </div>
-                </div>
-                <div class="activity-item">
-                    <div class="activity-icon" style="background: var(--secondary);">
-                        <i class="fas fa-user-tag"></i>
-                    </div>
-                    <div class="activity-content">
-                        <div class="activity-title">Anda menugaskan review memo #2024-017 kepada Budi Santoso</div>
-                        <div class="activity-time"><i class="far fa-clock"></i> 08:45 - 05 Jun 2024</div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-sm text-gray-500">
+                            {{ date('l, F j, Y') }}
+                        </div>
+                        <div class="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-            <h2 class="section-title">
-                <i class="fas fa-bolt" style="color: var(--secondary);"></i>
-                AKSI CEPAT
-            </h2>
-            <div class="actions-grid">
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: var(--warning);">
-                        <i class="fas fa-file-invoice"></i>
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Pending Memos -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-amber-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-600">Pending</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $pendingMemos ?? 0 }}</p>
+                        </div>
                     </div>
-                    <div class="action-text">Review Memo</div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: var(--success);">
-                        <i class="fas fa-plus"></i>
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <a href="{{ route('manager.memo.index') }}" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
+                            Review now
+                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
                     </div>
-                    <div class="action-text">Buat Baru</div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: var(--primary);">
-                        <i class="fas fa-chart-pie"></i>
+                </div>
+
+                <!-- Approved Memos -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-emerald-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-600">Approved</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $approvedMemos ?? 0 }}</p>
+                        </div>
                     </div>
-                    <div class="action-text">Laporan</div>
-                </a>
-                <a href="#" class="action-btn">
-                    <div class="action-icon" style="background: var(--secondary);">
-                        <i class="fas fa-search"></i>
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <span class="text-sm text-emerald-600 font-medium">
+                            ✓ All good
+                        </span>
                     </div>
-                    <div class="action-text">Cari Memo</div>
-                </a>
+                </div>
+
+                <!-- Rejected Memos -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-red-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-600">Rejected</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $rejectedMemos ?? 0 }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <span class="text-sm text-red-600 font-medium">
+                            Needs attention
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Total Memos -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:border-blue-200">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-sm font-medium text-gray-600">Total Memos</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ ($pendingMemos ?? 0) + ($approvedMemos ?? 0) + ($rejectedMemos ?? 0) }}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <span class="text-sm text-blue-600 font-medium">
+                            All time
+                        </span>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <!-- Charts Section -->
-        <div class="charts-section">
-            <h2 class="section-title">
-                <i class="fas fa-chart-line" style="color: var(--secondary);"></i>
-                STATISTIK
-            </h2>
-            <div class="chart-placeholder">
-                Grafik Statistik Memo Bulan Ini
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column - Quick Actions -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                            <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                            <p class="text-sm text-gray-600 mt-1">Manage your memo workflow efficiently</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Manage Memos -->
+                                <a href="{{ route('pengembangan.memo.index') }}" class="group block">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200 group-hover:bg-blue-50">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Manage Memos</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Review and process pending memos from your team</p>
+                                        <div class="flex items-center text-sm text-blue-600 font-medium group-hover:text-blue-700">
+                                            Go to Memos
+                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Create New -->
+                                <a href="{{ route('pengembangan.memo.index') }}" class="group block">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-emerald-300 hover:shadow-md transition-all duration-200 group-hover:bg-emerald-50">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
+                                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Create New</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Draft a new memo or document for your activity</p>
+                                        <div class="flex items-center text-sm text-emerald-600 font-medium group-hover:text-emerald-700">
+                                            Create Memo
+                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Reports -->
+                                <a href="#" class="group block">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-purple-300 hover:shadow-md transition-all duration-200 group-hover:bg-purple-50">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Reports</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">View memo statistics and detailed reports</p>
+                                        <div class="flex items-center text-sm text-purple-600 font-medium group-hover:text-purple-700">
+                                            View Reports
+                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Settings -->
+                                <a href="#" class="group block">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-gray-400 hover:shadow-md transition-all duration-200 group-hover:bg-gray-50">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-gray-200 transition-colors">
+                                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Settings</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Configure your dashboard and preferences</p>
+                                        <div class="flex items-center text-sm text-gray-600 font-medium group-hover:text-gray-700">
+                                            Open Settings
+                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Recent Activity -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
+                            <p class="text-sm text-gray-600 mt-1">Latest updates and notifications</p>
+                        </div>
+                        <div class="p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-amber-50 transition-colors">
+                                    <div class="w-3 h-3 bg-amber-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">New memo pending review</p>
+                                        <p class="text-xs text-gray-500 mt-1">From John Doe • 2 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-emerald-50 transition-colors">
+                                    <div class="w-3 h-3 bg-emerald-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Memo approved successfully</p>
+                                        <p class="text-xs text-gray-500 mt-1">Marketing proposal • 4 hours ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors">
+                                    <div class="w-3 h-3 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">New team member added</p>
+                                        <p class="text-xs text-gray-500 mt-1">Sarah Smith joined • 1 day ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-red-50 transition-colors">
+                                    <div class="w-3 h-3 bg-red-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Memo returned for revision</p>
+                                        <p class="text-xs text-gray-500 mt-1">Budget request • 2 days ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-gray-200">
+                                <a href="#" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium group w-full justify-center">
+                                    View all activity
+                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
