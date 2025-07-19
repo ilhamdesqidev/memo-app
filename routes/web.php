@@ -86,119 +86,115 @@ use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
         ]);
     });
 
-    // Division-Specific Routes
-    $divisionRoutes = [
-        'pengembangan' => [
-            'middleware' => 'divisi:Pengembangan Bisnis',
-            'controller' => DashboardPengembanganController::class, // <-- Tambahkan koma di sini
-            'extra_routes' => [
-                ['GET', '/memo', [PengembanganMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [PengembanganMemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'manager' => [
-            'middleware' => 'divisi:Manager',
-            'controller' => DashboardManagerController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'opwil1' => [
-            'middleware' => 'divisi:Operasional Wilayah I',
-            'controller' => DashboardOp1Controller::class,
-            'extra_routes' => [
-                ['GET', '/memo', [Op1MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [Op1MemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'opwil2' => [
-            'middleware' => 'divisi:Operasional Wilayah II',
-            'controller' => DashboardOp2Controller::class,
-            'extra_routes' => [
-                ['GET', '/memo', [Op2MemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [Op2MemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'umumlegal' => [
-            'middleware' => 'divisi:Umum dan Legal',
-            'controller' => DashboardUmumLegalController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [UmumLegalMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [UmumLegalMemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'adminkeu' => [
-            'middleware' => 'divisi:Administrasi dan Keuangan',
-            'controller' => DashboardAdminKeuController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [AdminKeuMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [AdminKeuMemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'sipil' => [
-            'middleware' => 'divisi:Infrastruktur dan Sipil',
-            'controller' => DashboardSipilController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [SipilMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [SipilMemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-        'food' => [
-            'middleware' => 'divisi:Food Beverage',
-            'controller' => DashboardFoodController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [FoodMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [FoodMemoController::class, 'show'], 'memo.show']
-            ]
-        ],
-       'marketing' => [
-            'middleware' => 'divisi:Marketing dan Sales',
-            'controller' => DashboardMarketingController::class,
-            'extra_routes' => [
-                ['GET', '/memo', [MarketingMemoController::class, 'index'], 'memo.index'],
-                ['GET', '/memo/{id}', [MarketingMemoController::class, 'show'], 'memo.show']
-            ]
-            ]
-    ];
- 
-    foreach ($divisionRoutes as $prefix => $config) {
-        Route::prefix($prefix)
-            ->middleware($config['middleware'])
-            ->name($prefix.'.')
-            ->group(function () use ($config) {
-                Route::get('/dashboard', [$config['controller'], 'index'])->name('dashboard');
-                
-                if (isset($config['extra_routes'])) {
-                    foreach ($config['extra_routes'] as $route) {
-                        Route::{$route[0]}($route[1], $route[2])->name($route[3]);
-                    }
-                }
-            });
+  // Division-Specific Routes
+Route::prefix('pengembangan')
+    ->middleware('divisi:Pengembangan Bisnis')
+    ->name('pengembangan.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [PengembanganMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [PengembanganMemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('manager')
+    ->middleware('divisi:Manager')
+    ->name('manager.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [MemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/create', [MemoController::class, 'create'])->name('memo.create'); // Add this line
+        Route::get('/memo/{id}', [MemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('opwil1')
+    ->middleware('divisi:Operasional Wilayah I')
+    ->name('opwil1.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
+        Route::get('/memo', [Op1MemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [Op1MemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('opwil2')
+    ->middleware('divisi:Operasional Wilayah II')
+    ->name('opwil2.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
+        Route::get('/memo', [Op2MemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [Op2MemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('umumlegal')
+    ->middleware('divisi:Umum dan Legal')
+    ->name('umumlegal.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [UmumLegalMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [UmumLegalMemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('adminkeu')
+    ->middleware('divisi:Administrasi dan Keuangan')
+    ->name('adminkeu.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [AdminKeuMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [AdminKeuMemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('sipil')
+    ->middleware('divisi:Infrastruktur dan Sipil')
+    ->name('sipil.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [SipilMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [SipilMemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('food')
+    ->middleware('divisi:Food Beverage')
+    ->name('food.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
+        Route::get('/memo', [FoodMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/{id}', [FoodMemoController::class, 'show'])->name('memo.show');
+    });
+
+Route::prefix('marketing')
+    ->middleware('divisi:Marketing dan Sales')
+    ->name('marketing.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
+
+        Route::get('/memo', [MarketingMemoController::class, 'index'])->name('memo.index');
+        Route::get('/memo/create', [MarketingMemoController::class, 'create'])->name('memo.create'); // <-- Ini penting
+        Route::post('/memo', [MarketingMemoController::class, 'store'])->name('memo.store');
+        Route::get('/memo/{id}', [MarketingMemoController::class, 'show'])->name('memo.show');
+    });
+
+
+// Main Dashboard Redirector
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+
+    if ($user->role === 'admin') {
+        return redirect()->route('admin.dashboard');
     }
 
-    // Main Dashboard Redirector
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-    
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-    
-        $divisiRoutes = [
-            'Pengembangan Bisnis' => 'pengembangan.dashboard',
-            'Manager' => 'manager.dashboard',
-            'Operasional Wilayah I' => 'opwil1.dashboard',
-            'Operasional Wilayah II' => 'opwil2.dashboard',
-            'Umum dan Legal' => 'umumlegal.dashboard',
-            'Administrasi dan Keuangan' => 'adminkeu.dashboard',
-            'Infrastruktur dan Sipil' => 'sipil.dashboard',
-            'Food Beverage' => 'food.dashboard',
-            'Marketing dan Sales' => 'marketing.dashboard',
-        ];
-    
-        return redirect()->route(
-            $divisiRoutes[$user->divisi->nama ?? ''] ?? 'login'
-        );
-    })->name('main.dashboard');
+    $divisiRoutes = [
+        'Pengembangan Bisnis' => 'pengembangan.dashboard',
+        'Manager' => 'manager.dashboard',
+        'Operasional Wilayah I' => 'opwil1.dashboard',
+        'Operasional Wilayah II' => 'opwil2.dashboard',
+        'Umum dan Legal' => 'umumlegal.dashboard',
+        'Administrasi dan Keuangan' => 'adminkeu.dashboard',
+        'Infrastruktur dan Sipil' => 'sipil.dashboard',
+        'Food Beverage' => 'food.dashboard',
+        'Marketing dan Sales' => 'marketing.dashboard',
+    ];
+
+    return redirect()->route(
+        $divisiRoutes[$user->divisi->nama ?? ''] ?? 'login'
+    );
+})->name('main.dashboard');
 });

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('perihal');
             $table->string('lampiran')->nullable();
             $table->text('isi');
-            $table->string('signature')->nullable();
             $table->timestamps();
         });
     }

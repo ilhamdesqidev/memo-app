@@ -18,11 +18,9 @@ class Memo extends Model
         'dari',
         'perihal',
         'isi',
-        'signature',
-        'status',
-        'approved_by',
-        'approval_date',
-        'rejection_reason'
+        'lampiran',
+        'divisi_tujuan',
+        'dibuat_oleh_user_id',      
     ];
 
     protected $casts = [
@@ -34,4 +32,9 @@ class Memo extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'approved_by');
     }
+    public function creator()
+{
+    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
+}
+
 }

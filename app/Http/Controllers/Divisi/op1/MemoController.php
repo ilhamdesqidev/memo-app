@@ -11,4 +11,9 @@ class MemoController extends Controller
     {
         return view('divisi.opwil1.memo.index');
     }
+    public function create()
+{
+    $divisi = auth()->user()->divisi->nama;
+    return view('memo.create', compact('divisi'));
+}
 }

@@ -3,6 +3,6 @@
     <div class="container">
         <h1>Memo Food Beverage</h1>
         <p>Selamat datang di halaman memo Food Beverage.</p>
-        <!-- Add your memo content here -->
+        
     </div>
 @endsection

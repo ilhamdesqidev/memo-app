@@ -10,6 +10,8 @@ class MemoController extends Controller
 {
     public function index()
     {
+
+         $memos = Memo::where('divisi_tujuan', 'Manager')->latest()->get();
         $memos = Memo::where('status', 'pending')
                     ->latest()
                     ->get()
@@ -21,55 +23,28 @@ class MemoController extends Controller
         return view('divisi.manager.memo.index', compact('memos'));
     }
 
-    /**
-     * Display the specified memo
-     */
-    public function show($id)
-    {
-        $memo = Memo::findOrFail($id);
-        $memo->tanggal = \Carbon\Carbon::parse($memo->tanggal);
+   public function create()
+{
+    $divisi = auth()->user()->divisi->nama;
+    return view('memo.create', compact('divisi'));
+}
+public function store(Request $request)
+{
+    $request->validate([
+        'judul' => 'required',
+        'isi' => 'required',
+        'divisi_tujuan' => 'required', // Pilihan divisi
+    ]);
 
-        return view('manager.memo.show', compact('memo'));
-    }
+    Memo::create([
+        'judul' => $request->judul,
+        'isi' => $request->isi,
+        'divisi_tujuan' => $request->divisi_tujuan,
+        'dibuat_oleh_user_id' => auth()->id(),
+    ]);
 
-    /**
-     * Approve the specified memo
-     */
-    public function approve(Request $request, $id)
-    {
-        $memo = Memo::findOrFail($id);
-        
-        $memo->update([
-            'status' => 'approved',
-            'approved_by' => Auth::id(),
-            'approval_date' => now(),
-            'rejection_reason' => null
-        ]);
+    return redirect()->back()->with('success', 'Memo berhasil dibuat.');
+}
 
-        return redirect()->route('manager.memo.index')
-               ->with('success', 'Memo berhasil disetujui!');
-    }
-
-    /**
-     * Reject the specified memo
-     */
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500'
-        ]);
-
-        $memo = Memo::findOrFail($id);
-        
-        $memo->update([
-            'status' => 'rejected',
-            'approved_by' => Auth::id(),
-            'approval_date' => now(),
-            'rejection_reason' => $request->rejection_reason
-        ]);
-
-        return redirect()->route('manager.memo.index')
-               ->with('success', 'Memo berhasil ditolak!');
-    }
 }
 
