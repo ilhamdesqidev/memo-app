@@ -1,46 +1,79 @@
 <?php
 
-namespace App\Http\Controllers\Divisi\marketing;
+namespace App\Http\Controllers\Divisi\Marketing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class MemoController extends Controller
 {
     /**
-     * Display the marketing memo page.
-     *
-     * @return \Illuminate\View\View
+     * Tampilkan semua memo yang dikirim oleh divisi Marketing
      */
     public function index()
     {
-         $memos = Memo::where('divisi_tujuan', 'Marketing dan Sales')->latest()->get();
-        return view('divisi.marketing.memo.index', compact( 'memos'));
+        $memos = Memo::where('dari', 'Marketing dan Sales')
+                     ->latest()
+                     ->get();
+
+        return view('divisi.marketing.memo.index', compact('memos'));
     }
-   public function create()
-{
-    $divisi = auth()->user()->divisi->nama;
-    return view('memo.create', compact('divisi'));
-}
 
-public function store(Request $request)
-{
-    $request->validate([
-        'judul' => 'required',
-        'isi' => 'required',
-        'divisi_tujuan' => 'required', // Pilihan divisi
-    ]);
+    /**
+     * Tampilkan form create memo
+     */
+    public function create()
+    {
+        $divisi = auth()->user()->divisi->nama;
+        return view('memo.create', compact('divisi'));
+    }
 
-    Memo::create([
-        'judul' => $request->judul,
-        'isi' => $request->isi,
-        'divisi_tujuan' => $request->divisi_tujuan,
-        'dibuat_oleh_user_id' => auth()->id(),
-    ]);
+    /**
+     * Simpan memo ke database
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nomor' => 'required|unique:memos,nomor',
+            'tanggal' => 'required|date',
+            'kepada' => 'required|string|max:255',
+            'perihal' => 'required|string|max:255',
+            'isi' => 'required|string',
+            'divisi_tujuan' => 'required|string|max:255',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+        ]);
 
-    return redirect()->back()->with('success', 'Memo berhasil dibuat.');
-}
+        $lampiranPath = null;
 
+        if ($request->hasFile('lampiran')) {
+            $lampiranPath = $request->file('lampiran')
+                                    ->storeAs('lampiran_memo', Str::uuid() . '.' . $request->file('lampiran')->getClientOriginalExtension(), 'public');
+        }
+
+        Memo::create([
+            'nomor' => $request->nomor,
+            'tanggal' => $request->tanggal,
+            'kepada' => $request->kepada,
+            'dari' => auth()->user()->divisi->nama,
+            'perihal' => $request->perihal,
+            'isi' => $request->isi,
+            'divisi_tujuan' => $request->divisi_tujuan,
+            'lampiran' => $lampiranPath,
+            'status' => 'Diajukan',
+        ]);
+
+        return redirect()->route('marketing.memo.index')->with('success', 'Memo berhasil dikirim.');
+    }
+
+    /**
+     * Tampilkan detail memo
+     */
+    public function show($id)
+    {
+        $memo = Memo::findOrFail($id);
+        return view('divisi.marketing.memo.show', compact('memo'));
+    }
 }

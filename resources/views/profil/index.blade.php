@@ -187,24 +187,29 @@
                             </a>
                         </div>
 
-                       <!-- Account Stats -->
-                    <div class="mt-6 pt-4 border-t border-gray-200">
-                        <div class="text-sm text-gray-500 mb-2">Account Statistics</div>
-                        <div class="flex justify-between">
-                            <div class="text-center">
-                                <div class="text-lg font-medium text-indigo-600">
-                                    {{ Auth::user()->created_at->diffInDays(now()) }}
+                        <!-- Account Stats -->
+                        <div class="mt-6 pt-4 border-t border-gray-200">
+                            <div class="text-sm text-gray-500 mb-2">Account Statistics</div>
+                            <div class="flex justify-between">
+                                <div class="text-center">
+                                    <div id="activeTime" class="text-lg font-medium text-indigo-600">
+                                        @php
+                                            $created = Auth::user()->created_at;
+                                            $now = now();
+                                            $diff = $created->diff($now);
+                                        @endphp
+                                        {{ $diff->format('%a days %h hours %i minutes %s seconds') }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Active Time</div>
                                 </div>
-                                <div class="text-xs text-gray-500">Days Active</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-lg font-medium text-green-600">
-                                    {{ Auth::user()->signature ? '1' : '0' }}
+                                <div class="text-center">
+                                    <div class="text-lg font-medium text-green-600">
+                                        {{ Auth::user()->signature ? '1' : '0' }}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Signatures</div>
                                 </div>
-                                <div class="text-xs text-gray-500">Signatures</div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -243,6 +248,30 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Active time counter
+    const createdAt = new Date("{{ Auth::user()->created_at->format('Y-m-d H:i:s') }}");
+    const activeTimeElement = document.getElementById('activeTime');
+    
+    function updateActiveTime() {
+        const now = new Date();
+        const diff = Math.floor((now - createdAt) / 1000); // difference in seconds
+        
+        // Calculate days, hours, minutes, seconds
+        const days = Math.floor(diff / 86400);
+        const hours = Math.floor((diff % 86400) / 3600);
+        const minutes = Math.floor((diff % 3600) / 60);
+        const seconds = diff % 60;
+        
+        activeTimeElement.textContent = 
+            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+    
+    // Update immediately
+    updateActiveTime();
+    
+    // Update every second
+    setInterval(updateActiveTime, 1000);
+
     // Tab switching
     const drawTab = document.getElementById('draw-tab');
     const uploadTab = document.getElementById('upload-tab');
@@ -269,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Signature canvas functionality (existing code remains the same)
+    // Signature canvas functionality
     const canvas = document.getElementById('signature-canvas');
     if (!canvas) return;
 
