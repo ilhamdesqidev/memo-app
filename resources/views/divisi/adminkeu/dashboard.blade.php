@@ -86,7 +86,7 @@
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="{{ route('manager.memo.index') }}" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
+                        <a href="{{ route('adminkeu.memo.index') }}" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
                             Review now
                             <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -174,7 +174,7 @@
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <!-- Manage Memos -->
-                                <a href="{{ route('food.memo.index') }}" class="group block">
+                                <a href="{{ route('adminkeu.memo.index') }}" class="group block">
                                     <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200 group-hover:bg-blue-50">
                                         <div class="flex items-center mb-3">
                                             <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
@@ -195,7 +195,7 @@
                                 </a>
 
                                 <!-- Create New -->
-                                <a href="{{ route('food.memo.index') }}" class="group block">
+                                <a href="{{ route('adminkeu.memo.index') }}" class="group block">
                                     <div class="border border-gray-200 rounded-lg p-4 hover:border-emerald-300 hover:shadow-md transition-all duration-200 group-hover:bg-emerald-50">
                                         <div class="flex items-center mb-3">
                                             <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:bg-emerald-200 transition-colors">

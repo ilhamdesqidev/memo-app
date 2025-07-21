@@ -13,7 +13,7 @@ return new class extends Migration
 public function up()
 {
     Schema::table('memos', function (Blueprint $table) {
-        $table->string('status')->default('pending')->after('signature');
+        $table->string('status')->default('pending');
         $table->foreignId('approved_by')->nullable()->after('status');
         $table->timestamp('approval_date')->nullable()->after('approved_by');
         $table->text('rejection_reason')->nullable()->after('approval_date');
