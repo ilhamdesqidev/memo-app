@@ -4,46 +4,70 @@ namespace App\Http\Controllers\Divisi\Manager;
 
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
+use App\Models\Divisi;
 use Illuminate\Http\Request;
 
 class MemoController extends Controller
 {
     public function index()
     {
-
-         $memos = Memo::where('divisi_tujuan', 'Manager')->latest()->get();
-        $memos = Memo::where('status', 'pending')
-                    ->latest()
-                    ->get()
-                    ->map(function($memo) {
-                        $memo->tanggal = \Carbon\Carbon::parse($memo->tanggal);
-                        return $memo;
-                    });
-
+        $memos = Memo::where('divisi_tujuan', auth()->user()->divisi->nama)
+                   ->orWhere('dari', auth()->user()->divisi->nama)
+                   ->orderBy('created_at', 'desc')
+                   ->paginate(10);
+        
         return view('divisi.manager.memo.index', compact('memos'));
     }
 
-   public function create()
-{
-    $divisi = auth()->user()->divisi->nama;
-    return view('memo.create', compact('divisi'));
-}
-public function store(Request $request)
-{
-    $request->validate([
-        'judul' => 'required',
-        'isi' => 'required',
-        'divisi_tujuan' => 'required', // Pilihan divisi
-    ]);
+    public function create()
+    {
+        $divisiTujuan = Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();
+        return view('memo.create', compact('divisiTujuan'));
+    }
 
-    Memo::create([
-        'judul' => $request->judul,
-        'isi' => $request->isi,
-        'divisi_tujuan' => $request->divisi_tujuan,
-        'dibuat_oleh_user_id' => auth()->id(),
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nomor' => 'required|string|max:50|unique:memos',
+            'tanggal' => 'required|date',
+            'kepada' => 'required|string|max:100',
+            'perihal' => 'required|string|max:255',
+            'divisi_tujuan' => 'required|string',
+            'isi' => 'required|string',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+        ]);
 
-    return redirect()->back()->with('success', 'Memo berhasil dibuat.');
+        $memoData = $request->only([
+            'nomor', 'tanggal', 'kepada', 'perihal', 
+            'divisi_tujuan', 'isi'
+        ]);
+        
+        $memoData['dari'] = auth()->user()->divisi->nama;
+        $memoData['dibuat_oleh_user_id'] = auth()->id();
+
+        if ($request->hasFile('lampiran')) {
+            $memoData['lampiran'] = $request->file('lampiran')
+                ->store('lampiran', 'public');
+        }
+
+        Memo::create($memoData);
+
+        return redirect()
+               ->route('manager.memo.index')
+               ->with('success', 'Memo berhasil dibuat');
+    }
+// In your MemoController for Manager
+public function show($id)
+{
+    $memo = Memo::findOrFail($id);
+    
+    // Verify the memo belongs to the current user's division
+    if ($memo->divisi_tujuan !== auth()->user()->divisi->nama && 
+        $memo->dari !== auth()->user()->divisi->nama) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    return view('divisi.manager.memo.show', compact('memo'));
 }
 
 }

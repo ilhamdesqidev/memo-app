@@ -69,4 +69,20 @@ public function getDivisiNameAttribute()
 {
     return $this->divisi ? $this->divisi->nama : null;
 }
+public function getRoutePrefixAttribute()
+{
+    $divisiMap = [
+        'Pengembangan Bisnis' => 'pengembangan',
+        'Manager' => 'manager',
+        'Operasional Wilayah I' => 'opwil1',
+        'Operasional Wilayah II' => 'opwil2',
+        'Umum dan Legal' => 'umumlegal',
+        'Administrasi dan Keuangan' => 'adminkeu',
+        'Infrastruktur dan Sipil' => 'sipil',
+        'Food Beverage' => 'food',
+        'Marketing dan Sales' => 'marketing'
+    ];
+    
+    return $divisiMap[$this->divisi->nama] ?? null;
+}
 }

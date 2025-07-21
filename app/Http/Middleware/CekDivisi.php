@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class CekDivisi
 {
-    public function handle($request, Closure $next, $divisi)
+    public function handle($request, Closure $next, ...$divisions)
     {
         $user = auth()->user();
 
@@ -16,13 +16,20 @@ class CekDivisi
             return redirect()->route('login');
         }
 
-        // Jika divisi adalah relasi, bandingkan berdasarkan nama
-        $userDivisiNama = optional($user->divisi)->nama;
-
-        if (Str::lower($userDivisiNama) === Str::lower($divisi)) {
+        // Admin bisa melewati pengecekan divisi
+        if ($user->role === 'admin') {
             return $next($request);
         }
 
-        abort(403, 'AKSES DITOLAK.');
+        $userDivisiNama = optional($user->divisi)->nama;
+
+        // Cek semua divisi yang diizinkan
+        foreach ($divisions as $divisi) {
+            if (Str::lower($userDivisiNama) === Str::lower($divisi)) {
+                return $next($request);
+            }
+        }
+
+        abort(403, 'AKSES DITOLAK: Anda tidak memiliki hak akses ke divisi ini.');
     }
 }

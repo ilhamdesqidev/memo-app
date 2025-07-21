@@ -11,19 +11,23 @@ class Memo extends Model
     use HasFactory;
 
     protected $dates = ['tanggal']; // This will automatically cast the field to a Carbon instance
-    protected $fillable = [
-        'nomor',
-        'tanggal',
-        'kepada',
-        'dari',
-        'perihal',
-        'isi',
-        'lampiran',
-        'divisi_tujuan',
-        'dibuat_oleh_user_id',      
-    ];
+   protected $fillable = [
+    'nomor',
+    'tanggal',
+    'kepada',
+    'dari',
+    'perihal',
+    'isi',
+    'lampiran',
+    'divisi_tujuan',
+    'dibuat_oleh_user_id'
+];
 
-    protected $casts = [
+// Add relationship to user
+public function dibuatOleh()
+{
+    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
+}    protected $casts = [
         'tanggal' => 'date',
         'approval_date' => 'datetime'
     ];

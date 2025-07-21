@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Divisi\Marketing;
 
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
+use App\Models\Divisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -13,67 +14,64 @@ class MemoController extends Controller
     /**
      * Tampilkan semua memo yang dikirim oleh divisi Marketing
      */
-    public function index()
+ public function index()
     {
-        $memos = Memo::where('dari', 'Marketing dan Sales')
-                     ->latest()
-                     ->get();
-
+        $memos = Memo::where('divisi_tujuan', auth()->user()->divisi->nama)
+                   ->orWhere('dari', auth()->user()->divisi->nama)
+                   ->orderBy('created_at', 'desc')
+                   ->paginate(10);
+        
         return view('divisi.marketing.memo.index', compact('memos'));
     }
 
-    /**
-     * Tampilkan form create memo
-     */
     public function create()
     {
-        $divisi = auth()->user()->divisi->nama;
-        return view('memo.create', compact('divisi'));
+        $divisiTujuan = Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();
+        return view('memo.create', compact('divisiTujuan'));
     }
 
-    /**
-     * Simpan memo ke database
-     */
     public function store(Request $request)
     {
-        $request->validate([
-            'nomor' => 'required|unique:memos,nomor',
+        $validated = $request->validate([
+            'nomor' => 'required|string|max:50|unique:memos',
             'tanggal' => 'required|date',
-            'kepada' => 'required|string|max:255',
+            'kepada' => 'required|string|max:100',
             'perihal' => 'required|string|max:255',
+            'divisi_tujuan' => 'required|string',
             'isi' => 'required|string',
-            'divisi_tujuan' => 'required|string|max:255',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:2048',
+            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
         ]);
 
-        $lampiranPath = null;
+        $memoData = $request->only([
+            'nomor', 'tanggal', 'kepada', 'perihal', 
+            'divisi_tujuan', 'isi'
+        ]);
+        
+        $memoData['dari'] = auth()->user()->divisi->nama;
+        $memoData['dibuat_oleh_user_id'] = auth()->id();
 
         if ($request->hasFile('lampiran')) {
-            $lampiranPath = $request->file('lampiran')
-                                    ->storeAs('lampiran_memo', Str::uuid() . '.' . $request->file('lampiran')->getClientOriginalExtension(), 'public');
+            $memoData['lampiran'] = $request->file('lampiran')
+                ->store('lampiran', 'public');
         }
 
-        Memo::create([
-            'nomor' => $request->nomor,
-            'tanggal' => $request->tanggal,
-            'kepada' => $request->kepada,
-            'dari' => auth()->user()->divisi->nama,
-            'perihal' => $request->perihal,
-            'isi' => $request->isi,
-            'divisi_tujuan' => $request->divisi_tujuan,
-            'lampiran' => $lampiranPath,
-            'status' => 'Diajukan',
-        ]);
+        Memo::create($memoData);
 
-        return redirect()->route('marketing.memo.index')->with('success', 'Memo berhasil dikirim.');
+        return redirect()
+               ->route('marketing.memo.index')
+               ->with('success', 'Memo berhasil dibuat');
+    }
+// In your MemoController for marketing
+public function show($id)
+{
+    $memo = Memo::findOrFail($id);
+    
+    // Verify the memo belongs to the current user's division
+    if ($memo->divisi_tujuan !== auth()->user()->divisi->nama && 
+        $memo->dari !== auth()->user()->divisi->nama) {
+        abort(403, 'Unauthorized action.');
     }
 
-    /**
-     * Tampilkan detail memo
-     */
-    public function show($id)
-    {
-        $memo = Memo::findOrFail($id);
-        return view('divisi.marketing.memo.show', compact('memo'));
-    }
+    return view('divisi.marketing.memo.show', compact('memo'));
+}
 }
