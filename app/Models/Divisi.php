@@ -10,4 +10,9 @@ class Divisi extends Model
     
     use HasFactory;
     protected $fillable = ['nama', 'urutan'];
+
+    public function getRoutePrefixAttribute()
+{
+    return strtolower(str_replace(' ', '', $this->nama));
+}
 }

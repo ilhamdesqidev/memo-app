@@ -85,139 +85,150 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Divisi Manager
-    Route::prefix('manager')
-        ->middleware('divisi:Manager')
-        ->name('manager.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [ManagerMemoController::class, 'index'])->name('index');
-                Route::get('/create', [ManagerMemoController::class, 'create'])->name('create');
-                Route::post('/', [ManagerMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [ManagerMemoController::class, 'show'])->name('show');
-            });
-        });
+  // Divisi Manager
+Route::prefix('manager')
+->middleware('divisi:Manager')
+->name('manager.')
+->group(function () {
+    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Pengembangan Bisnis
-    Route::prefix('pengembangan')
-        ->middleware('divisi:Pengembangan Bisnis')
-        ->name('pengembangan.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [PengembanganMemoController::class, 'index'])->name('index');
-                Route::get('/create', [PengembanganMemoController::class, 'create'])->name('create');
-                Route::post('/', [PengembanganMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [PengembanganMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Pengembangan Bisnis
+Route::prefix('pengembangan')
+->middleware('divisi:Pengembangan Bisnis')
+->name('pengembangan.')
+->group(function () {
+    Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Operasional Wilayah I
-    Route::prefix('opwil1')
-        ->middleware('divisi:Operasional Wilayah I')
-        ->name('opwil1.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [Op1MemoController::class, 'index'])->name('index');
-                Route::get('/create', [Op1MemoController::class, 'create'])->name('create');
-                Route::post('/', [Op1MemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [Op1MemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Operasional Wilayah I
+Route::prefix('opwil1')
+->middleware('divisi:Operasional Wilayah I')
+->name('opwil1.')
+->group(function () {
+    Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Operasional Wilayah II
-    Route::prefix('opwil2')
-        ->middleware('divisi:Operasional Wilayah II')
-        ->name('opwil2.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [Op2MemoController::class, 'index'])->name('index');
-                Route::get('/create', [Op2MemoController::class, 'create'])->name('create');
-                Route::post('/', [Op2MemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [Op2MemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Operasional Wilayah II
+Route::prefix('opwil2')
+->middleware('divisi:Operasional Wilayah II')
+->name('opwil2.')
+->group(function () {
+    Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Umum dan Legal
-    Route::prefix('umumlegal')
-        ->middleware('divisi:Umum dan Legal')
-        ->name('umumlegal.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [UmumLegalMemoController::class, 'index'])->name('index');
-                Route::get('/create', [UmumLegalMemoController::class, 'create'])->name('create');
-                Route::post('/', [UmumLegalMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [UmumLegalMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Umum dan Legal
+Route::prefix('umumlegal')
+->middleware('divisi:Umum dan Legal')
+->name('umumlegal.')
+->group(function () {
+    Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Administrasi dan Keuangan
-    Route::prefix('adminkeu')
-        ->middleware('divisi:Administrasi dan Keuangan')
-        ->name('adminkeu.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [AdminKeuMemoController::class, 'index'])->name('index');
-                Route::get('/create', [AdminKeuMemoController::class, 'create'])->name('create');
-                Route::post('/', [AdminKeuMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [AdminKeuMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Administrasi dan Keuangan
+Route::prefix('adminkeu')
+->middleware('divisi:Administrasi dan Keuangan')
+->name('adminkeu.')
+->group(function () {
+    Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Infrastruktur dan Sipil
-    Route::prefix('sipil')
-        ->middleware('divisi:Infrastruktur dan Sipil')
-        ->name('sipil.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [SipilMemoController::class, 'index'])->name('index');
-                Route::get('/create', [SipilMemoController::class, 'create'])->name('create');
-                Route::post('/', [SipilMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [SipilMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Infrastruktur dan Sipil
+Route::prefix('sipil')
+->middleware('divisi:Infrastruktur dan Sipil')
+->name('sipil.')
+->group(function () {
+    Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Food Beverage
-    Route::prefix('food')
-        ->middleware('divisi:Food Beverage')
-        ->name('food.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [FoodMemoController::class, 'index'])->name('index');
-                Route::get('/create', [FoodMemoController::class, 'create'])->name('create');
-                Route::post('/', [FoodMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [FoodMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Food Beverage
+Route::prefix('food')
+->middleware('divisi:Food Beverage')
+->name('food.')
+->group(function () {
+    Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'show'])->name('show');
+    });
+});
 
-    // Divisi Marketing dan Sales
-    Route::prefix('marketing')
-        ->middleware('divisi:Marketing dan Sales')
-        ->name('marketing.')
-        ->group(function () {
-            Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
-            
-            Route::prefix('memo')->name('memo.')->group(function () {
-                Route::get('/', [MarketingMemoController::class, 'index'])->name('index');
-                Route::get('/create', [MarketingMemoController::class, 'create'])->name('create');
-                Route::post('/', [MarketingMemoController::class, 'store'])->name('store');
-                Route::get('/{memo}', [MarketingMemoController::class, 'show'])->name('show');
-            });
-        });
+// Divisi Marketing dan Sales
+Route::prefix('marketing')
+->middleware('divisi:Marketing dan Sales')
+->name('marketing.')
+->group(function () {
+    Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
+    
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'index'])->name('index');
+        Route::get('/inbox', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/create', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'store'])->name('store');
+        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'show'])->name('show');
+    });
+});
+        
 
     // Main Dashboard Redirector
     Route::get('/dashboard', function () {
