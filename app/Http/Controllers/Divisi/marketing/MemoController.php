@@ -15,18 +15,4 @@ class MemoController extends BaseMemoController
         $this->divisiName = 'Marketing dan Sales';
         $this->viewPrefix = 'divisi.marketing.memo';
     }
-
-    // Bisa override method dari BaseMemoController jika diperlukan
-    // Contoh: Tampilan khusus Manager
-    public function show($id)
-    {
-        $memo = Memo::findOrFail($id);
-        
-        if ($memo->divisi_tujuan !== $this->divisiName && 
-            $memo->dari !== $this->divisiName) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        return view($this->viewPrefix . '.show', compact('memo'));
-    }
 }

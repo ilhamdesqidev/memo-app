@@ -25,6 +25,18 @@ class BaseMemoController extends Controller
         return view($this->viewPrefix . '.index', compact('memos'));
     }
 
+    public function show($id)
+    {
+        $memo = Memo::findOrFail($id);
+
+        if ($memo->divisi_tujuan !== $this->divisiName && 
+            $memo->dari !== $this->divisiName) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view($this->viewPrefix . '.show', compact('memo'));
+    }
+
 
 
     /**
