@@ -92,7 +92,7 @@ class BaseMemoController extends Controller
     ]);
 }
 
-    public function store(Request $request)
+        public function store(Request $request)
     {
         $validated = $request->validate([
             'nomor' => 'required|string|max:50|unique:memos',
@@ -101,21 +101,17 @@ class BaseMemoController extends Controller
             'perihal' => 'required|string|max:255',
             'divisi_tujuan' => 'required|string',
             'isi' => 'required|string',
-            'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+            'lampiran' => 'nullable|integer|min:0|max:10', // Updated validation
         ]);
 
-        $memoData = $request->only(['nomor', 'tanggal', 'kepada', 'perihal', 'divisi_tujuan', 'isi']);
+        $memoData = $request->only(['nomor', 'tanggal', 'kepada', 'perihal', 'divisi_tujuan', 'isi', 'lampiran']); // Include lampiran
         $memoData['dari'] = $this->divisiName;
         $memoData['dibuat_oleh_user_id'] = auth()->id();
-
-        if ($request->hasFile('lampiran')) {
-            $memoData['lampiran'] = $request->file('lampiran')->store('lampiran', 'public');
-        }
 
         Memo::create($memoData);
 
         return redirect()->route($this->routePrefix . '.memo.index')
-               ->with('success', 'Memo berhasil dibuat');
+            ->with('success', 'Memo berhasil dibuat');
     }
 
     public function updateStatus(Request $request)

@@ -225,30 +225,61 @@
                     </div>
 
                     <!-- Lampiran -->
-                    <div class="mt-6 space-y-2">
-                        <label for="lampiran" class="block text-sm font-semibold text-gray-700">
-                            Lampiran
-                            <span class="text-gray-500 text-xs font-normal">(Opsional)</span>
-                        </label>
-                        <div class="relative">
-                            <input type="file" 
-                                   name="lampiran" 
-                                   id="lampiran" 
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1 flex items-center">
-                            <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Maksimal 2MB (PDF, DOC, DOCX, JPG, PNG)
-                        </p>
-                    </div>
-                </div>
+<div class="mt-4 space-y-2 pb-4">
+    <label for="lampiran" class="block text-sm font-semibold text-gray-700">
+        Lampiran (Jumlah)
+        <span class="text-gray-500 text-xs font-normal">(Opsional)</span>
+    </label>
+    <div class="relative">
+        <div class="flex rounded-lg shadow-sm">
+            <button type="button" 
+                    class="decrement-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-l-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
+                    onclick="decrementValue()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                </svg>
+            </button>
+            <input type="number" 
+                   name="lampiran" 
+                   id="lampiran" 
+                   min="0"
+                   max="10"
+                   value="{{ old('lampiran', 0) }}"
+                   class="w-20 px-4 py-3 text-center border-t border-b border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+            <button type="button" 
+                    class="increment-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-r-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
+                    onclick="incrementValue()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <p class="text-xs text-gray-500 mt-1 flex items-center">
+        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Masukkan jumlah lampiran (0-10)
+    </p>
+</div>
+
+<script>
+    function incrementValue() {
+        const input = document.getElementById('lampiran');
+        let value = parseInt(input.value);
+        if (value < 10) {
+            input.value = value + 1;
+        }
+    }
+
+    function decrementValue() {
+        const input = document.getElementById('lampiran');
+        let value = parseInt(input.value);
+        if (value > 0) {
+            input.value = value - 1;
+        }
+    }
+</script>
 
                 <!-- Form Actions -->
                 <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">

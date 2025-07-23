@@ -61,6 +61,17 @@
                 <p class="text-base font-semibold">{{ $memo->perihal }}</p>
             </div>
 
+            <!-- Lampiran Count -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 mb-1">Lampiran</p>
+                <div class="flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 mr-2">
+                        {{ $memo->lampiran ?? 0 }}
+                    </span>
+                    <span class="text-base">dokumen terlampir</span>
+                </div>
+            </div>
+
             <!-- Isi Memo -->
             <div class="border-t border-gray-200 pt-4">
                 <p class="text-sm font-medium text-gray-500 mb-2">Isi Memo</p>
@@ -99,6 +110,22 @@
             </div>
             @endif
         </div>
+
+        <!-- Action Buttons -->
+        @if(auth()->user()->divisi->nama === $memo->divisi_tujuan && $memo->status === 'pending')
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
+            <form method="POST" action="{{ route('adminkeu.memo.approve', $memo->id) }}">
+                @csrf
+                @method('PUT')
+                <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Setujui
+                </button>
+            </form>
+            <button onclick="openRejectModal({{ $memo->id }})" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                Tolak
+            </button>
+        </div>
+        @endif
     </div>
 </div>
 
@@ -122,7 +149,7 @@
 function openRejectModal(memoId) {
     const modal = document.getElementById('rejectModal');
     const form = document.getElementById('rejectForm');
-    form.action = `/manager/memo/${memoId}/reject`;
+    form.action = `/adminkeu/memo/${memoId}/reject`;
     modal.classList.remove('hidden');
 }
 
