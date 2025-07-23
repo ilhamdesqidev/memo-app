@@ -1,3 +1,8 @@
+@extends('layouts.divisi')
+@section('content')
+
+
+
 @if ($memos->isEmpty())
     <div class="bg-gray-100 p-4 rounded-lg text-center">
         <p class="text-gray-600">Tidak ada memo.</p>
@@ -19,7 +24,7 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->nomor }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            @if($memo->dari === auth()->user()->divisi->nama)
+                            @if($memo->dari === $currentDivisi)
                                 <span class="text-blue-600">Kepada: {{ $memo->divisi_tujuan }}</span>
                             @else
                                 <span class="text-green-600">Dari: {{ $memo->dari }}</span>
@@ -28,7 +33,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->perihal }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->tanggal->format('d/m/Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <a href="{{ route(auth()->user()->divisi->routePrefix . '.memo.show', $memo->id) }}" 
+                            <a href="{{ route($routePrefix . '.memo.show', $memo->id) }}" 
                                class="text-blue-600 hover:text-blue-800 hover:underline">
                                 Lihat
                             </a>
@@ -42,3 +47,5 @@
         {{ $memos->links() }}
     </div>
 @endif
+
+@endsection

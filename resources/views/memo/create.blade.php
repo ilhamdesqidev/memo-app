@@ -60,7 +60,7 @@
 
         <!-- Form Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-            <form action="{{ route(auth()->user()->route_prefix.'.memo.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route($routePrefix . '.memo.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 
                 <div class="px-6 py-8">
@@ -253,7 +253,7 @@
                 <!-- Form Actions -->
                 <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                        <a href="{{ route(auth()->user()->route_prefix.'.memo.index') }}" 
+                        <a href="{{ route($routePrefix . '.memo.index') }}" 
                            class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>

@@ -2,58 +2,52 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6">Memo marketing</h1>
-    <p class="mb-6 text-gray-600">Selamat datang di halaman memo marketing.</p>
-
-    {{-- Tombol Buat Memo --}}
-    <div class="mb-6">
+    <h1 class="text-2xl font-bold mb-6">Memo Keluar - Marketing dan Sales</h1>
+    
+    <div class="mb-4 flex justify-between items-center">
+        <div>
+            <a href="{{ route('marketing.memo.inbox') }}" 
+               class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition duration-200 mr-2">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                </svg>
+                Kotak Masuk
+            </a>
+        </div>
         <a href="{{ route('marketing.memo.create') }}" 
            class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            Buat Memo
+            Buat Memo Baru
         </a>
     </div>
 
-    {{-- Tabel Memo --}}
     @if ($memos->isEmpty())
         <div class="bg-gray-100 p-4 rounded-lg text-center">
-            <p class="text-gray-600">Belum ada memo.</p>
+            <p class="text-gray-600">Belum ada memo yang dikirim.</p>
         </div>
     @else
         <div class="overflow-x-auto bg-white rounded-lg shadow">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat oleh</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nomor</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kepada</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perihal</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($memos as $memo)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->creator->name ?? '-' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                @php
-                                    $statusClasses = [
-                                        'draft' => 'bg-gray-100 text-gray-800',
-                                        'pending' => 'bg-yellow-100 text-yellow-800',
-                                        'approved' => 'bg-green-100 text-green-800',
-                                        'rejected' => 'bg-red-100 text-red-800',
-                                    ];
-                                    $statusText = [
-                                        'draft' => 'Draft',
-                                        'pending' => 'Menunggu Persetujuan',
-                                        'approved' => 'Disetujui',
-                                        'rejected' => 'Ditolak',
-                                    ];
-                                @endphp
-                                <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClasses[$memo->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ $statusText[$memo->status] ?? $memo->status }}
-                                </span>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->nomor }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <span class="text-blue-600">{{ $memo->divisi_tujuan }}</span>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->perihal }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $memo->tanggal->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
                                 <a href="{{ route('marketing.memo.show', $memo->id) }}" 
                                    class="text-blue-600 hover:text-blue-800 hover:underline">
@@ -65,12 +59,9 @@
                 </tbody>
             </table>
         </div>
-        {{-- Pagination --}}
-        @if ($memos->hasPages())
-            <div class="mt-4">
-                {{ $memos->links() }}
-            </div>
-        @endif
+        <div class="mt-4">
+            {{ $memos->links() }}
+        </div>
     @endif
 </div>
 @endsection

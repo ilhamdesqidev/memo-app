@@ -9,20 +9,59 @@ use Illuminate\Http\Request;
 
 class BaseMemoController extends Controller
 {
-    protected $divisiName;  // Nama divisi (e.g., 'Manager')
-    protected $viewPrefix;  // Prefix view (e.g., 'divisi.manager')
+    protected $divisiName;
+    protected $viewPrefix;
+    protected $routePrefix;
 
-    /**
-     * Menampilkan daftar memo (outbox & inbox)
-     */
+    public function __construct()
+    {
+        $this->setRoutePrefix();
+    }
+
+    protected function setRoutePrefix()
+    {
+        $nama = strtolower(str_replace(' ', '', $this->divisiName));
+        
+        $specialCases = [
+            'pengembanganbisnis' => 'pengembangan',
+            'operasionalwilayahi' => 'opwil1',
+            'operasionalwilayahii' => 'opwil2',
+            'umumdanlegal' => 'umumlegal',
+            'administrasidankeuangan' => 'adminkeu',
+            'infrastrukturdansipil' => 'sipil',
+            'foodbeverage' => 'food',
+            'marketingdansales' => 'marketing',
+            'manager' => 'manager'
+        ];
+        
+        $this->routePrefix = $specialCases[$nama] ?? $nama;
+    }
+
     public function index()
     {
-        $memos = Memo::where('divisi_tujuan', $this->divisiName)
-                   ->orWhere('dari', $this->divisiName)
+        $memos = Memo::where('dari', $this->divisiName)
                    ->orderBy('created_at', 'desc')
                    ->paginate(10);
         
-        return view($this->viewPrefix . '.index', compact('memos'));
+        return view($this->viewPrefix . '.index', [
+            'memos' => $memos,
+            'routePrefix' => $this->routePrefix,
+            'currentDivisi' => $this->divisiName
+        ]);
+    }
+
+    public function inbox()
+    {
+        $memos = Memo::where('divisi_tujuan', $this->divisiName)
+                   ->where('dari', '!=', $this->divisiName)
+                   ->orderBy('created_at', 'desc')
+                   ->paginate(10);
+        
+        return view($this->viewPrefix . '.inbox', [
+            'memos' => $memos,
+            'routePrefix' => $this->routePrefix,
+            'currentDivisi' => $this->divisiName
+        ]);
     }
 
     public function show($id)
@@ -34,36 +73,21 @@ class BaseMemoController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        return view($this->viewPrefix . '.show', compact('memo'));
+        return view($this->viewPrefix . '.show', [
+            'memo' => $memo,
+            'routePrefix' => $this->routePrefix
+        ]);
     }
 
-
-
-    /**
-     * Menampilkan memo masuk (inbox)
-     */
-    public function inbox()
+   public function create()
 {
-    $memos = Memo::where('divisi_tujuan', $this->divisiName)
-               ->where('dari', '!=', $this->divisiName)
-               ->orderBy('created_at', 'desc')
-               ->paginate(10);
-    
-    return view($this->viewPrefix . '.inbox', compact('memos'));
+    $divisiTujuan = Divisi::where('nama', '!=', $this->divisiName)->get();
+    return view('memo.create', [
+        'divisiTujuan' => $divisiTujuan,
+        'routePrefix' => $this->routePrefix
+    ]);
 }
 
-    /**
-     * Form buat memo baru
-     */
-    public function create()
-    {
-        $divisiTujuan = Divisi::where('nama', '!=', $this->divisiName)->get();
-        return view('memo.create', compact('divisiTujuan'));
-    }
-
-    /**
-     * Simpan memo baru
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -86,15 +110,7 @@ class BaseMemoController extends Controller
 
         Memo::create($memoData);
 
-        return redirect()->route($this->getRoutePrefix() . '.memo.index')
+        return redirect()->route($this->routePrefix . '.memo.index')
                ->with('success', 'Memo berhasil dibuat');
-    }
-
-    /**
-     * Helper untuk mendapatkan prefix route (e.g., 'manager.')
-     */
-    protected function getRoutePrefix()
-    {
-        return strtolower(str_replace(' ', '', $this->divisiName));
     }
 }

@@ -11,5 +11,6 @@ class MemoController extends BaseMemoController
     {
         $this->divisiName = 'Pengembangan Bisnis';
         $this->viewPrefix = 'divisi.pengembangan.memo';
+         parent::__construct();
     }
 }
