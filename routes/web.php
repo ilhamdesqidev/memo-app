@@ -98,6 +98,8 @@ Route::prefix('manager')
         Route::get('/create', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'updateStatus'])->name('updateStatus');
+
     });
 });
 
@@ -114,6 +116,7 @@ Route::prefix('pengembangan')
         Route::get('/create', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -130,6 +133,7 @@ Route::prefix('opwil1')
         Route::get('/create', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -146,6 +150,7 @@ Route::prefix('opwil2')
         Route::get('/create', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -162,6 +167,7 @@ Route::prefix('umumlegal')
         Route::get('/create', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -178,6 +184,7 @@ Route::prefix('adminkeu')
         Route::get('/create', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -194,6 +201,7 @@ Route::prefix('sipil')
         Route::get('/create', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -210,6 +218,7 @@ Route::prefix('food')
         Route::get('/create', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
 
@@ -226,6 +235,7 @@ Route::prefix('marketing')
         Route::get('/create', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'create'])->name('create');
         Route::post('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'show'])->name('show');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'updateStatus'])->name('updateStatus');
     });
 });
         

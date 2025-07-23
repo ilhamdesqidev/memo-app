@@ -51,18 +51,22 @@ class BaseMemoController extends Controller
     }
 
     public function inbox()
-    {
-        $memos = Memo::where('divisi_tujuan', $this->divisiName)
-                   ->where('dari', '!=', $this->divisiName)
-                   ->orderBy('created_at', 'desc')
-                   ->paginate(10);
-        
-        return view($this->viewPrefix . '.inbox', [
-            'memos' => $memos,
-            'routePrefix' => $this->routePrefix,
-            'currentDivisi' => $this->divisiName
-        ]);
-    }
+{
+    $divisiTujuan = $this->getDivisiTujuan(); // <--- Tambahkan baris ini
+
+    $memos = Memo::where('divisi_tujuan', $this->divisiName)
+                ->where('dari', '!=', $this->divisiName)
+                ->where('status', '!=', 'ditolak') // Optional filter status
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+    
+    return view($this->viewPrefix . '.inbox', [
+        'memos' => $memos,
+        'routePrefix' => $this->routePrefix,
+        'currentDivisi' => $this->divisiName,
+        'divisiTujuan' => $divisiTujuan, // <--- Kirim ke view
+    ]);
+}
 
     public function show($id)
     {
@@ -113,4 +117,41 @@ class BaseMemoController extends Controller
         return redirect()->route($this->routePrefix . '.memo.index')
                ->with('success', 'Memo berhasil dibuat');
     }
+
+    public function updateStatus(Request $request)
+{
+    $memo = Memo::findOrFail($request->memo_id);
+
+    if ($memo->divisi_tujuan !== $this->divisiName) {
+        abort(403, 'Unauthorized action.');
+    }
+
+    $action = $request->input('action');
+
+    if ($action === 'setujui') {
+        if ($request->filled('next_divisi')) {
+            $memo->divisi_tujuan = $request->next_divisi;
+        }
+        $memo->status = 'disetujui';
+        $memo->approved_by = auth()->id();
+        $memo->approval_date = now();
+    } elseif ($action === 'tolak') {
+        $request->validate(['alasan' => 'required|string']);
+        $memo->status = 'ditolak';
+        $memo->alasan = $request->alasan;
+    } elseif ($action === 'revisi') {
+        $request->validate(['catatan_revisi' => 'required|string']);
+        $memo->status = 'revisi';
+        $memo->catatan_revisi = $request->catatan_revisi;
+    }
+
+    $memo->save();
+
+    return redirect()->back()->with('success', 'Status memo berhasil diperbarui.');
+}
+
+protected function getDivisiTujuan()
+{
+    return Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();
+}
 }
