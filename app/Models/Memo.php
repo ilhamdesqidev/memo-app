@@ -41,4 +41,9 @@ public function dibuatOleh()
     return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
 }
 
+public function logs()
+{
+    return $this->hasMany(MemoLog::class);
+}
+
 }

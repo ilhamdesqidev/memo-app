@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\Divisi;
 use Illuminate\Http\Request;
+use App\Models\MemoLog;
 
 class BaseMemoController extends Controller
 {
@@ -123,9 +124,11 @@ class BaseMemoController extends Controller
     }
 
     $action = $request->input('action');
+    $catatan = null;
 
     if ($action === 'setujui') {
         if ($request->filled('next_divisi')) {
+            $catatan = "Diteruskan ke divisi " . $request->next_divisi;
             $memo->divisi_tujuan = $request->next_divisi;
         }
         $memo->status = 'disetujui';
@@ -134,17 +137,30 @@ class BaseMemoController extends Controller
     } elseif ($action === 'tolak') {
         $request->validate(['alasan' => 'required|string']);
         $memo->status = 'ditolak';
-        $memo->alasan = $request->alasan;
+        $catatan = $request->alasan;
+        $memo->alasan = $catatan;
     } elseif ($action === 'revisi') {
         $request->validate(['catatan_revisi' => 'required|string']);
         $memo->status = 'revisi';
-        $memo->catatan_revisi = $request->catatan_revisi;
+        $catatan = $request->catatan_revisi;
+        $memo->catatan_revisi = $catatan;
     }
 
     $memo->save();
 
+    // Simpan log jejak
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'divisi' => $this->divisiName,
+        'aksi' => $action,
+        'catatan' => $catatan,
+        'user_id' => auth()->id(),
+        'waktu' => now(),
+    ]);
+
     return redirect()->back()->with('success', 'Status memo berhasil diperbarui.');
 }
+
 
 protected function getDivisiTujuan()
 {
