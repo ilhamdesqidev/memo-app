@@ -80,7 +80,6 @@
                 <div class="signature-name">{{ $memo->disetujuiOleh->name }}</div>
                 <div class="signature-position">{{ $memo->disetujuiOleh->jabatan }}</div>
                 <div class="signature-date">
-                    Disetujui pada: {{ $memo->approval_date->format('d/m/Y H:i') }}
                 </div>
             </div>
         </div>
