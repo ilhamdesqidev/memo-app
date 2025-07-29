@@ -7,6 +7,8 @@ use App\Models\Memo;
 use App\Models\Divisi;
 use Illuminate\Http\Request;
 use App\Models\MemoLog;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class BaseMemoController extends Controller
 {
@@ -165,5 +167,55 @@ class BaseMemoController extends Controller
 protected function getDivisiTujuan()
 {
     return Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();
+}
+
+// In your controller (MemoController.php)
+public function generatePdf($id)
+{
+    $memo = Memo::findOrFail($id);
+    
+    $pdf = PDF::loadView('memo.pdf', compact('memo'));
+    
+    // Pastikan folder exists
+    $folder = storage_path('app/public/memo_pdfs');
+    if (!file_exists($folder)) {
+        mkdir($folder, 0755, true);
+    }
+    
+    $filename = 'memo_'.$id.'_'.time().'.pdf';
+    $path = 'memo_pdfs/'.$filename;
+    $fullPath = storage_path('app/public/'.$path);
+    
+    $pdf->save($fullPath);
+    
+    // Update database
+    $memo->update(['pdf_path' => $path]);
+    
+    return $path;
+}
+
+public function viewPdf($id)
+{
+    $memo = Memo::findOrFail($id);
+    $pdf = PDF::loadView('memo.pdf', compact('memo'));
+    return $pdf->stream('memo.pdf');
+}
+
+public function regeneratePdf($id)
+{
+    $memo = Memo::findOrFail($id);
+    
+    // Hapus PDF lama jika ada
+    if ($memo->pdf_path && Storage::exists('public/'.$memo->pdf_path)) {
+        Storage::delete('public/'.$memo->pdf_path);
+    }
+    
+    // Generate PDF baru
+    $pdfPath = $this->generatePdf($memo->id);
+    
+    return response()->json([
+        'success' => true,
+        'path' => $pdfPath
+    ]);
 }
 }

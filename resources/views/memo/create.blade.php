@@ -116,13 +116,19 @@
                                 <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
-                                <input type="text" 
-                                       name="kepada" 
-                                       id="kepada" 
-                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 placeholder-gray-400" 
-                                       value="{{ old('kepada') }}" 
-                                       placeholder="Nama penerima memo"
-                                       required>
+                                <select name="kepada" 
+                                        id="kepada" 
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 appearance-none bg-white" 
+                                        required>
+                                    <option value="" disabled selected>Pilih Penerima Memo</option>
+                                    @foreach(\App\Models\User::where('id', '!=', auth()->id())->get() as $user)
+                                        <option value="{{ $user->id }}" 
+                                            data-divisi="{{ $user->divisi->nama }}"
+                                            {{ old('kepada') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -180,18 +186,13 @@
                             <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <select name="divisi_tujuan" 
-                                    id="divisi_tujuan" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 appearance-none bg-white" 
-                                    required>
-                                <option value="" disabled selected>Pilih Divisi Tujuan</option>
-                                @foreach(\App\Models\Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get() as $divisi)
-                                    <option value="{{ $divisi->nama }}" 
-                                        {{ old('divisi_tujuan') == $divisi->nama ? 'selected' : '' }}>
-                                        {{ $divisi->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <input type="text" 
+                                   name="divisi_tujuan" 
+                                   id="divisi_tujuan" 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed" 
+                                   readonly
+                                   value="{{ old('divisi_tujuan') }}"
+                                   placeholder="Divisi akan terisi otomatis">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -225,61 +226,79 @@
                     </div>
 
                     <!-- Lampiran -->
-<div class="mt-4 space-y-2 pb-4">
-    <label for="lampiran" class="block text-sm font-semibold text-gray-700">
-        Lampiran (Jumlah)
-        <span class="text-gray-500 text-xs font-normal">(Opsional)</span>
-    </label>
-    <div class="relative">
-        <div class="flex rounded-lg shadow-sm">
-            <button type="button" 
-                    class="decrement-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-l-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
-                    onclick="decrementValue()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                </svg>
-            </button>
-            <input type="number" 
-                   name="lampiran" 
-                   id="lampiran" 
-                   min="0"
-                   max="10"
-                   value="{{ old('lampiran', 0) }}"
-                   class="w-20 px-4 py-3 text-center border-t border-b border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
-            <button type="button" 
-                    class="increment-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-r-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
-                    onclick="incrementValue()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-    <p class="text-xs text-gray-500 mt-1 flex items-center">
-        <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-        Masukkan jumlah lampiran (0-10)
-    </p>
-</div>
+                    <div class="mt-4 space-y-2 pb-4">
+                        <label for="lampiran" class="block text-sm font-semibold text-gray-700">
+                            Lampiran (Jumlah)
+                            <span class="text-gray-500 text-xs font-normal">(Opsional)</span>
+                        </label>
+                        <div class="relative">
+                            <div class="flex rounded-lg shadow-sm">
+                                <button type="button" 
+                                        class="decrement-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-l-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
+                                        onclick="decrementValue()">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                    </svg>
+                                </button>
+                                <input type="number" 
+                                       name="lampiran" 
+                                       id="lampiran" 
+                                       min="0"
+                                       max="10"
+                                       value="{{ old('lampiran', 0) }}"
+                                       class="w-20 px-4 py-3 text-center border-t border-b border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                                <button type="button" 
+                                        class="increment-btn px-4 py-3 text-sm font-medium text-gray-900 bg-gray-100 border border-gray-300 rounded-r-lg hover:bg-gray-200 focus:z-10 focus:ring-2 focus:ring-blue-500 focus:bg-gray-100 transition duration-200"
+                                        onclick="incrementValue()">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Masukkan jumlah lampiran (0-10)
+                        </p>
+                    </div>
 
-<script>
-    function incrementValue() {
-        const input = document.getElementById('lampiran');
-        let value = parseInt(input.value);
-        if (value < 10) {
-            input.value = value + 1;
-        }
-    }
+                    <script>
+                        function incrementValue() {
+                            const input = document.getElementById('lampiran');
+                            let value = parseInt(input.value);
+                            if (value < 10) {
+                                input.value = value + 1;
+                            }
+                        }
 
-    function decrementValue() {
-        const input = document.getElementById('lampiran');
-        let value = parseInt(input.value);
-        if (value > 0) {
-            input.value = value - 1;
-        }
-    }
-</script>
+                        function decrementValue() {
+                            const input = document.getElementById('lampiran');
+                            let value = parseInt(input.value);
+                            if (value > 0) {
+                                input.value = value - 1;
+                            }
+                        }
+
+                        // Auto-fill divisi tujuan based on selected user
+                        document.getElementById('kepada').addEventListener('change', function() {
+                            const selectedOption = this.options[this.selectedIndex];
+                            const divisiTujuan = selectedOption.getAttribute('data-divisi');
+                            document.getElementById('divisi_tujuan').value = divisiTujuan;
+                        });
+
+                        // Initialize divisi tujuan if there's old input
+                        window.addEventListener('load', function() {
+                            const kepadaSelect = document.getElementById('kepada');
+                            if (kepadaSelect.value) {
+                                const selectedOption = kepadaSelect.options[kepadaSelect.selectedIndex];
+                                const divisiTujuan = selectedOption.getAttribute('data-divisi');
+                                document.getElementById('divisi_tujuan').value = divisiTujuan;
+                            }
+                        });
+                    </script>
+                </div>
 
                 <!-- Form Actions -->
                 <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">

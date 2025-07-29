@@ -224,20 +224,26 @@ Route::prefix('food')
 
 // Divisi Marketing dan Sales
 Route::prefix('marketing')
-->middleware('divisi:Marketing dan Sales')
-->name('marketing.')
-->group(function () {
-    Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'updateStatus'])->name('updateStatus');
+    ->middleware('divisi:Marketing dan Sales')
+    ->name('marketing.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'updateStatus'])->name('updateStatus');
+            
+            // Tambahkan route untuk PDF
+            Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'regeneratePdf'])
+                 ->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'viewPdf'])
+                 ->name('pdf');
+        });
     });
-});
         
 
     // Main Dashboard Redirector
