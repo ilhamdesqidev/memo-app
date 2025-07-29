@@ -15,7 +15,7 @@
             display: block;
         }
         .dropdown.active .dropdown-chevron {
-            transform: rotate(180deg);
+            transform: rotate(180deg); b
         }
         .sidebar {
             transition: width 0.3s ease;

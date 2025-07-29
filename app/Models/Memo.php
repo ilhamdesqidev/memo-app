@@ -24,10 +24,7 @@ class Memo extends Model
 ];
 
 // Add relationship to user
-public function dibuatOleh()
-{
-    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
-}    protected $casts = [
+   protected $casts = [
         'tanggal' => 'date',
         'approval_date' => 'datetime'
     ];
@@ -46,4 +43,18 @@ public function logs()
     return $this->hasMany(MemoLog::class);
 }
 
+public function dibuatOleh()
+{
+    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
+}
+
+public function disetujuiOleh()
+{
+    return $this->belongsTo(User::class, 'approved_by');
+}
+
+public function ditandatanganiOleh()
+{
+    return $this->belongsTo(User::class, 'signed_by');
+}
 }
