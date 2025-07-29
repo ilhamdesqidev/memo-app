@@ -101,7 +101,8 @@ Route::prefix('manager')
         Route::post('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'updateStatus'])->name('updateStatus');
-
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
