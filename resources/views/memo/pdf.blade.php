@@ -1,99 +1,90 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Memo {{ $memo->nomor }}</title>
+    <meta charset="utf-8">
+    <title>Memo - {{ $memo->nomor }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.5;
-            font-size: 12pt;
-            color: #333;
-            margin: 1.5cm;
-            position: relative;
-            min-height: 100vh;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #2c3e50;
-            padding-bottom: 15px;
-        }
-        
-        .info-table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 25px;
-        }
-        
-        .content {
-            margin: 30px 0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        
-        .signature-container {
-            margin-top: 60px;
-            margin-bottom: 100px; /* Space for footer */
-            width: 300px;
-        }
-        
-        .signature-line {
-            border-bottom: 1px solid #000;
-            width: 250px;
-            margin: 15px 0 5px 0;
-        }
-        
-        .footer {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            font-size: 10pt;
-            text-align: center;
-            color: #777;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .content { margin: 0 auto; width: 90%; }
+        .footer { margin-top: 50px; }
+        .signature-container { margin-top: 50px; display: flex; justify-content: flex-end; }
+        .signature-box { width: 300px; text-align: center; }
+        .signature-img { height: 80px; margin-bottom: 10px; }
+        .signature-line { border-top: 1px solid #000; width: 200px; margin: 0 auto; }
+        .signature-name { margin-top: 5px; font-weight: bold; }
+        .signature-position { font-size: 0.9em; }
+        .signature-date { font-size: 0.9em; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="header">
         <h2>MEMO INTERNAL</h2>
-        <p>Nomor: {{ $memo->nomor }}</p>
+        <h3>Nomor: {{ $memo->nomor }}</h3>
     </div>
-
-    <table class="info-table">
-        <tr>
-            <td width="20%">Dari</td>
-            <td width="30%">: {{ $memo->dari }}</td>
-            <td width="20%">Tanggal</td>
-            <td width="30%">: {{ $memo->tanggal->format('d F Y') }}</td>
-        </tr>
-        <tr>
-            <td>Kepada</td>
-            <td>: {{ $memo->kepada }}</td>
-            <td>Perihal</td>
-            <td>: {{ $memo->perihal }}</td>
-        </tr>
-    </table>
-
+    
     <div class="content">
-        {!! nl2br(e($memo->isi)) !!}
-    </div>
-
-    <!-- Tanda Tangan di Kiri -->
-    <div class="signature-container">
-        <p style="margin-bottom: 15px;">Hormat kami,</p>
-        <p style="margin: 0;">{{ $memo->dari }}</p>
-        <div class="signature-line"></div>
-        <p style="margin: 5px 0 0 0; font-weight: bold;">{{ $memo->penandatangan ?? 'Galla Pandegia' }}</p>
-    </div>
-
-    <!-- Footer dengan jarak yang aman -->
-    <div class="footer">
-        <p>Dokumen ini dicetak pada {{ now()->format('d F Y H:i') }}</p>
+        <table width="100%" cellspacing="0" cellpadding="5">
+            <tr>
+                <td width="20%">Dari</td>
+                <td width="80%">: {{ $memo->dari }}</td>
+            </tr>
+            <tr>
+                <td>Kepada</td>
+                <td>: {{ $memo->kepada }}</td>
+            </tr>
+            <tr>
+                <td>Tanggal</td>
+                <td>: {{ $memo->tanggal->format('d/m/Y') }}</td>
+            </tr>
+            <tr>
+                <td>Perihal</td>
+                <td>: {{ $memo->perihal }}</td>
+            </tr>
+        </table>
+        
+        <div style="margin-top: 30px;">
+            {!! nl2br(e($memo->isi)) !!}
+        </div>
+        
+        @if($memo->lampiran > 0)
+        <div style="margin-top: 20px;">
+            <strong>Lampiran:</strong> {{ $memo->lampiran }} lembar
+        </div>
+        @endif
+        
+        <!-- Bagian Tanda Tangan -->
+        @if($memo->include_signature && $memo->signature_path && $memo->disetujuiOleh)
+        <div class="signature-container">
+            <div class="signature-box">
+                <div>
+                    @php
+                        $signaturePath = storage_path('app/public/' . $memo->signature_path);
+                        if (file_exists($signaturePath)) {
+                            $imageData = base64_encode(file_get_contents($signaturePath));
+                            $imageInfo = getimagesize($signaturePath);
+                            $mimeType = $imageInfo['mime'];
+                        }
+                    @endphp
+                    
+                    @if(isset($imageData))
+                        <img src="data:{{ $mimeType }};base64,{{ $imageData }}" 
+                            class="signature-img" alt="Tanda Tangan" style="width: 150px; height: auto;">
+                    @else
+                        <div style="color: red; border: 1px dashed #ccc; padding: 5px;">
+                            Tanda tangan tidak ditemukan atau tidak dapat dibaca
+                        </div>
+                    @endif
+                </div>
+                <div class="signature-line"></div>
+                <div class="signature-name">{{ $memo->disetujuiOleh->name }}</div>
+                <div class="signature-position">{{ $memo->disetujuiOleh->jabatan }}</div>
+                <div class="signature-date">
+                    Disetujui pada: {{ $memo->approval_date->format('d/m/Y H:i') }}
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 </body>
 </html>

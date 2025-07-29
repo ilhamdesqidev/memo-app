@@ -72,6 +72,7 @@
                     <form method="POST" action="{{ route($routePrefix . '.memo.updateStatus') }}">
                         @csrf
                         <input type="hidden" name="memo_id" id="approveMemoId">
+                        
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Lanjutkan ke Divisi:</label>
                             <select name="next_divisi" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500">
@@ -81,6 +82,29 @@
                                 @endforeach
                             </select>
                         </div>
+                        
+                        <!-- Tambahkan checkbox untuk tanda tangan -->
+                        <div class="mb-4">
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="include_signature" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                <span class="ml-2">Sertakan tanda tangan saya</span>
+                            </label>
+                            @if(auth()->user()->signature)
+                                <div class="mt-2 text-sm text-gray-500">
+                                    <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Tanda tangan tersedia
+                                    </span>
+                                </div>
+                            @else
+                                <div class="mt-2 text-sm text-red-500">
+                                    Anda belum mengunggah tanda tangan. Silakan ke halaman profil untuk menambahkan tanda tangan.
+                                </div>
+                            @endif
+                        </div>
+                        
                         <div class="flex space-x-3">
                             <button name="action" value="setujui" 
                                     class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
