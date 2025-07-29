@@ -4,7 +4,7 @@
 <div class="container mx-auto px-6 py-8 max-w-4xl">
     <!-- Header -->
     <div class="flex items-center mb-8">
-        <a href="{{ route('manager.memo.index') }}" 
+        <a href="{{ route('manager                                .memo.index') }}" 
            class="p-2 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-800 transition-colors mr-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -135,7 +135,7 @@
         @if(auth()->user()->divisi->nama === $memo->divisi_tujuan && $memo->status === 'pending')
         <div class="border-t border-gray-100 p-6 bg-gray-50">
             <div class="flex space-x-3">
-                <form method="POST" action="{{ route('manager.memo.approve', $memo->id) }}" class="flex-1">
+                <form method="POST" action="{{ route('manager                                .memo.approve', $memo->id) }}" class="flex-1">
                     @csrf
                     @method('PUT')
                     <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
@@ -180,7 +180,7 @@
 function openRejectModal(memoId) {
     const modal = document.getElementById('rejectModal');
     const form = document.getElementById('rejectForm');
-    form.action = `/manager/memo/${memoId}/reject`;
+    form.action = `/manager                                /memo/${memoId}/reject`;
     modal.classList.remove('hidden');
 }
 

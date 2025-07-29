@@ -94,26 +94,31 @@ class BaseMemoController extends Controller
 }
 
         public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nomor' => 'required|string|max:50|unique:memos',
-            'tanggal' => 'required|date',
-            'kepada' => 'required|string|max:100',
-            'perihal' => 'required|string|max:255',
-            'divisi_tujuan' => 'required|string',
-            'isi' => 'required|string',
-            'lampiran' => 'nullable|integer|min:0|max:10', // Updated validation
-        ]);
+{
+    $validated = $request->validate([
+        'nomor' => 'required|string|max:50|unique:memos',
+        'tanggal' => 'required|date',
+        'kepada' => 'required|string|max:100',
+        'kepada_id' => 'required|exists:users,id',
+        'perihal' => 'required|string|max:255',
+        'divisi_tujuan' => 'required|string',
+        'isi' => 'required|string',
+        'lampiran' => 'nullable|integer|min:0|max:10',
+    ]);
 
-        $memoData = $request->only(['nomor', 'tanggal', 'kepada', 'perihal', 'divisi_tujuan', 'isi', 'lampiran']); // Include lampiran
-        $memoData['dari'] = $this->divisiName;
-        $memoData['dibuat_oleh_user_id'] = auth()->id();
+    $memoData = $request->only([
+        'nomor', 'tanggal', 'kepada', 'kepada_id', 'perihal', 
+        'divisi_tujuan', 'isi', 'lampiran'
+    ]);
+    
+    $memoData['dari'] = $this->divisiName;
+    $memoData['dibuat_oleh_user_id'] = auth()->id();
 
-        Memo::create($memoData);
+    Memo::create($memoData);
 
-        return redirect()->route($this->routePrefix . '.memo.index')
-            ->with('success', 'Memo berhasil dibuat');
-    }
+    return redirect()->route($this->routePrefix . '.memo.index')
+        ->with('success', 'Memo berhasil dibuat');
+}
 
     public function updateStatus(Request $request)
 {

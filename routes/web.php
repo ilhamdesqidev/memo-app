@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
@@ -265,3 +267,26 @@ Route::prefix('marketing')
         );
     })->name('main.dashboard');
 });
+
+Route::get('/api/search-users', function (Request $request) {
+    $query = $request->input('q');
+    
+    $users = User::where('role', 'user')
+        ->where(function($q) use ($query) {
+            $q->where('name', 'like', "%$query%")
+              ->orWhere('username', 'like', "%$query%");
+        })
+        ->with('divisi')
+        ->limit(10)
+        ->get()
+        ->map(function($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'jabatan' => $user->jabatan ?? '-',
+                'divisi_nama' => $user->divisi->nama ?? '-'
+            ];
+        });
+
+    return response()->json($users);
+})->name('api.search-users');

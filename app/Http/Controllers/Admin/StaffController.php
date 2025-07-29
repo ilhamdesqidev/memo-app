@@ -56,7 +56,7 @@ class StaffController extends Controller
     'name'       => 'required|string|max:255',
     'username'   => 'required|string|max:255|unique:users', // Ganti email dengan username
     'password'   => 'required|string|min:8|confirmed',
-    'jabatan'    => 'required|string|max:255',
+    'jabatan' => 'required|string|in:asisten,ketua,pengadaan',
     'divisi_id'  => 'required|exists:divisis,id',
 ]);
 

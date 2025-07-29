@@ -93,13 +93,15 @@
                             Jabatan
                             <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" 
-                               name="jabatan" 
-                               id="jabatan" 
-                               required 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror" 
-                               value="{{ old('jabatan', $user->jabatan) }}"
-                               placeholder="Masukkan jabatan, contoh: Manager, Staff, Supervisor">
+                        <select name="jabatan" 
+                                id="jabatan" 
+                                required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror">
+                            <option value="">-- Pilih Jabatan --</option>
+                            <option value="asisten" {{ old('jabatan', $user->jabatan) == 'asisten' ? 'selected' : '' }}>Asisten</option>
+                            <option value="ketua" {{ old('jabatan', $user->jabatan) == 'ketua' ? 'selected' : '' }}>Ketua</option>
+                            <option value="pengadaan" {{ old('jabatan', $user->jabatan) == 'pengadaan' ? 'selected' : '' }}>Pengadaan</option>
+                        </select>
                         @error('jabatan') 
                             <p class="text-red-500 text-sm mt-1 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
