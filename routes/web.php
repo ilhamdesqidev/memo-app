@@ -120,11 +120,8 @@ Route::prefix('pengembangan')
         Route::post('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'updateStatus'])->name('updateStatus');
-         // Tambahkan route untuk PDF
-            Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'regeneratePdf'])
-                 ->name('regenerate-pdf');
-            Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'viewPdf'])
-                 ->name('pdf');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -142,6 +139,9 @@ Route::prefix('opwil1')
         Route::post('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -159,6 +159,9 @@ Route::prefix('opwil2')
         Route::post('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -176,6 +179,9 @@ Route::prefix('umumlegal')
         Route::post('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -193,6 +199,9 @@ Route::prefix('adminkeu')
         Route::post('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -210,6 +219,9 @@ Route::prefix('sipil')
         Route::post('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 
@@ -227,6 +239,9 @@ Route::prefix('food')
         Route::post('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update-status', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'viewPdf'])->name('pdf');
     });
 });
 

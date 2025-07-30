@@ -93,8 +93,8 @@
             <!-- Isi Memo -->
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-3">Isi Memo</h3>
-                <div class="prose max-w-none text-gray-700 leading-relaxed p-4 bg-gray-50 rounded-lg break-words whitespace-pre-wrap">
-                    {!! nl2br(e($memo->isi)) !!}
+                <div class="memo-content prose max-w-none text-gray-700 leading-relaxed p-4 bg-gray-50 rounded-lg break-words">
+                    {!! $memo->isi !!}
                 </div>
             </div>
 
@@ -197,6 +197,158 @@
         </form>
     </div>
 </div>
+
+<style>
+/* Custom styles untuk konten rich text di show view */
+.memo-content h1, .memo-content h2, .memo-content h3, 
+.memo-content h4, .memo-content h5, .memo-content h6 {
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #374151;
+}
+
+.memo-content h1 { font-size: 1.5rem; }
+.memo-content h2 { font-size: 1.25rem; }
+.memo-content h3 { font-size: 1.125rem; }
+.memo-content h4 { font-size: 1rem; }
+.memo-content h5 { font-size: 0.875rem; }
+.memo-content h6 { font-size: 0.75rem; }
+
+.memo-content p {
+    margin: 0.75rem 0;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.memo-content strong {
+    font-weight: 600;
+}
+
+.memo-content em {
+    font-style: italic;
+}
+
+.memo-content u {
+    text-decoration: underline;
+}
+
+.memo-content s {
+    text-decoration: line-through;
+}
+
+.memo-content ul, .memo-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.memo-content li {
+    margin: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.memo-content blockquote {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.memo-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, "Menlo", "Monaco", "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Code", "Droid Sans Mono", "Courier New", monospace;
+    font-size: 0.875em;
+    color: #dc2626;
+}
+
+.memo-content pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #e5e7eb;
+}
+
+.memo-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.memo-content a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.memo-content a:hover {
+    color: #1d4ed8;
+}
+
+.memo-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0;
+    border-radius: 0.375rem;
+}
+
+/* Styling untuk align text */
+.memo-content .ql-align-center {
+    text-align: center;
+}
+
+.memo-content .ql-align-right {
+    text-align: right;
+}
+
+.memo-content .ql-align-justify {
+    text-align: justify;
+}
+
+/* Color styling */
+.memo-content .ql-color-red {
+    color: #dc2626;
+}
+
+.memo-content .ql-color-blue {
+    color: #2563eb;
+}
+
+.memo-content .ql-color-green {
+    color: #16a34a;
+}
+
+/* Background color styling */
+.memo-content .ql-bg-yellow {
+    background-color: #fef3c7;
+}
+
+.memo-content .ql-bg-red {
+    background-color: #fecaca;
+}
+
+.memo-content .ql-bg-blue {
+    background-color: #dbeafe;
+}
+
+/* Font size styling */
+.memo-content .ql-size-small {
+    font-size: 0.75em;
+}
+
+.memo-content .ql-size-large {
+    font-size: 1.25em;
+}
+
+.memo-content .ql-size-huge {
+    font-size: 1.5em;
+}
+</style>
 
 <script>
 function openRejectModal(memoId) {

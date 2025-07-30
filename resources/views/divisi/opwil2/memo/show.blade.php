@@ -1,7 +1,7 @@
 @extends('layouts.divisi')
 
 @section('content')
-<div class="container mx-auto px-6 py-8 max-w-4xl">
+<div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Header -->
     <div class="flex items-center mb-8">
         <a href="{{ route('opwil2.memo.index') }}" 
@@ -10,18 +10,18 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
             </svg>
         </a>
-        <div>
-            <h1 class="text-2xl font-semibold text-gray-900">Detail Memo</h1>
-            <p class="text-gray-500 text-sm mt-1">{{ $memo->nomor }}</p>
+        <div class="min-w-0">
+            <h1 class="text-2xl font-semibold text-gray-900 truncate">Detail Memo</h1>
+            <p class="text-gray-500 text-sm mt-1 truncate">{{ $memo->nomor }}</p>
         </div>
     </div>
 
     <!-- Main Card -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <!-- Header Info -->
         <div class="p-6 border-b border-gray-100">
-            <div class="flex justify-between items-start mb-4">
-                <h2 class="text-xl font-medium text-gray-900">{{ $memo->perihal }}</h2>
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                <h2 class="text-xl font-medium text-gray-900 break-words">{{ $memo->perihal }}</h2>
                 @php
                     $statusClasses = [
                         'draft' => 'bg-gray-100 text-gray-700',
@@ -36,25 +36,46 @@
                         'rejected' => 'Ditolak',
                     ];
                 @endphp
-                <span class="px-3 py-1 text-sm font-medium rounded-full {{ $statusClasses[$memo->status] ?? 'bg-gray-100 text-gray-700' }}">
+                <span class="px-3 py-1 text-sm font-medium rounded-full {{ $statusClasses[$memo->status] ?? 'bg-gray-100 text-gray-700' }} whitespace-nowrap">
                     {{ $statusText[$memo->status] ?? $memo->status }}
                 </span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                     <p class="text-gray-500 mb-1">Dari</p>
-                    <p class="font-medium text-gray-900">{{ $memo->dari }}</p>
+                    <p class="font-medium text-gray-900 break-words">{{ $memo->dari }}</p>
                 </div>
                 <div>
                     <p class="text-gray-500 mb-1">Kepada</p>
-                    <p class="font-medium text-gray-900">{{ $memo->kepada }}</p>
+                    <p class="font-medium text-gray-900 break-words">{{ $memo->kepada }}</p>
                 </div>
                 <div>
                     <p class="text-gray-500 mb-1">Tanggal</p>
                     <p class="font-medium text-gray-900">{{ $memo->tanggal->format('d F Y') }}</p>
                 </div>
             </div>
+
+            <!-- PDF Button Section -->
+            @if(strtolower($memo->status) === 'approved' || strtolower($memo->status) === 'disetujui' || strtolower($memo->status) === 'disetujul')
+            <div class="mt-4">
+                <a href="{{ route('opwil2.memo.pdf', $memo->id) }}" 
+                   target="_blank"
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Lihat PDF
+                </a>
+                
+                @if(auth()->user()->can('regenerate', $memo))
+                <button onclick="regeneratePdf({{ $memo->id }})" 
+                        class="ml-2 inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap">
+                    Buat Ulang PDF
+                </button>
+                @endif
+            </div>
+            @endif
         </div>
 
         <!-- Content -->
@@ -72,8 +93,8 @@
             <!-- Isi Memo -->
             <div>
                 <h3 class="text-sm font-medium text-gray-500 mb-3">Isi Memo</h3>
-                <div class="prose max-w-none text-gray-700 leading-relaxed p-4 bg-gray-50 rounded-lg">
-                    {!! nl2br(e($memo->isi)) !!}
+                <div class="memo-content prose max-w-none text-gray-700 leading-relaxed p-4 bg-gray-50 rounded-lg break-words">
+                    {!! $memo->isi !!}
                 </div>
             </div>
 
@@ -83,18 +104,19 @@
                 <h3 class="text-sm font-medium text-gray-500 mb-3">Tanda Tangan</h3>
                 @if(file_exists(storage_path('app/public/'.$memo->signature)))
                     @if(Str::endsWith($memo->signature, '.pdf'))
-                    <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="border border-gray-200 rounded-lg p-4 overflow-x-auto">
                         <embed src="{{ url('storage/'.$memo->signature) }}" 
                             type="application/pdf"
                             width="100%"
-                            height="300px">
+                            height="300px"
+                            style="max-width: 100%">
                         <p class="text-center mt-3 text-sm text-gray-600">{{ $memo->dari }}</p>
                     </div>
                     @else
-                    <div class="text-center p-4 border border-gray-200 rounded-lg">
+                    <div class="text-center p-4 border border-gray-200 rounded-lg max-w-xs mx-auto">
                         <img src="{{ url('storage/'.$memo->signature) }}" 
                             alt="Tanda Tangan"
-                            class="max-h-32 mx-auto mb-2">
+                            class="max-h-32 mx-auto mb-2 w-full h-auto">
                         <p class="text-sm text-gray-600">{{ $memo->dari }}</p>
                     </div>
                     @endif
@@ -109,18 +131,18 @@
             @if($memo->logs->count() > 0)
                 <div class="space-y-3">
                     @foreach ($memo->logs as $log)
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2 h-2 rounded-full {{ $log->aksi === 'approved' ? 'bg-green-500' : ($log->aksi === 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }}"></div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">{{ $log->divisi }}</p>
-                                <p class="text-xs text-gray-500">{{ ucfirst($log->aksi) }} • {{ $log->user->name ?? '-' }}</p>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg gap-2">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <div class="w-2 h-2 rounded-full {{ $log->aksi === 'approved' ? 'bg-green-500' : ($log->aksi === 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }} flex-shrink-0"></div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">{{ $log->divisi }}</p>
+                                <p class="text-xs text-gray-500 truncate">{{ ucfirst($log->aksi) }} • {{ $log->user->name ?? '-' }}</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-xs text-gray-500">{{ $log->waktu }}</p>
+                        <div class="text-right sm:text-left min-w-0">
+                            <p class="text-xs text-gray-500 whitespace-nowrap">{{ $log->waktu }}</p>
                             @if($log->catatan)
-                                <p class="text-xs text-gray-400 mt-1">{{ Str::limit($log->catatan, 30) }}</p>
+                                <p class="text-xs text-gray-400 mt-1 truncate">{{ Str::limit($log->catatan, 30) }}</p>
                             @endif
                         </div>
                     </div>
@@ -134,7 +156,7 @@
         <!-- Actions -->
         @if(auth()->user()->divisi->nama === $memo->divisi_tujuan && $memo->status === 'pending')
         <div class="border-t border-gray-100 p-6 bg-gray-50">
-            <div class="flex space-x-3">
+            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <form method="POST" action="{{ route('opwil2.memo.approve', $memo->id) }}" class="flex-1">
                     @csrf
                     @method('PUT')
@@ -176,6 +198,158 @@
     </div>
 </div>
 
+<style>
+/* Custom styles untuk konten rich text di show view */
+.memo-content h1, .memo-content h2, .memo-content h3, 
+.memo-content h4, .memo-content h5, .memo-content h6 {
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #374151;
+}
+
+.memo-content h1 { font-size: 1.5rem; }
+.memo-content h2 { font-size: 1.25rem; }
+.memo-content h3 { font-size: 1.125rem; }
+.memo-content h4 { font-size: 1rem; }
+.memo-content h5 { font-size: 0.875rem; }
+.memo-content h6 { font-size: 0.75rem; }
+
+.memo-content p {
+    margin: 0.75rem 0;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.memo-content strong {
+    font-weight: 600;
+}
+
+.memo-content em {
+    font-style: italic;
+}
+
+.memo-content u {
+    text-decoration: underline;
+}
+
+.memo-content s {
+    text-decoration: line-through;
+}
+
+.memo-content ul, .memo-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.memo-content li {
+    margin: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.memo-content blockquote {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.memo-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, "Menlo", "Monaco", "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Code", "Droid Sans Mono", "Courier New", monospace;
+    font-size: 0.875em;
+    color: #dc2626;
+}
+
+.memo-content pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #e5e7eb;
+}
+
+.memo-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.memo-content a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.memo-content a:hover {
+    color: #1d4ed8;
+}
+
+.memo-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0;
+    border-radius: 0.375rem;
+}
+
+/* Styling untuk align text */
+.memo-content .ql-align-center {
+    text-align: center;
+}
+
+.memo-content .ql-align-right {
+    text-align: right;
+}
+
+.memo-content .ql-align-justify {
+    text-align: justify;
+}
+
+/* Color styling */
+.memo-content .ql-color-red {
+    color: #dc2626;
+}
+
+.memo-content .ql-color-blue {
+    color: #2563eb;
+}
+
+.memo-content .ql-color-green {
+    color: #16a34a;
+}
+
+/* Background color styling */
+.memo-content .ql-bg-yellow {
+    background-color: #fef3c7;
+}
+
+.memo-content .ql-bg-red {
+    background-color: #fecaca;
+}
+
+.memo-content .ql-bg-blue {
+    background-color: #dbeafe;
+}
+
+/* Font size styling */
+.memo-content .ql-size-small {
+    font-size: 0.75em;
+}
+
+.memo-content .ql-size-large {
+    font-size: 1.25em;
+}
+
+.memo-content .ql-size-huge {
+    font-size: 1.5em;
+}
+</style>
+
 <script>
 function openRejectModal(memoId) {
     const modal = document.getElementById('rejectModal');
@@ -194,5 +368,30 @@ document.getElementById('rejectModal').addEventListener('click', function(e) {
         closeRejectModal();
     }
 });
+
+function regeneratePdf(memoId) {
+    if (confirm('Anda yakin ingin membuat ulang PDF?')) {
+        fetch(`/opwil2/memo/${memoId}/regenerate-pdf`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('PDF berhasil dibuat ulang');
+                window.location.reload();
+            } else {
+                alert('Gagal: ' + (data.message || 'Terjadi kesalahan'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat membuat PDF');
+        });
+    }
+}
 </script>
 @endsection
