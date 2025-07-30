@@ -78,11 +78,15 @@
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
-                    <!-- Isi Memo -->
+                    <!-- Isi Memo dengan Rich Text Editor -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Isi Memo *</label>
-                        <textarea name="isi" rows="6"
-                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>{{ old('isi') }}</textarea>
+                        <div class="mt-1">
+                            <!-- Quill Editor Container -->
+                            <div id="editor-container" style="height: 300px; background: white;"></div>
+                            <!-- Hidden textarea for form submission -->
+                            <textarea name="isi" id="isi_memo" style="display: none;" required>{{ old('isi') }}</textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -96,8 +100,47 @@
     </div>
 </div>
 
+<!-- Quill.js CDN - Modern Rich Text Editor -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Quill Editor
+    var quill = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'font': [] }],
+                [{ 'size': ['small', false, 'large', 'huge',] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'align': [] }],
+                ['blockquote', 'code-block'],
+                ['link', 'image'],
+                ['clean']
+            ]
+        },
+        placeholder: 'Tulis isi memo di sini...',
+        bounds: '#editor-container'
+    });
+
+    // Set initial content if exists
+    var initialContent = document.getElementById('isi_memo').value;
+    if (initialContent) {
+        quill.root.innerHTML = initialContent;
+    }
+
+    // Update hidden textarea when content changes
+    quill.on('text-change', function() {
+        document.getElementById('isi_memo').value = quill.root.innerHTML;
+    });
+
+    // User search functionality
     const searchInput = document.getElementById('kepada_search');
     const kepadaInput = document.getElementById('kepada');
     const kepadaIdInput = document.getElementById('kepada_id');
@@ -146,6 +189,65 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdown.classList.add('hidden');
         }
     });
+
+    // Form submission handler
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Ensure Quill content is saved to textarea before submission
+        document.getElementById('isi_memo').value = quill.root.innerHTML;
+    });
 });
 </script>
+
+<style>
+/* Custom styles for Quill Editor */
+.ql-toolbar {
+    border: 1px solid #d1d5db !important;
+    border-bottom: none !important;
+    border-top-left-radius: 0.375rem !important;
+    border-top-right-radius: 0.375rem !important;
+    background: #f9fafb !important;
+}
+
+.ql-container {
+    border: 1px solid #d1d5db !important;
+    border-bottom-left-radius: 0.375rem !important;
+    border-bottom-right-radius: 0.375rem !important;
+    font-family: inherit !important;
+}
+
+.ql-editor {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    min-height: 250px !important;
+}
+
+.ql-editor.ql-blank::before {
+    color: #9ca3af !important;
+    font-style: normal !important;
+}
+
+/* Focus styles */
+.ql-container.ql-snow.ql-focused {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+.ql-toolbar.ql-snow.ql-focused {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 1px #3b82f6 !important;
+}
+
+/* Toolbar button styles */
+.ql-toolbar.ql-snow .ql-formats {
+    margin-right: 15px !important;
+}
+
+.ql-toolbar.ql-snow button:hover {
+    color: #3b82f6 !important;
+}
+
+.ql-toolbar.ql-snow button.ql-active {
+    color: #1d4ed8 !important;
+}
+</style>
 @endsection
