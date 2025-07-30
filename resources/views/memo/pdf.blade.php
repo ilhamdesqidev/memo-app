@@ -159,10 +159,7 @@
                 <div class="signature-name">{{ $memo->disetujuiOleh->name }}</div>
                 <div class="signature-position">{{ $memo->disetujuiOleh->jabatan }}</div>
                 <div class="signature-date">
-<<<<<<< HEAD
                     {{ $memo->approval_date->format('d/m/Y H:i') }}
-=======
->>>>>>> 3ad3906dbdb6de5e29514832f96c6d6db9ace5ab
                 </div>
             </div>
         </div>

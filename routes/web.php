@@ -120,6 +120,11 @@ Route::prefix('pengembangan')
         Route::post('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'store'])->name('store');
         Route::get('/{memo}', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'show'])->name('show');
         Route::post('/update-status', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'updateStatus'])->name('updateStatus');
+         // Tambahkan route untuk PDF
+            Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'regeneratePdf'])
+                 ->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'viewPdf'])
+                 ->name('pdf');
     });
 });
 
