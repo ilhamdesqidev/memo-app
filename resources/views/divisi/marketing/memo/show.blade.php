@@ -55,27 +55,6 @@
                     <p class="font-medium text-gray-900">{{ $memo->tanggal->format('d F Y') }}</p>
                 </div>
             </div>
-
-            <!-- PDF Button Section -->
-            @if(strtolower($memo->status) === 'approved' || strtolower($memo->status) === 'disetujui' || strtolower($memo->status) === 'disetujul')
-            <div class="mt-4">
-                <a href="{{ route('marketing.memo.pdf', $memo->id) }}" 
-                   target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors whitespace-nowrap">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Lihat PDF
-                </a>
-                
-                @if(auth()->user()->can('regenerate', $memo))
-                <button onclick="regeneratePdf({{ $memo->id }})" 
-                        class="ml-2 inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors whitespace-nowrap">
-                    Buat Ulang PDF
-                </button>
-                @endif
-            </div>
-            @endif
         </div>
 
         <!-- Content -->
@@ -131,20 +110,26 @@
             @if($memo->logs->count() > 0)
                 <div class="space-y-3">
                     @foreach ($memo->logs as $log)
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 bg-gray-50 rounded-lg gap-2">
-                        <div class="flex items-center space-x-3 min-w-0">
-                            <div class="w-2 h-2 rounded-full {{ $log->aksi === 'approved' ? 'bg-green-500' : ($log->aksi === 'rejected' ? 'bg-red-500' : 'bg-yellow-500') }} flex-shrink-0"></div>
-                            <div class="min-w-0">
-                                <p class="text-sm font-medium text-gray-900 truncate">{{ $log->divisi }}</p>
-                                <p class="text-xs text-gray-500 truncate">{{ ucfirst($log->aksi) }} • {{ $log->user->name ?? '-' }}</p>
+                    <div class="border border-gray-200 p-4 rounded-lg bg-white shadow-sm">
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">{{ $log->user->name ?? '-' }} 
+                                    <span class="text-gray-500">({{ $log->divisi }})</span>
+                                </p>
+                                <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log->waktu)->format('d M Y • H:i') }}</p>
+                            </div>
+                            <div>
+                                <span class="inline-block px-3 py-1 text-xs rounded-full 
+                                    {{ $log->aksi === 'approved' ? 'bg-green-100 text-green-700' : ($log->aksi === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
+                                    {{ ucfirst($log->aksi) }}
+                                </span>
                             </div>
                         </div>
-                        <div class="text-right sm:text-left min-w-0">
-                            <p class="text-xs text-gray-500 whitespace-nowrap">{{ $log->waktu }}</p>
-                            @if($log->catatan)
-                                <p class="text-xs text-gray-400 mt-1 truncate">{{ Str::limit($log->catatan, 30) }}</p>
-                            @endif
+                        @if($log->catatan)
+                        <div class="mt-3 text-sm text-gray-600 bg-gray-50 p-3 rounded">
+                            <span class="font-medium text-gray-700">Catatan:</span> {{ $log->catatan }}
                         </div>
+                        @endif
                     </div>
                     @endforeach
                 </div>
@@ -152,6 +137,7 @@
                 <p class="text-sm text-gray-400 text-center py-4">Belum ada riwayat persetujuan</p>
             @endif
         </div>
+
 
         <!-- Actions -->
         @if(auth()->user()->divisi->nama === $memo->divisi_tujuan && $memo->status === 'pending')

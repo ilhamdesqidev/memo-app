@@ -79,6 +79,9 @@
                                 Tanggal
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                PDF
+                            </th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                                 Aksi
                             </th>
                         </tr>
@@ -154,6 +157,25 @@
                                     <div class="text-xs text-gray-400 mt-1">
                                         {{ $memo->created_at->diffForHumans() }}
                                     </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    @if(strtolower($memo->status) === 'approved' || strtolower($memo->status) === 'disetujui')
+                                        <a href="{{ route('marketing.memo.pdf', $memo->id) }}" 
+                                        target="_blank"
+                                        class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 transition-colors">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            PDF
+                                        </a>
+                                    @else
+                                        <button class="inline-flex items-center px-3 py-1.5 bg-gray-300 text-gray-600 text-xs font-medium rounded cursor-not-allowed" disabled>
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            PDF
+                                        </button>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <div class="flex items-center space-x-2">
