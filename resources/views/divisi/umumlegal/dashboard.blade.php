@@ -57,7 +57,7 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-500">
-                            {{ date('l, F j, Y') }}
+                            {{ date('l, j F Y') }}
                         </div>
                         <div class="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                             <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
