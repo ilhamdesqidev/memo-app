@@ -10,6 +10,10 @@
             color: #000;
             margin: 0;
             padding: 20px;
+            width: 100%;
+            max-width: 800px; /* Batasi lebar maksimum */
+            margin: 0 auto; /* Pusatkan di tengah */
+            box-sizing: border-box;
         }
         
         .header { 
@@ -33,17 +37,21 @@
         
         .content { 
             margin: 0 auto; 
-            width: 90%; 
+            width: 100%; 
+            box-sizing: border-box;
+            padding: 0 10px;
         }
         
         .memo-details table {
             width: 100%;
             margin-bottom: 25px;
+            table-layout: fixed; /* Pastikan tabel tidak melebar */
         }
         
         .memo-details td {
             padding: 8px 0;
             vertical-align: top;
+            word-wrap: break-word; /* Memastikan teks panjang akan dipotong */
         }
         
         .memo-details .label {
@@ -55,6 +63,8 @@
             margin: 25px 0;
             text-align: justify;
             line-height: 1.7;
+            width: 100%;
+            word-wrap: break-word; /* Memastikan teks panjang akan dipotong */
         }
         
         .attachment-info {
@@ -97,6 +107,23 @@
         .signature-date { 
             font-size: 12px; 
             margin-top: 8px; 
+        }
+
+        /* Tambahan untuk memastikan konten tidak melebar */
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+
+        @media print {
+            body {
+                width: 100%;
+                max-width: 100%;
+                padding: 0;
+            }
+            .content {
+                padding: 0;
+            }
         }
     </style>
 </head>
@@ -159,10 +186,7 @@
                 <div class="signature-name">{{ $memo->disetujuiOleh->name }}</div>
                 <div class="signature-position">{{ $memo->disetujuiOleh->jabatan }}</div>
                 <div class="signature-date">
-<<<<<<< HEAD
                     {{ $memo->approval_date->format('d/m/Y H:i') }}
-=======
->>>>>>> 3ad3906dbdb6de5e29514832f96c6d6db9ace5ab
                 </div>
             </div>
         </div>
