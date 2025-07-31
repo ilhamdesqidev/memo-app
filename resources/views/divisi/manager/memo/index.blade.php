@@ -22,9 +22,10 @@
             <select class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white shadow-sm">
                 <option value="">Semua Status</option>
                 <option value="draft">Draft</option>
-                <option value="pending">Menunggu</option>
+                <option value="pending">Diajukan</option>
                 <option value="approved">Disetujui</option>
                 <option value="rejected">Ditolak</option>
+                <option value="revision">Revisi</option>
             </select>
         </div>
         
@@ -87,7 +88,22 @@
                             <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
                                 <td class="px-6 py-5">
                                     <div class="flex items-center">
-                                        <div class="w-2.5 h-2.5 rounded-full {{ $memo->status === 'approved' ? 'bg-emerald-400' : ($memo->status === 'rejected' ? 'bg-rose-400' : ($memo->status === 'pending' ? 'bg-amber-400' : 'bg-gray-400')) }} mr-3 shadow-sm"></div>
+                                        @php
+                                            // Define status dot colors
+                                            $dotColors = [
+                                                'approved' => 'bg-green-500',    // Hijau - disetujui
+                                                'disetujui' => 'bg-green-500',   // Hijau - disetujui (alternative)
+                                                'rejected' => 'bg-red-500',      // Merah - ditolak
+                                                'ditolak' => 'bg-red-500',       // Merah - ditolak (alternative)
+                                                'pending' => 'bg-yellow-500',    // Kuning - diajukan
+                                                'diajukan' => 'bg-yellow-500',   // Kuning - diajukan (alternative)
+                                                'revision' => 'bg-orange-500',   // Oren - revisi
+                                                'revisi' => 'bg-orange-500',     // Oren - revisi (alternative)
+                                                'draft' => 'bg-gray-400',        // Abu - draft
+                                            ];
+                                            $dotColor = $dotColors[strtolower($memo->status)] ?? 'bg-gray-400';
+                                        @endphp
+                                        <div class="w-2.5 h-2.5 rounded-full {{ $dotColor }} mr-3 shadow-sm"></div>
                                         <span class="text-sm font-semibold text-gray-900">{{ $memo->nomor }}</span>
                                     </div>
                                 </td>
@@ -119,11 +135,16 @@
                                     @php
                                         $statusConfig = [
                                             'draft' => ['bg-gray-100 text-gray-700', 'Draft'],
-                                            'pending' => ['bg-amber-100 text-amber-700', 'Menunggu'],
-                                            'approved' => ['bg-emerald-100 text-emerald-700', 'Disetujui'],
-                                            'rejected' => ['bg-rose-100 text-rose-700', 'Ditolak'],
+                                            'pending' => ['bg-yellow-100 text-yellow-700', 'Diajukan'],
+                                            'diajukan' => ['bg-yellow-100 text-yellow-700', 'Diajukan'],
+                                            'approved' => ['bg-green-100 text-green-700', 'Disetujui'],
+                                            'disetujui' => ['bg-green-100 text-green-700', 'Disetujui'],
+                                            'rejected' => ['bg-red-100 text-red-700', 'Ditolak'],
+                                            'ditolak' => ['bg-red-100 text-red-700', 'Ditolak'],
+                                            'revision' => ['bg-orange-100 text-orange-700', 'Revisi'],
+                                            'revisi' => ['bg-orange-100 text-orange-700', 'Revisi'],
                                         ];
-                                        [$classes, $text] = $statusConfig[$memo->status] ?? ['bg-gray-100 text-gray-700', $memo->status];
+                                        [$classes, $text] = $statusConfig[strtolower($memo->status)] ?? ['bg-gray-100 text-gray-700', ucfirst($memo->status)];
                                     @endphp
                                     <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full {{ $classes }} shadow-sm">
                                         {{ $text }}
@@ -153,7 +174,7 @@
                                         </a>
                                         
                                         <!-- PDF Button -->
-                                        @if(strtolower($memo->status) === 'approved' || strtolower($memo->status) === 'disetujui')
+                                        @if(in_array(strtolower($memo->status), ['approved', 'disetujui']))
                                             <a href="{{ route('manager.memo.pdf', $memo->id) }}" 
                                                target="_blank"
                                                class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"

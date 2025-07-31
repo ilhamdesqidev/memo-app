@@ -40,7 +40,7 @@ class BaseMemoController extends Controller
         $this->routePrefix = $specialCases[$nama] ?? $nama;
     }
 
-    public function index()
+     public function index()
     {
         $memos = Memo::where('dari', $this->divisiName)
                    ->orderBy('created_at', 'desc')
@@ -49,17 +49,18 @@ class BaseMemoController extends Controller
         return view($this->viewPrefix . '.index', [
             'memos' => $memos,
             'routePrefix' => $this->routePrefix,
-            'currentDivisi' => $this->divisiName
+            'currentDivisi' => $this->divisiName,
+            'title' => 'Memo Keluar'
         ]);
     }
 
-    public function inbox()
+      public function inbox()
 {
-    $divisiTujuan = $this->getDivisiTujuan(); // <--- Tambahkan baris ini
+    $divisiTujuan = $this->getDivisiTujuan();
 
     $memos = Memo::where('divisi_tujuan', $this->divisiName)
                 ->where('dari', '!=', $this->divisiName)
-                ->where('status', '!=', 'ditolak') // Optional filter status
+                ->whereIn('status', ['diajukan', 'revisi'])
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
     
@@ -67,7 +68,9 @@ class BaseMemoController extends Controller
         'memos' => $memos,
         'routePrefix' => $this->routePrefix,
         'currentDivisi' => $this->divisiName,
-        'divisiTujuan' => $divisiTujuan, // <--- Kirim ke view
+        'divisiTujuan' => $divisiTujuan,
+        'title' => 'Memo Masuk',
+        'inbox' => true
     ]);
 }
 
@@ -123,59 +126,79 @@ class BaseMemoController extends Controller
 }
 
     public function updateStatus(Request $request)
-    {
-        $memo = Memo::findOrFail($request->memo_id);
+{
+    $request->validate([
+        'memo_id' => 'required|exists:memos,id',
+        'action' => 'required|in:setujui,tolak,revisi',
+        'next_divisi' => 'nullable|exists:divisis,nama',
+        'alasan' => 'required_if:action,tolak',
+        'catatan_revisi' => 'required_if:action,revisi'
+    ]);
 
-        if ($memo->divisi_tujuan !== $this->divisiName) {
-            abort(403, 'Unauthorized action.');
-        }
+    $memo = Memo::findOrFail($request->memo_id);
 
-        $action = $request->input('action');
-        $catatan = null;
-
-        if ($action === 'setujui') {
-            if ($request->filled('next_divisi')) {
-                $catatan = "Diteruskan ke divisi " . $request->next_divisi;
-                $memo->divisi_tujuan = $request->next_divisi;
-            }
-            
-            // Handle tanda tangan
-            if ($request->has('include_signature') && auth()->user()->signature) {
-                $memo->include_signature = true;
-                $memo->signature_path = auth()->user()->signature;
-                $memo->signed_by = auth()->id();
-                $memo->signed_at = now();
-            }
-            
-            $memo->status = 'disetujui';
-            $memo->approved_by = auth()->id();
-            $memo->approval_date = now();
-        } elseif ($action === 'tolak') {
-            // ... (kode sebelumnya)
-        } elseif ($action === 'revisi') {
-            // ... (kode sebelumnya)
-        }
-
-        $memo->save();
-
-        // Simpan log jejak
-        MemoLog::create([
-            'memo_id' => $memo->id,
-            'divisi' => $this->divisiName,
-            'aksi' => $action,
-            'catatan' => $catatan,
-            'user_id' => auth()->id(),
-            'waktu' => now(),
-        ]);
-
-        // Regenerate PDF jika ada perubahan
-        if ($action === 'setujui' || $action === 'tolak') {
-            $this->regeneratePdf($memo->id);
-        }
-
-        return redirect()->back()->with('success', 'Status memo berhasil diperbarui.');
+    // Authorization check
+    if ($memo->divisi_tujuan !== $this->divisiName) {
+        abort(403, 'Unauthorized action.');
     }
 
+    $action = $request->input('action');
+    $catatan = null;
+
+    if ($action === 'setujui') {
+        if ($request->filled('next_divisi')) {
+            // Forward to another division - keep status as "diajukan"
+            $catatan = "Diteruskan ke divisi " . $request->next_divisi;
+            $memo->divisi_tujuan = $request->next_divisi;
+            $memo->status = 'diajukan';
+            
+            // Don't reset signature if already signed
+            if (!$memo->signed_by) {
+                $memo->approved_by = null;
+                $memo->approval_date = null;
+            }
+        } else {
+            // Final approval
+            $catatan = "Disetujui";
+            $memo->status = 'disetujui';
+            $memo->approved_by = auth()->id();
+            $memo->approval_date = now()->toDateTimeString();
+        }
+        
+        // Handle signature only if not already signed
+        if ($request->has('include_signature') && !$memo->signed_by && auth()->user()->signature) {
+            $memo->include_signature = true;
+            $memo->signature_path = auth()->user()->signature;
+            $memo->signed_by = auth()->id();
+            $memo->signed_at = now()->toDateTimeString();
+        }
+    } 
+    elseif ($action === 'tolak') {
+        $memo->status = 'ditolak';
+        $catatan = $request->alasan;
+    } 
+    elseif ($action === 'revisi') {
+        $memo->status = 'revisi';
+        $catatan = $request->catatan_revisi;
+    }
+
+    $memo->save();
+
+    // Log the action
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'divisi' => $this->divisiName,
+        'aksi' => $action,
+        'catatan' => $catatan,
+        'user_id' => auth()->id(),
+        'waktu' => now()->toDateTimeString(),
+    ]);
+
+    // Regenerate PDF
+    $this->regeneratePdf($memo->id);
+
+    return redirect()->back()->with('success', 'Status memo berhasil diperbarui.');
+}
 
 protected function getDivisiTujuan()
 {
@@ -214,21 +237,29 @@ public function viewPdf($id)
     return $pdf->stream('memo.pdf');
 }
 
-public function regeneratePdf($id)
+protected function regeneratePdf($memoId)
 {
-    $memo = Memo::findOrFail($id);
+    $memo = Memo::with(['logs', 'disetujuiOleh', 'ditandatanganiOleh'])->findOrFail($memoId);
     
-    // Hapus PDF lama jika ada
+    // Hapus file PDF lama jika ada
     if ($memo->pdf_path && Storage::exists('public/'.$memo->pdf_path)) {
         Storage::delete('public/'.$memo->pdf_path);
     }
     
-    // Generate PDF baru
-    $pdfPath = $this->generatePdf($memo->id);
+    $pdf = PDF::loadView('memo.pdf', compact('memo'));
     
-    return response()->json([
-        'success' => true,
-        'path' => $pdfPath
-    ]);
+    $filename = 'memo_'.$memoId.'_'.time().'.pdf';
+    $path = 'memo_pdfs/'.$filename;
+    
+    // Pastikan folder exists
+    if (!Storage::exists('public/memo_pdfs')) {
+        Storage::makeDirectory('public/memo_pdfs');
+    }
+    
+    Storage::put('public/'.$path, $pdf->output());
+    
+    $memo->update(['pdf_path' => $path]);
+    
+    return $path;
 }
 }

@@ -7,54 +7,63 @@ use Illuminate\Database\Eloquent\Model;
 
 class Memo extends Model
 {
-
     use HasFactory;
 
-    protected $dates = ['tanggal']; // This will automatically cast the field to a Carbon instance
-   protected $fillable = [
-    'nomor',
-    'tanggal',
-    'kepada',
-    'dari',
-    'perihal',
-    'isi',
-    'lampiran',
-    'divisi_tujuan',
-    'dibuat_oleh_user_id'
-];
+    protected $fillable = [
+        'nomor',
+        'tanggal',
+        'kepada',
+        'dari',
+        'perihal',
+        'isi',
+        'lampiran',
+        'divisi_tujuan',
+        'status',
+        'dibuat_oleh_user_id',
+        'approved_by',
+        'approval_date',
+        'include_signature',
+        'signature_path',
+        'signed_by',
+        'signed_at',
+        'pdf_path'
+    ];
 
-// Add relationship to user
-   protected $casts = [
-        'tanggal' => 'date',
-        'approval_date' => 'datetime'
+    protected $casts = [
+        'tanggal' => 'datetime:Y-m-d',
+        'approval_date' => 'datetime',
+        'signed_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     public function approver()
     {
-        return $this->belongsTo(\App\Models\User::class, 'approved_by');
+        return $this->belongsTo(User::class, 'approved_by');
     }
+
     public function creator()
-{
-    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
-}
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
+    }
 
-public function logs()
-{
-    return $this->hasMany(MemoLog::class);
-}
+    public function logs()
+    {
+        return $this->hasMany(MemoLog::class);
+    }
 
-public function dibuatOleh()
-{
-    return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
-}
+    public function dibuatOleh()
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
+    }
 
-public function disetujuiOleh()
-{
-    return $this->belongsTo(User::class, 'approved_by');
-}
+    public function disetujuiOleh()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 
-public function ditandatanganiOleh()
-{
-    return $this->belongsTo(User::class, 'signed_by');
-}
+    public function ditandatanganiOleh()
+    {
+        return $this->belongsTo(User::class, 'signed_by');
+    }
 }
