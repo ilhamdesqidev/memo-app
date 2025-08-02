@@ -15,6 +15,7 @@ use App\Http\Controllers\Divisi\op2\DashboardOp2Controller;
 use App\Http\Controllers\Divisi\adminkeu\DashboardAdminkeuController;
 use App\Http\Controllers\Divisi\umumlegal\DashboardUmumLegalController;
 use App\Http\Controllers\Divisi\sipil\DashboardSipilController;
+use App\Http\Controllers\Manager\ManagerMemoController;
 use App\Http\Controllers\Divisi\marketing\MemoController as MarketingMemoController;
 use App\Http\Controllers\Divisi\pengembangan\MemoController as PengembanganMemoController;
 use App\Http\Controllers\Divisi\Food\MemoController as FoodMemoController;
@@ -145,9 +146,16 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 | Manager Routes
 |-------------------------------------------------------------------------*/
 
-Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
-    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
-});
+    Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
+        Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+        // Memo routes within the same manager group
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [ManagerMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [ManagerMemoController::class, 'inbox'])->name('inbox');
+        });
+    });
+
+
 
 
 /*-------------------------------------------------------------------------

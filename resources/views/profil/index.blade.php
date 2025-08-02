@@ -170,21 +170,22 @@
                             <h3 class="text-lg font-semibold text-gray-800">Quick Actions</h3>
                         </div>
                         <div class="space-y-3">
-                            <a href="{{ route('profil.edit') }}" 
-                               class="flex items-center w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 group">
+                            <a href="{{ Auth::user()->role === 'manager' ? route('manager.profil.edit') : route('profil.edit') }}" 
+                            class="flex items-center w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                                 Edit Profile
                             </a>
-                            <a href="{{ route('profil.signature.index') }}" 
-                               class="flex items-center w-full px-4 py-3 bg-green-600 text-white roun   ed-lg hover:bg-green-700 transition-colors duration-200 group">
+                            <a href="{{ Auth::user()->role === 'manager' ? route('manager.profil.signature.index') : route('profil.signature.index') }}" 
+                            class="flex items-center w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                 </svg>
                                 Manage Signature
                             </a>
                         </div>
+                    </div>
 
                         <!-- Account Stats -->
                         <div class="mt-6 pt-4 border-t border-gray-200">
