@@ -1,19 +1,26 @@
 @php
     $user = auth()->user();
-    $divisiNama = $user->divisi->nama ?? 'Unknown';
+    $divisiNama = 'Unknown'; // Initialize with default value
     
-    // Define prefix based on user's division
-    $prefix = match($divisiNama) {
-        'Pengembangan Bisnis' => 'pengembangan.',
-        'Operasional Wilayah I' => 'opwil1.',
-        'Operasional Wilayah II' => 'opwil2.',
-        'Umum dan Legal' => 'umumlegal.',
-        'Administrasi dan Keuangan' => 'adminkeu.',
-        'Infrastruktur dan Sipil' => 'sipil.',
-        'Food Beverage' => 'food.',
-        'Marketing dan Sales' => 'marketing.',
-        default => 'profil.'
-    };
+    // Handle managers separately
+    if ($user->role === 'manager') {
+        $prefix = 'manager.';
+        $divisiNama = 'Manager'; // Set a proper value for managers
+    } else {
+        $divisiNama = $user->divisi->nama ?? 'Unknown';
+        
+        $prefix = match($divisiNama) {
+            'Pengembangan Bisnis' => 'pengembangan.',
+            'Operasional Wilayah I' => 'opwil1.',
+            'Operasional Wilayah II' => 'opwil2.',
+            'Umum dan Legal' => 'umumlegal.',
+            'Administrasi dan Keuangan' => 'adminkeu.',
+            'Infrastruktur dan Sipil' => 'sipil.',
+            'Food Beverage' => 'food.',
+            'Marketing dan Sales' => 'marketing.',
+            default => 'profil.',
+        };
+    }
 @endphp
 
 <!DOCTYPE html>
@@ -21,7 +28,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Mestakara {{ $divisiNama }}</title>
+    <title>Mestakara {{ $divisiNama }}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
