@@ -185,7 +185,7 @@
                                 Manage Signature
                             </a>
                         </div>
-                    </div>
+                
 
                         <!-- Account Stats -->
                         <div class="mt-6 pt-4 border-t border-gray-200">
