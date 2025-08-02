@@ -16,14 +16,13 @@ class DivisiSeeder extends Seeder
     {
          Divisi::insert([
             ['nama' => 'Pengembangan Bisnis', 'urutan' => 1],
-            ['nama' => 'Manager', 'urutan' => 2],
-            ['nama' => 'Operasional Wilayah I', 'urutan' => 3],
-            ['nama' => 'Operasional Wilayah II', 'urutan' => 4],
-            ['nama' => 'Umum dan Legal', 'urutan' => 5],
-            ['nama' => 'Administrasi dan Keuangan', 'urutan' => 6],
-            ['nama' => 'Infrastruktur dan Sipil', 'urutan' => 7],
-            ['nama' => 'Food Beverage', 'urutan' => 8],
-            ['nama' => 'Marketing dan Sales', 'urutan' => 9],
+            ['nama' => 'Operasional Wilayah I', 'urutan' => 2],
+            ['nama' => 'Operasional Wilayah II', 'urutan' => 3],
+            ['nama' => 'Umum dan Legal', 'urutan' => 4],
+            ['nama' => 'Administrasi dan Keuangan', 'urutan' => 5],
+            ['nama' => 'Infrastruktur dan Sipil', 'urutan' => 6],
+            ['nama' => 'Food Beverage', 'urutan' => 7],
+            ['nama' => 'Marketing dan Sales', 'urutan' => 8],
         ]);
     }
 }

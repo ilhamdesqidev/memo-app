@@ -1,28 +1,10 @@
-@php
-    $user = auth()->user();
-    $divisiNama = $user->divisi->nama ?? 'Unknown';
-    
-    // Define prefix based on user's division
-    $prefix = match($divisiNama) {
-        'Pengembangan Bisnis' => 'pengembangan.',
-        'Operasional Wilayah I' => 'opwil1.',
-        'Operasional Wilayah II' => 'opwil2.',
-        'Umum dan Legal' => 'umumlegal.',
-        'Administrasi dan Keuangan' => 'adminkeu.',
-        'Infrastruktur dan Sipil' => 'sipil.',
-        'Food Beverage' => 'food.',
-        'Marketing dan Sales' => 'marketing.',
-        default => 'profil.'
-    };
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Mestakara {{ $divisiNama }}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css">
+    <title>@yield('title', 'Mestakara')</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .dropdown-content {
@@ -33,7 +15,7 @@
             display: block;
         }
         .dropdown.active .dropdown-chevron {
-            transform: rotate(180deg);
+            transform: rotate(180deg); b
         }
         .sidebar {
             transition: width 0.3s ease;
@@ -115,7 +97,7 @@
             flex-shrink: 0;
         }
 
-        .sidebar.collapsed .dropdown-toggle .user-avatar {
+ .sidebar.collapsed .dropdown-toggle .user-avatar {
             margin: 0 auto;
         }
 
@@ -185,7 +167,7 @@
                         </div>
                         <div class="header-content">
                             <h2 class="text-xl font-bold text-white">Mestakara</h2>
-                            <p class="text-sm text-indigo-300">Agro gunung mas</p>
+                            <p class="text-sm text-indigo-300">Agro Wisata Gn.mas</p>
                         </div>
                     </div>
                     <span class="tooltip-text">Mestakara</span>
@@ -193,9 +175,9 @@
                
                 <div class="flex flex-col flex-grow pt-5 overflow-y-auto">
                     <div class="flex flex-col flex-1 px-4 space-y-1">
-                        <!-- Dashboard -->
+                        <!-- Navigation Items -->
                         <div class="tooltip">
-                            <a href="{{ route($prefix . 'dashboard') }}" class="nav-item @if(request()->routeIs($prefix . 'dashboard')) bg-indigo-900 @endif flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
+                            <a href="{{ route('manager.dashboard') }}" class="nav-item @if(request()->routeIs('home')) bg-indigo-900 @endif flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                 <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                 </svg>
@@ -204,14 +186,14 @@
                             <span class="tooltip-text">Dashboard</span>
                         </div>
 
-                        <!-- Memo Dropdown -->
-                        <div class="dropdown tooltip mb-2 @if(request()->routeIs($prefix . 'memo.*')) active @endif">
+                        <!-- Surat Dropdown -->
+                        <div class="dropdown tooltip mb-2 @if(request()->routeIs('memo.*') || request()->routeIs('arsip.*')) active @endif">
                             <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700">
                                 <div class="flex items-center">
                                     <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
-                                    <span class="sidebar-text">Memo</span>
+                                    <span class="sidebar-text">Surat</span>
                                 </div>
                                 <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -219,115 +201,32 @@
                             </button>
                             
                             <div class="dropdown-content ml-8 mt-1 space-y-1">
-                                <a href="{{ route($prefix . 'memo.index') }}" class="@if(request()->routeIs($prefix . 'memo.index')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
+                                <a href="#" class="@if(request()->routeIs('memo.*')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                                     </svg>
-                                    Daftar Memo
+                                    Memo
                                 </a>
-                                <a href="{{ route($prefix . 'memo.inbox') }}" class="@if(request()->routeIs($prefix . 'memo.inbox')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
+                                
+                                <a href="#" class="@if(request()->routeIs('arsip.*')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                     </svg>
-                                    Memo Masuk
+                                    Arsip
                                 </a>
                             </div>
-                            <span class="tooltip-text">Memo</span>
+                            <span class="tooltip-text">Surat</span>
                         </div>
 
-                        <!-- Divisi Specific Features -->
-                        @switch($divisiNama)
-                            @case('Pengembangan Bisnis')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Proyek Bisnis</span>
-                                    </a>
-                                    <span class="tooltip-text">Proyek Bisnis</span>
-                                </div>
-                                @break
-                            @case('Operasional Wilayah I')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Wilayah I Ops</span>
-                                    </a>
-                                    <span class="tooltip-text">Wilayah I Ops</span>
-                                </div>
-                                @break
-                            @case('Operasional Wilayah II')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Wilayah II Ops</span>
-                                    </a>
-                                    <span class="tooltip-text">Wilayah II Ops</span>
-                                </div>
-                                @break
-                            @case('Umum dan Legal')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip Hukum</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip Hukum</span>
-                                </div>
-                                @break
-                            @case('Administrasi dan Keuangan')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Transaksi Keuangan</span>
-                                    </a>
-                                    <span class="tooltip-text">Transaksi Keuangan</span>
-                                </div>
-                                @break
-                            @case('Infrastruktur dan Sipil')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Proyek Sipil</span>
-                                    </a>
-                                    <span class="tooltip-text">Proyek Sipil</span>
-                                </div>
-                                @break
-                            @case('Food Beverage')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m-8-13v13m16 0V8M4 8l8-4 8 4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Manajemen Menu</span>
-                                    </a>
-                                    <span class="tooltip-text">Manajemen Menu</span>
-                                </div>
-                                @break
-                            @case('Marketing dan Sales')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Target Penjualan</span>
-                                    </a>
-                                    <span class="tooltip-text">Target Penjualan</span>
-                                </div>
-                                @break
-                        @endswitch
+                        <div class="tooltip">
+                            <a href="#" class="nav-item @if(request()->routeIs('user.*')) bg-indigo-900 @endif flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
+                                <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                                <span class="sidebar-text">User</span>
+                            </a>
+                            <span class="tooltip-text">User</span>
+                        </div>
                     </div>
 
                     <!-- User Profil Section -->
@@ -356,7 +255,7 @@
                             </button>
                             
                             <div class="dropdown-content user-dropdown-content absolute left-0 right-0 bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 mx-2 mb-2">
-                           <a href="{{ route('profil.index') }}" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
+                                <a href="{{ route('profil.index') }}" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>

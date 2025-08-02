@@ -34,7 +34,6 @@ class BaseMemoController extends Controller
             'infrastrukturdansipil' => 'sipil',
             'foodbeverage' => 'food',
             'marketingdansales' => 'marketing',
-            'manager' => 'manager'
         ];
         
         $this->routePrefix = $specialCases[$nama] ?? $nama;

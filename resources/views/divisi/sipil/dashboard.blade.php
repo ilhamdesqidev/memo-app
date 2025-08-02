@@ -86,7 +86,7 @@
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="{{ route('manager.memo.index') }}" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
+                        <a href="{{ route('sipil.memo.index') }}" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
                             Review now
                             <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>

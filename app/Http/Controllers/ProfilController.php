@@ -15,26 +15,28 @@ class ProfilController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        return view('profil.index', compact('user'));
-    }
-    
-    public function dashboard(): View
-    {
-        $user = Auth::user();
-        return view('profil.dashboard', compact('user'));
+        $baseRoute = $this->getBaseRoute();
+        
+        return view('profil.index', [
+            'user' => $user,
+            'baseRoute' => $baseRoute
+        ]);
     }
     
     public function edit(): View
     {
         $user = Auth::user();
-        $this->authorize('update', $user);
-        return view('profil.edit', compact('user'));
+        $baseRoute = $this->getBaseRoute();
+        
+        return view('profil.edit', [
+            'user' => $user,
+            'baseRoute' => $baseRoute
+        ]);
     }
 
     public function update(Request $request)
     {
         $user = Auth::user();
-        $this->authorize('update', $user);
         
         $request->validate([
             'name' => 'required|string|max:255',
@@ -43,7 +45,7 @@ class ProfilController extends Controller
 
         $user->update($request->only('name', 'username'));
 
-        return redirect()->route('profil.index')
+        return redirect()->route($this->getBaseRoute().'index')
             ->with('success', 'Profile updated successfully!');
     }
 
@@ -65,12 +67,21 @@ class ProfilController extends Controller
     public function signatureIndex(): View
     {
         $user = Auth::user();
-        return view('profil.signature.index', compact('user'));
+        $baseRoute = $this->getBaseRoute();
+        
+        return view('profil.signature.index', [
+            'user' => $user,
+            'baseRoute' => $baseRoute
+        ]);
     }
 
     public function createSignature(): View
     {
-        return view('profil.signature.create');
+        $baseRoute = $this->getBaseRoute();
+        
+        return view('profil.signature.create', [
+            'baseRoute' => $baseRoute
+        ]);
     }
 
     public function uploadSignature(Request $request)
@@ -83,11 +94,6 @@ class ProfilController extends Controller
                 'mimes:png,jpg,jpeg',
                 'max:2048'
             ]
-        ], [
-            'signature.required' => 'Please select a signature file.',
-            'signature.image' => 'The file must be an image.',
-            'signature.mimes' => 'The signature must be a PNG, JPG, or JPEG file.',
-            'signature.max' => 'The signature file size must not exceed 2MB.'
         ]);
 
         try {
@@ -100,7 +106,7 @@ class ProfilController extends Controller
             $signaturePath = $request->file('signature')->store('signatures', 'public');
             $user->update(['signature' => $signaturePath]);
             
-            return redirect()->route('profil.index')
+            return redirect()->route($this->getBaseRoute().'index')
                 ->with('success', 'Signature uploaded successfully!');
                 
         } catch (\Exception $e) {
@@ -135,7 +141,7 @@ class ProfilController extends Controller
             Storage::disk('public')->put($signaturePath, $signatureData);
             $user->update(['signature' => $signaturePath]);
 
-            return redirect()->route('profil.index')
+            return redirect()->route($this->getBaseRoute().'index')
                 ->with('success', 'Signature saved successfully!');
                 
         } catch (\Exception $e) {
@@ -152,15 +158,20 @@ class ProfilController extends Controller
                 Storage::disk('public')->delete($user->signature);
                 $user->update(['signature' => null]);
                 
-                return redirect()->route('profil.index')
+                return redirect()->route($this->getBaseRoute().'index')
                     ->with('success', 'Signature deleted successfully!');
             }
             
-            return redirect()->route('profil.index')
+            return redirect()->route($this->getBaseRoute().'index')
                 ->with('info', 'No signature to delete');
                 
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to delete signature');
         }
+    }
+
+    protected function getBaseRoute(): string
+    {
+        return Auth::user()->role === 'manager' ? 'manager.profil.' : 'profil.';
     }
 }

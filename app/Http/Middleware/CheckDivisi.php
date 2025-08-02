@@ -17,10 +17,6 @@ class CheckDivisi
 
     $userDivisi = optional(auth()->user()->divisi)->nama;
 
-    if (strtolower($userDivisi) !== strtolower($divisi)) {
-        return redirect()->route('staff.dashboard')
-               ->with('error', 'Unauthorized access');
-    }
 
     return $next($request);
 }

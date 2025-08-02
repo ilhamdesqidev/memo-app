@@ -73,7 +73,6 @@ public function getRoutePrefixAttribute()
 {
     $divisiMap = [
         'Pengembangan Bisnis' => 'pengembangan',
-        'Manager' => 'manager',
         'Operasional Wilayah I' => 'opwil1',
         'Operasional Wilayah II' => 'opwil2',
         'Umum dan Legal' => 'umumlegal',

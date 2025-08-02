@@ -35,13 +35,16 @@ public function store(LoginRequest $request): RedirectResponse
         return redirect()->route('admin.dashboard');
     }
     
+    if ($user->role === 'manager') {
+        return redirect()->route('manager.dashboard');
+    }
+    
     if ($user->role === 'user') {
         // pastikan relasi divisi termuat
         $divisi = $user->divisi->nama ?? null;
     
         $divisiRoutes = [
             'Pengembangan Bisnis' => 'pengembangan.dashboard',
-            'Manager' => 'manager.dashboard',
             'Operasional Wilayah I' => 'opwil1.dashboard',
             'Operasional Wilayah II' => 'opwil2.dashboard',
             'Umum dan Legal' => 'umumlegal.dashboard',
@@ -55,7 +58,6 @@ public function store(LoginRequest $request): RedirectResponse
     }
     
     abort(403);
-    
 }
 
     /**

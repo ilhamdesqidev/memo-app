@@ -1,15 +1,12 @@
 <?php
 
-use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\Manager\DashboardManagerController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\DashboardAdminController;
-use App\Http\Controllers\Divisi\Manager\DashboardManagerController;
 use App\Http\Controllers\Divisi\Food\DashboardFoodController;
 use App\Http\Controllers\Divisi\marketing\DashboardMarketingController;
 use App\Http\Controllers\Divisi\pengembangan\DashboardPengembanganController;
@@ -18,7 +15,6 @@ use App\Http\Controllers\Divisi\op2\DashboardOp2Controller;
 use App\Http\Controllers\Divisi\adminkeu\DashboardAdminkeuController;
 use App\Http\Controllers\Divisi\umumlegal\DashboardUmumLegalController;
 use App\Http\Controllers\Divisi\sipil\DashboardSipilController;
-use App\Http\Controllers\Divisi\Manager\MemoController as ManagerMemoController;
 use App\Http\Controllers\Divisi\marketing\MemoController as MarketingMemoController;
 use App\Http\Controllers\Divisi\pengembangan\MemoController as PengembanganMemoController;
 use App\Http\Controllers\Divisi\Food\MemoController as FoodMemoController;
@@ -28,7 +24,9 @@ use App\Http\Controllers\Divisi\adminkeu\MemoController as AdminKeuMemoControlle
 use App\Http\Controllers\Divisi\umumlegal\MemoController as UmumLegalMemoController;
 use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
 
-// Public Routes
+/*-------------------------------------------------------------------------
+| Public Routes
+|-------------------------------------------------------------------------*/
 Route::get('/', function () {
     return view('welcome');
 });
@@ -49,256 +47,272 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
 
-// Authenticated Routes
-Route::middleware(['auth', 'verified'])->group(function () {
-    // Profile Routes
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/', [ProfileController::class, 'index'])->name('index');
-        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ProfileController::class, 'update'])->name('update');
-        Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
-    });
+/*-------------------------------------------------------------------------
+| Authenticated Routes (All Roles)
+|-------------------------------------------------------------------------*/
+Route::middleware(['auth'])->group(function () {
+    // Main Dashboard Redirector
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
 
-    // Profil Routes (with Signature)
-    Route::prefix('profil')->name('profil.')->group(function () {
-        Route::get('/', [ProfilController::class, 'index'])->name('index');
-        Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
-        Route::patch('/update', [ProfilController::class, 'update'])->name('update');
-        Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
-        Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
-        Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
-        Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
-        Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
-        Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
-    });
+        if (!$user) {
+            return redirect()->route('login');
+        }
 
-    // Admin Routes
-    Route::prefix('admin')->middleware(['role:admin'])->name('admin.')->group(function () {
-        Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
-        
-        Route::resource('staff', StaffController::class)->names([
-            'index' => 'staff.index',
-            'create' => 'staff.create',
-            'store' => 'staff.store',
-            'edit' => 'staff.edit',
-            'update' => 'staff.update',
-            'destroy' => 'staff.destroy'
-        ]);
-    });
+        switch ($user->role) {
+            case 'manager':
+                return redirect()->route('manager.dashboard');
+            case 'admin':
+                return redirect()->route('admin.dashboard');
+            default:
+                $divisiRoutes = [
+                    'Pengembangan Bisnis' => 'pengembangan.dashboard',
+                    'Operasional Wilayah I' => 'opwil1.dashboard',
+                    'Operasional Wilayah II' => 'opwil2.dashboard',
+                    'Umum dan Legal' => 'umumlegal.dashboard',
+                    'Administrasi dan Keuangan' => 'adminkeu.dashboard',
+                    'Infrastruktur dan Sipil' => 'sipil.dashboard',
+                    'Food Beverage' => 'food.dashboard',
+                    'Marketing dan Sales' => 'marketing.dashboard',
+                ];
 
-    // Divisi Manager
-  // Divisi Manager
-Route::prefix('manager')
-->middleware('divisi:Manager')
-->name('manager.')
-->group(function () {
-    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Manager\MemoController::class, 'viewPdf'])->name('pdf');
-    });
+                return redirect()->route(
+                    $divisiRoutes[$user->divisi->nama ?? ''] ?? 'login'
+                );
+        }
+    })->name('main.dashboard');
 });
+
+/*-------------------------------------------------------------------------
+| Profile Routes (Separated by role)
+|-------------------------------------------------------------------------*/
+
+// ADMIN ONLY PROFILE ROUTES
+Route::prefix('profile')->name('profile.')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::patch('/update', [ProfileController::class, 'update'])->name('update');
+    Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
+});
+
+// USER PROFILE ROUTES
+Route::prefix('profil')->name('profil.')->middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/', [ProfilController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
+    Route::patch('/update', [ProfilController::class, 'update'])->name('update');
+    Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
+    
+    // Signature routes
+    Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
+    Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
+    Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
+    Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
+    Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
+});
+
+// MANAGER PROFILE ROUTES (with manager prefix)
+Route::prefix('manager/profil')->name('manager.profil.')->middleware(['auth', 'role:manager'])->group(function () {
+    Route::get('/', [ProfilController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
+    Route::patch('/update', [ProfilController::class, 'update'])->name('update');
+    Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
+    
+    // Signature routes
+    Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
+    Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
+    Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
+    Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
+    Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
+});
+
+/*-------------------------------------------------------------------------
+| Admin Routes
+|-------------------------------------------------------------------------*/
+Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
+    
+    Route::resource('staff', StaffController::class)->names([
+        'index' => 'staff.index',
+        'create' => 'staff.create',
+        'store' => 'staff.store',
+        'edit' => 'staff.edit',
+        'update' => 'staff.update',
+        'destroy' => 'staff.destroy'
+    ]);
+});
+
+/*-------------------------------------------------------------------------
+| Manager Routes
+|-------------------------------------------------------------------------*/
+
+Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
+    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+});
+
+
+/*-------------------------------------------------------------------------
+| Divisi Routes
+|-------------------------------------------------------------------------*/
 
 // Divisi Pengembangan Bisnis
 Route::prefix('pengembangan')
-->middleware('divisi:Pengembangan Bisnis')
-->name('pengembangan.')
-->group(function () {
-    Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Pengembangan\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Pengembangan Bisnis'])
+    ->name('pengembangan.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [PengembanganMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [PengembanganMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [PengembanganMemoController::class, 'create'])->name('create');
+            Route::post('/', [PengembanganMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [PengembanganMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [PengembanganMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [PengembanganMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [PengembanganMemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Operasional Wilayah I
 Route::prefix('opwil1')
-->middleware('divisi:Operasional Wilayah I')
-->name('opwil1.')
-->group(function () {
-    Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Op1\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Operasional Wilayah I'])
+    ->name('opwil1.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [Op1MemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [Op1MemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [Op1MemoController::class, 'create'])->name('create');
+            Route::post('/', [Op1MemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [Op1MemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [Op1MemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [Op1MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [Op1MemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Operasional Wilayah II
 Route::prefix('opwil2')
-->middleware('divisi:Operasional Wilayah II')
-->name('opwil2.')
-->group(function () {
-    Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Op2\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Operasional Wilayah II'])
+    ->name('opwil2.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [Op2MemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [Op2MemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [Op2MemoController::class, 'create'])->name('create');
+            Route::post('/', [Op2MemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [Op2MemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [Op2MemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [Op2MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [Op2MemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Umum dan Legal
 Route::prefix('umumlegal')
-->middleware('divisi:Umum dan Legal')
-->name('umumlegal.')
-->group(function () {
-    Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\UmumLegal\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Umum dan Legal'])
+    ->name('umumlegal.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [UmumLegalMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [UmumLegalMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [UmumLegalMemoController::class, 'create'])->name('create');
+            Route::post('/', [UmumLegalMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [UmumLegalMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [UmumLegalMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [UmumLegalMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [UmumLegalMemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Administrasi dan Keuangan
 Route::prefix('adminkeu')
-->middleware('divisi:Administrasi dan Keuangan')
-->name('adminkeu.')
-->group(function () {
-    Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\AdminKeu\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Adminkeu\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Administrasi dan Keuangan'])
+    ->name('adminkeu.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [AdminKeuMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [AdminKeuMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [AdminKeuMemoController::class, 'create'])->name('create');
+            Route::post('/', [AdminKeuMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [AdminKeuMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [AdminKeuMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [AdminKeuMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [AdminKeuMemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Infrastruktur dan Sipil
 Route::prefix('sipil')
-->middleware('divisi:Infrastruktur dan Sipil')
-->name('sipil.')
-->group(function () {
-    Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Sipil\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Infrastruktur dan Sipil'])
+    ->name('sipil.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [SipilMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [SipilMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [SipilMemoController::class, 'create'])->name('create');
+            Route::post('/', [SipilMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [SipilMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [SipilMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [SipilMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [SipilMemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Food Beverage
 Route::prefix('food')
-->middleware('divisi:Food Beverage')
-->name('food.')
-->group(function () {
-    Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
-    
-    Route::prefix('memo')->name('memo.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'index'])->name('index');
-        Route::get('/inbox', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'inbox'])->name('inbox');
-        Route::get('/create', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'create'])->name('create');
-        Route::post('/', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'store'])->name('store');
-        Route::get('/{memo}', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'show'])->name('show');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/update-status', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'updateStatus'])->name('updateStatus');
-        Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-        Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Food\MemoController::class, 'viewPdf'])->name('pdf');
+    ->middleware(['auth', 'divisi:Food Beverage'])
+    ->name('food.')
+    ->group(function () {
+        Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
+        
+        Route::prefix('memo')->name('memo.')->group(function () {
+            Route::get('/', [FoodMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [FoodMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [FoodMemoController::class, 'create'])->name('create');
+            Route::post('/', [FoodMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [FoodMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [FoodMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [FoodMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [FoodMemoController::class, 'viewPdf'])->name('pdf');
+        });
     });
-});
 
 // Divisi Marketing dan Sales
 Route::prefix('marketing')
-    ->middleware('divisi:Marketing dan Sales')
+    ->middleware(['auth', 'divisi:Marketing dan Sales'])
     ->name('marketing.')
     ->group(function () {
         Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
         
         Route::prefix('memo')->name('memo.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'index'])->name('index');
-            Route::get('/inbox', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'inbox'])->name('inbox');
-            Route::get('/create', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'store'])->name('store');
-            Route::get('/{memo}', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'show'])->name('show');
-            Route::post('/update-status', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'updateStatus'])->name('updateStatus');
-            
-            // Tambahkan route untuk PDF
-            Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'regeneratePdf'])
-                 ->name('regenerate-pdf');
-            Route::get('/{memo}/pdf', [\App\Http\Controllers\Divisi\Marketing\MemoController::class, 'viewPdf'])
-                 ->name('pdf');
+            Route::get('/', [MarketingMemoController::class, 'index'])->name('index');
+            Route::get('/inbox', [MarketingMemoController::class, 'inbox'])->name('inbox');
+            Route::get('/create', [MarketingMemoController::class, 'create'])->name('create');
+            Route::post('/', [MarketingMemoController::class, 'store'])->name('store');
+            Route::get('/{memo}', [MarketingMemoController::class, 'show'])->name('show');
+            Route::post('/update-status', [MarketingMemoController::class, 'updateStatus'])->name('updateStatus');
+            Route::post('/{memo}/regenerate-pdf', [MarketingMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
+            Route::get('/{memo}/pdf', [MarketingMemoController::class, 'viewPdf'])->name('pdf');
         });
     });
-        
 
-    // Main Dashboard Redirector
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        $divisiRoutes = [
-            'Pengembangan Bisnis' => 'pengembangan.dashboard',
-            'Manager' => 'manager.dashboard',
-            'Operasional Wilayah I' => 'opwil1.dashboard',
-            'Operasional Wilayah II' => 'opwil2.dashboard',
-            'Umum dan Legal' => 'umumlegal.dashboard',
-            'Administrasi dan Keuangan' => 'adminkeu.dashboard',
-            'Infrastruktur dan Sipil' => 'sipil.dashboard',
-            'Food Beverage' => 'food.dashboard',
-            'Marketing dan Sales' => 'marketing.dashboard',
-        ];
-
-        return redirect()->route(
-            $divisiRoutes[$user->divisi->nama ?? ''] ?? 'login'
-        );
-    })->name('main.dashboard');
-});
-
-Route::get('/api/search-users', function (Request $request) {
+/*-------------------------------------------------------------------------
+| API Routes
+|-------------------------------------------------------------------------*/
+Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
     $query = $request->input('q');
     
-    $users = User::where('role', 'user')
+    $users = App\Models\User::where('role', 'user')
         ->where(function($q) use ($query) {
             $q->where('name', 'like', "%$query%")
               ->orWhere('username', 'like', "%$query%");
@@ -316,4 +330,4 @@ Route::get('/api/search-users', function (Request $request) {
         });
 
     return response()->json($users);
-})->name('api.search-users');
+})->middleware('auth')->name('api.search-users');

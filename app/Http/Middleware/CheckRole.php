@@ -20,10 +20,6 @@ class CheckRole
         return redirect()->route('login');
     }
 
-    if (auth()->user()->role !== $role) {
-        return redirect()->route('staff.dashboard')
-               ->with('error', 'Unauthorized access');
-    }
 
     return $next($request);
 }

@@ -85,6 +85,7 @@
                                 </p> 
                             @enderror
                         </div>
+                    </div>
 
                     <!-- Jabatan -->
                     <div>
@@ -137,6 +138,31 @@
                             </p> 
                         @enderror
                     </div>
+                </div>
+
+                <!-- Role Selection -->
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                        Role
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <select name="role"
+                            id="role"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
+                        <option value="">-- Pilih Role --</option>
+                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Manager</option>
+                        <option value="asisten_manager" {{ old('role') == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
+                    </select>
+                    @error('role')
+                        <p class="text-red-500 text-sm mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
                 </div>
 
                 <!-- Security Section -->
@@ -246,5 +272,30 @@ function togglePassword(fieldId) {
     const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
     field.setAttribute('type', type);
 }
+
+// Function to handle role change
+document.getElementById('role').addEventListener('change', function() {
+    const divisiSelect = document.getElementById('divisi_id');
+    if (this.value === 'manager' || this.value === 'asisten_manager') {
+        divisiSelect.disabled = true;
+        divisiSelect.value = ''; // Clear selection
+        divisiSelect.required = false;
+    } else {
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+});
+
+// Initialize the state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const divisiSelect = document.getElementById('divisi_id');
+    
+    if (roleSelect.value === 'manager' || roleSelect.value === 'asisten_manager') {
+        divisiSelect.disabled = true;
+        divisiSelect.value = '';
+        divisiSelect.required = false;
+    }
+});
 </script>
 @endsection

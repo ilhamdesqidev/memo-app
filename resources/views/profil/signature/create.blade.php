@@ -43,14 +43,14 @@
                     </div>
                 </div>
                 
-                <form id="signature-form" action="{{ route('profil.signature.save') }}" method="POST" class="space-y-4">
+                <form id="signature-form" action="{{ route($baseRoute.'signature.save') }}" method="POST" class="space-y-4">
                     @csrf
                     <input type="hidden" id="signature-data" name="signature_data">
                     <div class="flex space-x-2">
                         <button type="submit" id="save-signature" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition" disabled>
                             Save Signature
                         </button>
-                        <a href="{{ route('profil.signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                        <a href="{{ route($baseRoute.'signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
                             Cancel
                         </a>
                     </div>
@@ -59,7 +59,7 @@
 
             <!-- Upload Signature Panel -->
             <div id="upload-panel" class="signature-panel hidden">
-                <form action="{{ route('profil.signature.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <form action="{{ route($baseRoute.'signature.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -76,7 +76,7 @@
                         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
                             Upload Signature
                         </button>
-                        <a href="{{ route('profil.signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                        <a href="{{ route($baseRoute.'signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
                             Cancel
                         </a>
                     </div>
@@ -96,7 +96,7 @@
     </div>
 </div>
 
-<!-- Script untuk canvas signature (sama seperti sebelumnya) -->
+@push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching
@@ -297,4 +297,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+@endpush
 @endsection

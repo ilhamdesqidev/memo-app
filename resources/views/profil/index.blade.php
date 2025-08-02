@@ -24,7 +24,6 @@
                             @if(Auth::user()->divisi)
                                 @php
                                     $divisiConfig = [
-                                        'Manager' => ['color' => 'bg-indigo-400', 'icon' => 'M5 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm14 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8zm-9 5a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm18 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'],
                                         'Pengembangan Bisnis' => ['color' => 'bg-blue-400', 'icon' => 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
                                         'Operasional Wilayah I' => ['color' => 'bg-green-400', 'icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z'],
                                         'Operasional Wilayah II' => ['color' => 'bg-teal-400', 'icon' => 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z'],
@@ -179,7 +178,7 @@
                                 Edit Profile
                             </a>
                             <a href="{{ route('profil.signature.index') }}" 
-                               class="flex items-center w-full px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 group">
+                               class="flex items-center w-full px-4 py-3 bg-green-600 text-white roun   ed-lg hover:bg-green-700 transition-colors duration-200 group">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                 </svg>

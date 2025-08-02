@@ -12,36 +12,36 @@ use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
-   public function index(Request $request)
-{
-    // Start building the query
-    $query = User::with('divisi')
-                ->where('role', 'user')
-                ->orderBy('name');
+    public function index(Request $request)
+    {
+        // Start building the query
+        $query = User::with('divisi')
+                    ->whereIn('role', ['user', 'manager', 'asisten_manager'])
+                    ->orderBy('name');
 
-    // Apply search filter if provided
-    if ($request->has('search') && !empty($request->search)) {
-        $searchTerm = $request->search;
-        $query->where(function($q) use ($searchTerm) {
-            $q->where('name', 'like', "%$searchTerm%")
-              ->orWhere('username', 'like', "%$searchTerm%")
-              ->orWhere('jabatan', 'like', "%$searchTerm%")
-              ->orWhereHas('divisi', function($q) use ($searchTerm) {
-                  $q->where('nama', 'like', "%$searchTerm%");
-              });
-        });
+        // Apply search filter if provided
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%$searchTerm%")
+                  ->orWhere('username', 'like', "%$searchTerm%")
+                  ->orWhere('jabatan', 'like', "%$searchTerm%")
+                  ->orWhereHas('divisi', function($q) use ($searchTerm) {
+                      $q->where('nama', 'like', "%$searchTerm%");
+                  });
+            });
+        }
+
+        // Paginate the results (5 items per page)
+        $users = $query->paginate(5);
+
+        // Pass the search term back to view to repopulate the search input
+        if ($request->has('search')) {
+            $users->appends(['search' => $request->search]);
+        }
+
+        return view('admin.staff.index', compact('users'));
     }
-
-    // Paginate the results (5 items per page)
-    $users = $query->paginate(5);
-
-    // Pass the search term back to view to repopulate the search input
-    if ($request->has('search')) {
-        $users->appends(['search' => $request->search]);
-    }
-
-    return view('admin.staff.index', compact('users'));
-}
 
     public function create()
     {
@@ -50,31 +50,38 @@ class StaffController extends Controller
     }
 
     public function store(Request $request)
-    {
+{
+    $validationRules = [
+        'name'       => 'required|string|max:255',
+        'username'   => 'required|string|max:255|unique:users',
+        'password'   => 'required|string|min:8|confirmed',
+        'jabatan'    => 'required|string|in:asisten,ketua,pengadaan',
+        'role'       => 'required|string|in:user,manager,asisten_manager',
+    ];
 
-        $request->validate([
-    'name'       => 'required|string|max:255',
-    'username'   => 'required|string|max:255|unique:users', // Ganti email dengan username
-    'password'   => 'required|string|min:8|confirmed',
-    'jabatan' => 'required|string|in:asisten,ketua,pengadaan',
-    'divisi_id'  => 'required|exists:divisis,id',
-]);
-
-User::create([
-    'name'       => $request->name,
-    'username'   => $request->username, // Ganti email dengan username
-    'password'   => Hash::make($request->password),
-    'jabatan'    => $request->jabatan,
-    'role'       => 'user',
-    'divisi_id'  => $request->divisi_id,
-]);
-
-        // Clear cache yang berkaitan dengan statistik dashboard
-        $this->clearDashboardCache();
-
-        return redirect()->route('admin.staff.index')
-            ->with('success', 'Akun staff berhasil dibuat. Total pengguna sekarang: ' . User::where('role', 'user')->count());
+    // Only require divisi_id if role is not manager or asisten_manager
+    if (!in_array($request->role, ['manager', 'asisten_manager'])) {
+        $validationRules['divisi_id'] = 'required|exists:divisis,id';
+    } else {
+        $validationRules['divisi_id'] = 'nullable';
     }
+
+    $request->validate($validationRules);
+
+    User::create([
+        'name'       => $request->name,
+        'username'   => $request->username,
+        'password'   => Hash::make($request->password),
+        'jabatan'    => $request->jabatan,
+        'role'       => $request->role, 
+        'divisi_id'  => in_array($request->role, ['manager', 'asisten_manager']) ? null : $request->divisi_id,
+    ]);
+
+    $this->clearDashboardCache();
+
+    return redirect()->route('admin.staff.index')
+        ->with('success', 'Akun staff berhasil dibuat. Total pengguna sekarang: ' . User::count());
+}
 
     public function edit($id)
     {
@@ -84,11 +91,11 @@ User::create([
         return view('admin.staff.edit', compact('user', 'divisis'));
     }
 
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
 {
     $user = User::findOrFail($id);
 
-    $request->validate([
+    $validationRules = [
         'name'       => 'required|string|max:255',
         'username'   => [
             'required',
@@ -98,8 +105,17 @@ User::create([
         ],
         'password'   => 'nullable|string|min:8|confirmed',
         'jabatan'    => 'required|string|max:255',
-        'divisi_id'  => 'required|exists:divisis,id',
-    ], [
+        'role'       => 'required|string|in:user,manager,asisten_manager',
+    ];
+
+    // Only require divisi_id if role is not manager or asisten_manager
+    if (!in_array($request->role, ['manager', 'asisten_manager'])) {
+        $validationRules['divisi_id'] = 'required|exists:divisis,id';
+    } else {
+        $validationRules['divisi_id'] = 'nullable';
+    }
+
+    $request->validate($validationRules, [
         'name.required' => 'Nama lengkap wajib diisi.',
         'username.required' => 'Username wajib diisi.',
         'username.unique' => 'Username sudah digunakan oleh user lain.',
@@ -108,22 +124,21 @@ User::create([
         'jabatan.required' => 'Jabatan wajib diisi.',
         'divisi_id.required' => 'Divisi wajib dipilih.',
         'divisi_id.exists' => 'Divisi yang dipilih tidak valid.',
+        'role.required' => 'Role wajib dipilih.',
     ]);
 
-    // Update user data
     $user->name = $request->name;
     $user->username = $request->username;
     $user->jabatan = $request->jabatan;
-    $user->divisi_id = $request->divisi_id;
+    $user->role = $request->role;
+    $user->divisi_id = in_array($request->role, ['manager', 'asisten_manager']) ? null : $request->divisi_id;
     
-    // Only update password if provided
     if ($request->filled('password')) {
         $user->password = Hash::make($request->password);
     }
 
     $user->save();
 
-    // Clear cache yang berkaitan dengan statistik dashboard
     $this->clearDashboardCache();
 
     return redirect()->route('admin.staff.index')
@@ -133,22 +148,13 @@ User::create([
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        
-        // Check if user has any related data before deletion
-        // You can add your own logic here based on your application needs
-        // Example:
-        // if ($user->hasRelatedData()) {
-        //     return redirect()->route('admin.staff.index')
-        //         ->with('error', 'Staff tidak dapat dihapus karena memiliki data terkait.');
-        // }
-        
         $userName = $user->name;
         $user->delete();
 
         // Clear cache yang berkaitan dengan statistik dashboard
         $this->clearDashboardCache();
 
-        $remainingUsers = User::where('role', 'user')->count();
+        $remainingUsers = User::count();
 
         return redirect()->route('admin.staff.index')
             ->with('success', "Staff '{$userName}' berhasil dihapus. Total pengguna sekarang: {$remainingUsers}");
@@ -160,9 +166,6 @@ User::create([
         return view('admin.staff.show', compact('user'));
     }
 
-    /**
-     * Clear dashboard related cache
-     */
     private function clearDashboardCache()
     {
         // Clear cache keys yang berkaitan dengan statistik dashboard
@@ -172,30 +175,22 @@ User::create([
         Cache::forget('dashboard_users_by_divisi');
     }
 
-    /**
-     * Get total users count for API or AJAX calls
-     */
     public function getTotalUsers()
     {
-        $totalUsers = User::where('role', 'user')->count();
-        $activeUsersToday = User::where('role', 'user')
-            ->whereDate('updated_at', now()->format('Y-m-d'))
+        $totalUsers = User::count();
+        $activeUsersToday = User::whereDate('updated_at', now()->format('Y-m-d'))
             ->count();
 
         return response()->json([
             'total_users' => $totalUsers,
             'active_users_today' => $activeUsersToday,
             'users_by_divisi' => User::with('divisi')
-                ->where('role', 'user')
                 ->selectRaw('divisi_id, count(*) as total')
-                ->groupBy('divisi_id')
+                ->groupBy('divisi_id')               
                 ->get()
         ]);
     }
 
-    /**
-     * Bulk actions for users
-     */
     public function bulkAction(Request $request)
     {
         $request->validate([
@@ -213,12 +208,10 @@ User::create([
                 $message = "{$count} staff berhasil dihapus.";
                 break;
             case 'activate':
-                // Assuming you have an 'active' column
                 User::whereIn('id', $request->user_ids)->update(['active' => true]);
                 $message = "{$count} staff berhasil diaktifkan.";
                 break;
             case 'deactivate':
-                // Assuming you have an 'active' column
                 User::whereIn('id', $request->user_ids)->update(['active' => false]);
                 $message = "{$count} staff berhasil dinonaktifkan.";
                 break;
