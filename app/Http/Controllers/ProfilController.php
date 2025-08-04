@@ -134,7 +134,7 @@ class ProfilController extends Controller
                 'file',
                 'image',
                 'mimes:png,jpg,jpeg',
-                'max:2048' // 2MB
+                'max:5096' // 5MB
             ]
         ]);
 
