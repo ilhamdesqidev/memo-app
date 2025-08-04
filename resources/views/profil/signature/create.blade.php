@@ -1,61 +1,42 @@
-@extends($user->role === 'manager' ? 'main' : 'layouts.divisi')
+@extends(
+    auth()->user()->role === 'manager' ? 'main' : 
+    (auth()->user()->role === 'asisten_manager' ? 'layouts.asisten_manager' : 'layouts.divisi')
+)
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-        <div class="bg-indigo-800 px-6 py-4">
-            <h2 class="text-xl font-semibold text-white">Create Digital Signature</h2>
+<div class="min-h-screen bg-gray-50 px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-light text-gray-800 mb-2">Create Digital Signature</h1>
+            <p class="text-gray-600">Create your personalized digital signature</p>
         </div>
-        
-        <div class="p-6">
-            <!-- Navigation Tabs -->
-            <div class="mb-4">
-                <nav class="flex space-x-4 border-b border-gray-200">
-                    <button id="draw-tab" class="py-2 px-4 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600">
-                        Draw Signature
-                    </button>
-                    <button id="upload-tab" class="py-2 px-4 text-sm font-medium text-gray-500 hover:text-gray-700">
-                        Upload Image
-                    </button>
-                </nav>
+
+        <!-- Main Card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
+                <h2 class="text-xl font-medium text-white">Signature Creation</h2>
             </div>
 
-            <!-- Draw Signature Panel -->
-             <div id="draw-panel" class="signature-panel">
-                <div class="mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Draw your signature below:</p>
-                    <div class="border-2 border-gray-300 rounded-lg bg-white">
-                        <canvas id="signature-canvas" width="400" height="200" class="w-full cursor-crosshair"></canvas>
-                    </div>
-                    <div class="mt-2 flex justify-between items-center">
-                        <div class="flex space-x-2">
-                            <button id="clear-signature" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                                Clear
-                            </button>
-                            <button id="undo-signature" class="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
-                                Undo
-                            </button>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <label class="text-sm text-gray-600">Pen Size:</label>
-                            <input type="range" id="pen-size" min="1" max="5" value="2" class="w-20">
-                        </div>
-                    </div>
-                </div>
-                
-                 <form id="signature-form" action="{{ route($routes['signature']['save']) }}" method="POST" class="space-y-4">
-                    @csrf
-                    <input type="hidden" id="signature-data" name="signature_data">
-                    <div class="flex space-x-2">
-                        <button type="submit" id="save-signature" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition" disabled>
-                            Save Signature
+            <div class="p-8">
+                <!-- Navigation Tabs -->
+                <div class="mb-8">
+                    <nav class="flex space-x-1 bg-gray-100 p-1 rounded-xl">
+                        <button id="draw-tab" class="flex-1 py-2.5 px-4 text-sm font-medium text-white bg-blue-600 rounded-lg transition-all duration-200">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                            Draw Signature
                         </button>
-                        <a href="{{ route($routes['signature']['index']) }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
+                        <button id="upload-tab" class="flex-1 py-2.5 px-4 text-sm font-medium text-gray-600 hover:text-gray-800 rounded-lg transition-all duration-200">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            Upload Image
+                        </button>
+                    </nav>
+                </div>
 
             <!-- Upload Signature Panel -->
            <div id="upload-panel" class="signature-panel hidden">
@@ -72,25 +53,106 @@
                             required>
                     </div>
                     
-                    <div class="flex space-x-2">
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                            Upload Signature
-                        </button>
-                        <a href="{{ route($routes['signature']['index']) }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
-            @if($errors->any())
-                <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                    <ul class="list-disc list-inside text-sm">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                    <form id="signature-form" action="{{ route($routes['signature']['save']) }}" method="POST" class="space-y-6">
+                        @csrf
+                        <input type="hidden" id="signature-data" name="signature_data">
+                        <div class="flex flex-wrap gap-3">
+                            <button type="submit" id="save-signature" class="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Save Signature
+                            </button>
+                            <a href="{{ route($routes['signature']['index']) }}" class="inline-flex items-center px-6 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
                 </div>
-            @endif
+
+                <!-- Upload Signature Panel -->
+                <div id="upload-panel" class="signature-panel hidden">
+                    <form action="{{ route($routes['signature']['upload']) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                Upload signature image
+                            </label>
+                            <div class="relative">
+                                <input type="file" 
+                                    name="signature" 
+                                    accept="image/png,image/jpg,image/jpeg" 
+                                    class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors duration-200"
+                                    required>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">PNG, JPG, JPEG up to 2MB</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-3">
+                            <button type="submit" class="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                Upload Signature
+                            </button>
+                            <a href="{{ route($routes['signature']['index']) }}" class="inline-flex items-center px-6 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Error Messages -->
+                @if($errors->any())
+                    <div class="mt-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
+                        <div class="flex items-center mb-2">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="font-medium">Please fix the following errors:</span>
+                        </div>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Tips Card -->
+        <div class="mt-8 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <h3 class="text-lg font-medium text-gray-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Tips for better signature
+            </h3>
+            <div class="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div class="flex items-start">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <span>Sign naturally as you would on paper</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <span>Use a consistent writing speed</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <span>Keep your signature readable</span>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                    <span>Upload high-quality images for best results</span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -105,19 +167,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadPanel = document.getElementById('upload-panel');
 
     drawTab.addEventListener('click', function() {
-        drawTab.classList.add('text-indigo-600', 'border-indigo-600');
-        drawTab.classList.remove('text-gray-500');
-        uploadTab.classList.add('text-gray-500');
-        uploadTab.classList.remove('text-indigo-600', 'border-indigo-600');
+        // Active draw tab
+        drawTab.classList.add('text-white', 'bg-blue-600');
+        drawTab.classList.remove('text-gray-600');
+        // Inactive upload tab
+        uploadTab.classList.add('text-gray-600');
+        uploadTab.classList.remove('text-white', 'bg-blue-600');
+        // Show/hide panels
         drawPanel.classList.remove('hidden');
         uploadPanel.classList.add('hidden');
     });
 
     uploadTab.addEventListener('click', function() {
-        uploadTab.classList.add('text-indigo-600', 'border-indigo-600');
-        uploadTab.classList.remove('text-gray-500');
-        drawTab.classList.add('text-gray-500');
-        drawTab.classList.remove('text-indigo-600', 'border-indigo-600');
+        // Active upload tab
+        uploadTab.classList.add('text-white', 'bg-blue-600');
+        uploadTab.classList.remove('text-gray-600');
+        // Inactive draw tab
+        drawTab.classList.add('text-gray-600');
+        drawTab.classList.remove('text-white', 'bg-blue-600');
+        // Show/hide panels
         uploadPanel.classList.remove('hidden');
         drawPanel.classList.add('hidden');
     });
@@ -128,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const clearButton = document.getElementById('clear-signature');
     const undoButton = document.getElementById('undo-signature');
     const penSizeSlider = document.getElementById('pen-size');
+    const penSizeValue = document.getElementById('pen-size-value');
     const saveButton = document.getElementById('save-signature');
     const signatureForm = document.getElementById('signature-form');
     const signatureData = document.getElementById('signature-data');
@@ -136,11 +205,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let paths = [];
     let currentPath = [];
 
+    // Update pen size display
+    penSizeSlider.addEventListener('input', function() {
+        penSizeValue.textContent = this.value;
+    });
+
     // Set canvas size
     function resizeCanvas() {
         const rect = canvas.getBoundingClientRect();
-        canvas.width = rect.width;
-        canvas.height = rect.height;
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = '#000000';
@@ -150,37 +228,42 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', resizeCanvas);
 
     // Drawing functions
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+    }
+
     function startDrawing(e) {
         isDrawing = true;
         currentPath = [];
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const pos = getMousePos(e);
         
         ctx.beginPath();
-        ctx.moveTo(x, y);
-        currentPath.push({x, y, type: 'start'});
+        ctx.moveTo(pos.x, pos.y);
+        currentPath.push({x: pos.x, y: pos.y, type: 'start'});
     }
 
     function draw(e) {
         if (!isDrawing) return;
         
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
+        const pos = getMousePos(e);
         ctx.lineWidth = penSizeSlider.value;
-        ctx.lineTo(x, y);
+        ctx.lineTo(pos.x, pos.y);
         ctx.stroke();
         
-        currentPath.push({x, y, type: 'draw'});
+        currentPath.push({x: pos.x, y: pos.y, type: 'draw'});
         enableSaveButton();
     }
 
     function stopDrawing() {
         if (!isDrawing) return;
         isDrawing = false;
-        paths.push([...currentPath]);
+        if (currentPath.length > 0) {
+            paths.push([...currentPath]);
+        }
         currentPath = [];
     }
 
@@ -195,20 +278,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function touchStart(e) {
         e.preventDefault();
-        const touch = getTouchPos(e);
+        const pos = getTouchPos(e);
         const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.x + canvas.getBoundingClientRect().left,
-            clientY: touch.y + canvas.getBoundingClientRect().top
+            clientX: pos.x + canvas.getBoundingClientRect().left,
+            clientY: pos.y + canvas.getBoundingClientRect().top
         });
         canvas.dispatchEvent(mouseEvent);
     }
 
     function touchMove(e) {
         e.preventDefault();
-        const touch = getTouchPos(e);
+        const pos = getTouchPos(e);
         const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.x + canvas.getBoundingClientRect().left,
-            clientY: touch.y + canvas.getBoundingClientRect().top
+            clientX: pos.x + canvas.getBoundingClientRect().left,
+            clientY: pos.y + canvas.getBoundingClientRect().top
         });
         canvas.dispatchEvent(mouseEvent);
     }
@@ -260,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 for (let i = 1; i < path.length; i++) {
                     if (path[i].type === 'draw') {
+                        ctx.lineWidth = penSizeSlider.value;
                         ctx.lineTo(path[i].x, path[i].y);
                     }
                 }
