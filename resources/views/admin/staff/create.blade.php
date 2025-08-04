@@ -271,25 +271,26 @@ function togglePassword(fieldId) {
     field.setAttribute('type', type);
 }
 
-// Function to handle role change
+// Function to handle role change - MODIFIED VERSION
 document.getElementById('role').addEventListener('change', function() {
     const divisiSelect = document.getElementById('divisi_id');
-    if (this.value === 'manager' || this.value === 'asisten_manager') {
+    if (this.value === 'manager') {
         divisiSelect.disabled = true;
         divisiSelect.value = ''; // Clear selection
         divisiSelect.required = false;
     } else {
+        // Enable for both 'user' and 'asisten_manager'
         divisiSelect.disabled = false;
         divisiSelect.required = true;
     }
 });
 
-// Initialize the state on page load
+// Initialize the state on page load - MODIFIED VERSION
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role');
     const divisiSelect = document.getElementById('divisi_id');
     
-    if (roleSelect.value === 'manager' || roleSelect.value === 'asisten_manager') {
+    if (roleSelect.value === 'manager') {
         divisiSelect.disabled = true;
         divisiSelect.value = '';
         divisiSelect.required = false;
