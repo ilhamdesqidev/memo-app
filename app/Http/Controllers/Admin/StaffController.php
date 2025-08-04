@@ -68,11 +68,11 @@ class StaffController extends Controller
             'role'       => 'required|string|in:user,manager,asisten_manager',
         ];
 
-        // Only require divisi_id if role is not manager or asisten_manager
-        if (!in_array($request->role, ['manager', 'asisten_manager'])) {
-            $validationRules['divisi_id'] = 'required|exists:divisis,id';
-        } else {
+        // Only require divisi_id if role is not manager
+        if ($request->role === 'manager') {
             $validationRules['divisi_id'] = 'nullable';
+        } else {
+            $validationRules['divisi_id'] = 'required|exists:divisis,id';
         }
 
         $request->validate($validationRules);
@@ -83,7 +83,7 @@ class StaffController extends Controller
             'password'   => Hash::make($request->password),
             'jabatan'    => $request->jabatan,
             'role'       => $request->role, 
-            'divisi_id'  => in_array($request->role, ['manager', 'asisten_manager']) ? null : $request->divisi_id,
+            'divisi_id'  => $request->role === 'manager' ? null : $request->divisi_id,
         ]);
 
         $this->clearDashboardCache();
