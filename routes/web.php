@@ -96,7 +96,7 @@ Route::prefix('profile')->name('profile.')->middleware(['auth', 'role:admin'])->
     Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
 });
 
-// USER PROFILE ROUTES
+// User Profile Routes
 Route::prefix('profil')->name('profil.')->middleware(['auth', 'role:user'])->group(function () {
     Route::get('/', [ProfilController::class, 'index'])->name('index');
     Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
@@ -111,7 +111,7 @@ Route::prefix('profil')->name('profil.')->middleware(['auth', 'role:user'])->gro
     Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
 });
 
-// MANAGER PROFILE ROUTES (with manager prefix)
+// Manager Profile Routes
 Route::prefix('manager/profil')->name('manager.profil.')->middleware(['auth', 'role:manager'])->group(function () {
     Route::get('/', [ProfilController::class, 'index'])->name('index');
     Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');

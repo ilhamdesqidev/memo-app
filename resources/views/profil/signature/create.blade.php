@@ -1,4 +1,4 @@
-@extends('layouts.divisi')
+@extends($user->role === 'manager' ? 'main' : 'layouts.divisi')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -21,7 +21,7 @@
             </div>
 
             <!-- Draw Signature Panel -->
-            <div id="draw-panel" class="signature-panel">
+             <div id="draw-panel" class="signature-panel">
                 <div class="mb-4">
                     <p class="text-sm text-gray-600 mb-2">Draw your signature below:</p>
                     <div class="border-2 border-gray-300 rounded-lg bg-white">
@@ -43,14 +43,14 @@
                     </div>
                 </div>
                 
-                <form id="signature-form" action="{{ route($baseRoute.'signature.save') }}" method="POST" class="space-y-4">
+                 <form id="signature-form" action="{{ route($routes['signature']['save']) }}" method="POST" class="space-y-4">
                     @csrf
                     <input type="hidden" id="signature-data" name="signature_data">
                     <div class="flex space-x-2">
                         <button type="submit" id="save-signature" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition" disabled>
                             Save Signature
                         </button>
-                        <a href="{{ route($baseRoute.'signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                        <a href="{{ route($routes['signature']['index']) }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
                             Cancel
                         </a>
                     </div>
@@ -58,31 +58,30 @@
             </div>
 
             <!-- Upload Signature Panel -->
-            <div id="upload-panel" class="signature-panel hidden">
-                <form action="{{ route($baseRoute.'signature.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+           <div id="upload-panel" class="signature-panel hidden">
+                <form action="{{ route($routes['signature']['upload']) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Upload Signature Image (PNG, JPG, JPEG - Max 2MB)
                         </label>
                         <input type="file" 
-                               name="signature" 
-                               accept="image/png,image/jpg,image/jpeg" 
-                               class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                               required>
+                            name="signature" 
+                            accept="image/png,image/jpg,image/jpeg" 
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                            required>
                     </div>
                     
                     <div class="flex space-x-2">
                         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
                             Upload Signature
                         </button>
-                        <a href="{{ route($baseRoute.'signature.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
+                        <a href="{{ route($routes['signature']['index']) }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition">
                             Cancel
                         </a>
                     </div>
                 </form>
             </div>
-
             @if($errors->any())
                 <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                     <ul class="list-disc list-inside text-sm">

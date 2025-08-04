@@ -1,4 +1,4 @@
-@extends('layouts.divisi')
+@extends($user->role === 'manager' ? 'main' : 'layouts.divisi')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -10,10 +10,10 @@
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Back to Profile
+                    Back to Profil
                 </a>
                 <span class="text-gray-400">/</span>
-                <span class="text-gray-600">Edit Profile</span>
+                <span class="text-gray-600">Edit Profil</span>
             </div>
         </nav>
 
@@ -28,7 +28,7 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-white">Edit Profile</h1>
+                        <h1 class="text-2xl font-bold text-white">Edit Profil</h1>
                         <p class="text-indigo-100 mt-1">Update your personal information</p>
                     </div>
                 </div>
@@ -51,14 +51,14 @@
                     @csrf
                     @method('patch')
 
-                    <!-- Profile Avatar Section -->
+                    <!-- Profil Avatar Section -->
                     <div class="flex items-center mb-8">
                         <div class="w-20 h-20 bg-indigo-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                             {{ substr(Auth::user()->name, 0, 1) }}
                         </div>
                         <div class="ml-6">
-                            <h3 class="text-lg font-semibold text-gray-800">Profile Picture</h3>
-                            <p class="text-sm text-gray-600 mt-1">Your profile avatar is generated from your name</p>
+                            <h3 class="text-lg font-semibold text-gray-800">Profil Picture</h3>
+                            <p class="text-sm text-gray-600 mt-1">Your profil avatar is generated from your name</p>
                         </div>
                     </div>
 

@@ -1,4 +1,4 @@
-@extends('layouts.divisi')
+@extends($user->role === 'manager' ? 'main' : 'layouts.divisi')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -18,11 +18,11 @@
                     </div>
                     
                     <div class="mt-4 flex space-x-2">
-                        <a href="{{ route($baseRoute.'signature.create') }}" 
+                        <a href="{{ route($routes['signature']['create']) }}" 
                            class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
                             Update Signature
                         </a>
-                        <form action="{{ route($baseRoute.'signature.delete') }}" method="POST" class="inline-block">
+                        <form action="{{ route($routes['signature']['delete']) }}" method="POST" class="inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
@@ -36,7 +36,7 @@
             @else
                 <div class="mb-6">
                     <p class="text-gray-600 mb-4">You don't have a signature yet.</p>
-                    <a href="{{ route($baseRoute.'signature.create') }}" 
+                    <a href="{{ route($routes['signature']['create']) }}" 
                        class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
                         Create Signature
                     </a>
