@@ -63,7 +63,7 @@
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Upload Signature Image (PNG, JPG, JPEG - Max 2MB)
+                            Upload Signature Image (PNG, JPG, JPEG - Max 5MB)
                         </label>
                         <input type="file" 
                             name="signature" 
