@@ -1,4 +1,7 @@
-@extends($user->role === 'manager' ? 'main' : 'layouts.divisi')
+@extends(
+    auth()->user()->role === 'manager' ? 'main' : 
+    (auth()->user()->role === 'asisten_manager' ? 'layouts.asisten_manager' : 'layouts.divisi')
+)
 
 @section('content')
 <div class="container mx-auto px-4 py-8">

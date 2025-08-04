@@ -24,6 +24,8 @@ use App\Http\Controllers\Divisi\op2\MemoController as Op2MemoController;
 use App\Http\Controllers\Divisi\adminkeu\MemoController as AdminKeuMemoController;
 use App\Http\Controllers\Divisi\umumlegal\MemoController as UmumLegalMemoController;
 use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
+use App\Http\Controllers\AsistenManagerController;
+
 
 /*-------------------------------------------------------------------------
 | Public Routes
@@ -65,6 +67,8 @@ Route::middleware(['auth'])->group(function () {
                 return redirect()->route('manager.dashboard');
             case 'admin':
                 return redirect()->route('admin.dashboard');
+            case 'asisten_manager':
+                return redirect()->route('asmen.dashboard');
             default:
                 $divisiRoutes = [
                     'Pengembangan Bisnis' => 'pengembangan.dashboard',
@@ -113,6 +117,20 @@ Route::prefix('profil')->name('profil.')->middleware(['auth', 'role:user'])->gro
 
 // Manager Profile Routes
 Route::prefix('manager/profil')->name('manager.profil.')->middleware(['auth', 'role:manager'])->group(function () {
+    Route::get('/', [ProfilController::class, 'index'])->name('index');
+    Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
+    Route::patch('/update', [ProfilController::class, 'update'])->name('update');
+    Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
+    
+    // Signature routes
+    Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
+    Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
+    Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
+    Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
+    Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
+});
+
+Route::prefix('asmen/profil')->name('asmen.profil.')->middleware(['auth', 'role:asisten_manager'])->group(function () {
     Route::get('/', [ProfilController::class, 'index'])->name('index');
     Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
     Route::patch('/update', [ProfilController::class, 'update'])->name('update');
@@ -339,3 +357,13 @@ Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
 
     return response()->json($users);
 })->middleware('auth')->name('api.search-users');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/asmen/dashboard', function () {
+        return view('asmen.dashboard');
+    })->name('asmen.dashboard');
+});
+
+Route::middleware(['auth', 'role:asisten_manager'])->group(function () {
+    Route::get('/dashboard/asman', [AsistenManagerController::class, 'dashboard'])->name('asman.dashboard');
+});
