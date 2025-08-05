@@ -248,90 +248,88 @@
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Proyek Bisnis</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Proyek Bisnis</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Operasional Wilayah I')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Wilayah I Ops</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Wilayah I Ops</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Operasional Wilayah II')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Wilayah II Ops</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Wilayah II Ops</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Umum dan Legal')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Arsip Hukum</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Arsip Hukum</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Administrasi dan Keuangan')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Transaksi Keuangan</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Transaksi Keuangan</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Infrastruktur dan Sipil')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Proyek Sipil</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Proyek Sipil</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Food Beverage')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m-8-13v13m16 0V8M4 8l8-4 8 4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Manajemen Menu</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Manajemen Menu</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                             @case('Marketing dan Sales')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                                         </svg>
-                                        <span class="sidebar-text">Target Penjualan</span>
+                                        <span class="sidebar-text">Arsip</span>
                                     </a>
-                                    <span class="tooltip-text">Target Penjualan</span>
+                                    <span class="tooltip-text">Arsip</span>
                                 </div>
                                 @break
                         @endswitch

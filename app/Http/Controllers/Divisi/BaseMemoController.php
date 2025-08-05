@@ -40,18 +40,19 @@ class BaseMemoController extends Controller
     }
 
      public function index()
-    {
-        $memos = Memo::where('dari', $this->divisiName)
-                   ->orderBy('created_at', 'desc')
-                   ->paginate(10);
-        
-        return view($this->viewPrefix . '.index', [
-            'memos' => $memos,
-            'routePrefix' => $this->routePrefix,
-            'currentDivisi' => $this->divisiName,
-            'title' => 'Memo Keluar'
-        ]);
-    }
+{
+    $memos = Memo::where('dari', $this->divisiName)
+               ->where('dibuat_oleh_user_id', auth()->id()) // Add this line
+               ->orderBy('created_at', 'desc')
+               ->paginate(10);
+    
+    return view($this->viewPrefix . '.index', [
+        'memos' => $memos,
+        'routePrefix' => $this->routePrefix,
+        'currentDivisi' => $this->divisiName,
+        'title' => 'Memo Keluar'
+    ]);
+}
 
       public function inbox()
 {
