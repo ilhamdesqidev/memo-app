@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class ManagerMemoController extends Controller
 {
-    public function index()
-    {
-        // Logic to display memos for managers
-        return view('manager.memo.index');
-    }
 
     public function inbox()
     {
