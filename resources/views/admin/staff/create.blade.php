@@ -87,7 +87,7 @@
                         </div>
                     </div>
 
-                    <!-- Jabatan (Manual Input) -->
+                    <!-- Jabatan (Manual Input for user, auto-filled for other roles) -->
                     <div>
                         <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">
                             Jabatan
@@ -99,7 +99,8 @@
                                required 
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror" 
                                value="{{ old('jabatan') }}"
-                               placeholder="Masukkan jabatan (contoh: Asisten, Ketua, Pengadaan)">
+                               placeholder="Masukkan jabatan (contoh: Asisten, Ketua, Pengadaan)"
+                               {{ old('role') == 'manager' || old('role') == 'asisten_manager' ? 'readonly' : '' }}>
                         @error('jabatan') 
                             <p class="text-red-500 text-sm mt-1 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,13 +274,34 @@ function togglePassword(fieldId) {
 
 // Function to handle role change - MODIFIED VERSION
 document.getElementById('role').addEventListener('change', function() {
+    const jabatanField = document.getElementById('jabatan');
     const divisiSelect = document.getElementById('divisi_id');
+    
     if (this.value === 'manager') {
+        // Set jabatan to "Manager" and make it readonly
+        jabatanField.value = 'Manager';
+        jabatanField.readOnly = true;
+        
+        // Disable divisi selection
         divisiSelect.disabled = true;
-        divisiSelect.value = ''; // Clear selection
+        divisiSelect.value = '';
         divisiSelect.required = false;
-    } else {
-        // Enable for both 'user' and 'asisten_manager'
+    } 
+    else if (this.value === 'asisten_manager') {
+        // Set jabatan to "Ketua" and make it readonly
+        jabatanField.value = 'Ketua';
+        jabatanField.readOnly = true;
+        
+        // Enable divisi selection
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+    else {
+        // For 'user' role, allow manual input and enable divisi
+        jabatanField.value = '';
+        jabatanField.readOnly = false;
+        jabatanField.placeholder = 'Masukkan jabatan (contoh: Asisten, Ketua, Pengadaan)';
+        
         divisiSelect.disabled = false;
         divisiSelect.required = true;
     }
@@ -288,13 +310,24 @@ document.getElementById('role').addEventListener('change', function() {
 // Initialize the state on page load - MODIFIED VERSION
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role');
+    const jabatanField = document.getElementById('jabatan');
     const divisiSelect = document.getElementById('divisi_id');
     
+    // Set initial state based on selected role (for form validation errors)
     if (roleSelect.value === 'manager') {
+        jabatanField.value = 'Manager';
+        jabatanField.readOnly = true;
         divisiSelect.disabled = true;
         divisiSelect.value = '';
         divisiSelect.required = false;
     }
+    else if (roleSelect.value === 'asisten_manager') {
+        jabatanField.value = 'Ketua';
+        jabatanField.readOnly = true;
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+    // For 'user' role, fields remain as they are (editable)
 });
 </script>
 @endsection
