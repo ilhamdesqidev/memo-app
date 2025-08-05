@@ -25,6 +25,8 @@ use App\Http\Controllers\Divisi\adminkeu\MemoController as AdminKeuMemoControlle
 use App\Http\Controllers\Divisi\umumlegal\MemoController as UmumLegalMemoController;
 use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
 use App\Http\Controllers\AsistenManagerController;
+use App\Http\Controllers\Asmen\ArsipController;
+use App\Http\Controllers\Asmen\MemoController;
 
 
 /*-------------------------------------------------------------------------
@@ -357,12 +359,18 @@ Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
     return response()->json($users);
 })->middleware('auth')->name('api.search-users');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/asmen/dashboard', function () {
-        return view('asmen.dashboard');
-    })->name('asmen.dashboard');
-});
-
-Route::middleware(['auth', 'role:asisten_manager'])->group(function () {
-    Route::get('/dashboard/asman', [AsistenManagerController::class, 'dashboard'])->name('asman.dashboard');
+Route::prefix('asmen')
+    ->middleware(['auth', 'role:asisten_manager'])
+    ->group(function () {
+        Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])
+            ->name('asmen.dashboard');
+        
+        Route::prefix('memo')->group(function () {
+            Route::get('inbox', [MemoController::class, 'inbox'])
+                ->name('asmen.memo.inbox');
+        });
+        
+        Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->group(function () {
+        Route::get('arsip', [ArsipController::class, 'index'])->name('asmen.arsip');
+    });
 });
