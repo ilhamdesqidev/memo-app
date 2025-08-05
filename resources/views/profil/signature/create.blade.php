@@ -38,19 +38,36 @@
                     </nav>
                 </div>
 
-            <!-- Upload Signature Panel -->
-           <div id="upload-panel" class="signature-panel hidden">
-                <form action="{{ route($routes['signature']['upload']) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Upload Signature Image (PNG, JPG, JPEG - Max 5MB)
+                <!-- Draw Signature Panel -->
+                <div id="draw-panel" class="signature-panel">
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">
+                            Draw your signature below
                         </label>
-                        <input type="file" 
-                            name="signature" 
-                            accept="image/png,image/jpg,image/jpeg" 
-                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                            required>
+                        <div class="border-2 border-gray-200 rounded-lg bg-white p-1">
+                            <canvas id="signature-canvas" class="w-full h-48 cursor-crosshair"></canvas>
+                        </div>
+                        <div class="mt-3 flex justify-between items-center">
+                            <div class="flex space-x-3">
+                                <button id="clear-signature" type="button" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Clear
+                                </button>
+                                <button id="undo-signature" type="button" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                    </svg>
+                                    Undo
+                                </button>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-sm font-medium text-gray-700">Pen Size:</span>
+                                <input type="range" id="pen-size" min="1" max="10" value="3" class="w-24">
+                                <span id="pen-size-value" class="text-sm font-medium text-gray-700">3</span>
+                            </div>
+                        </div>
                     </div>
                     
                     <form id="signature-form" action="{{ route($routes['signature']['save']) }}" method="POST" class="space-y-6">
