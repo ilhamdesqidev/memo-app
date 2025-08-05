@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
             toolbar: [
                 [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                 [{ 'font': [] }],
-                [{ 'size': ['small', false, 'large', 'huge',] }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ 'color': [] }, { 'background': [] }],
                 [{ 'script': 'sub'}, { 'script': 'super' }],
@@ -166,15 +166,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     users.forEach(user => {
                         const div = document.createElement('div');
                         div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
+                        
+                        // Tambahkan badge role
                         div.innerHTML = `
-                            <div class="font-medium">${user.name}</div>
-                            <div class="text-xs text-gray-500">${user.divisi_nama}</div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">${user.name}</div>
+                                    <div class="text-xs text-gray-500">${user.divisi_nama}</div>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full 
+                                    ${user.role === 'asisten_manager' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                                    ${user.role === 'asisten_manager' ? 'Asmen' : 'User'}
+                                </span>
+                            </div>
                         `;
+                        
                         div.addEventListener('click', () => {
                             searchInput.value = user.name;
                             kepadaInput.value = user.name;
                             kepadaIdInput.value = user.id;
-                            divisiInput.value = user.divisi_nama;
+                            
+                            // Jika penerima adalah asisten manager, set divisi tujuan ke divisi asisten manager tersebut
+                            if (user.role === 'asisten_manager') {
+                                divisiInput.value = user.divisi_nama;
+                            } else {
+                                divisiInput.value = user.divisi_nama;
+                            }
+                            
                             dropdown.classList.add('hidden');
                         });
                         dropdown.appendChild(div);
@@ -194,6 +212,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('form').addEventListener('submit', function(e) {
         // Ensure Quill content is saved to textarea before submission
         document.getElementById('isi_memo').value = quill.root.innerHTML;
+        
+        // Validate recipient selection
+        if (!kepadaIdInput.value) {
+            e.preventDefault();
+            alert('Silakan pilih penerima memo dari daftar');
+        }
+        
+        // Additional validation for assistant manager
+        const selectedRole = document.querySelector(`#kepadaDropdown div[data-role="asisten_manager"]`);
+        if (selectedRole && !divisiInput.value) {
+            e.preventDefault();
+            alert('Divisi tujuan harus diisi ketika mengirim ke Asisten Manager');
+        }
     });
 });
 </script>
@@ -248,6 +279,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .ql-toolbar.ql-snow button.ql-active {
     color: #1d4ed8 !important;
+}
+
+/* Style untuk dropdown pencarian user */
+#kepadaDropdown {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+#kepadaDropdown div {
+    transition: background-color 0.2s;
+}
+
+#kepadaDropdown div:hover {
+    background-color: #f3f4f6;
 }
 </style>
 @endsection

@@ -102,37 +102,8 @@ Route::prefix('profile')->name('profile.')->middleware(['auth', 'role:admin'])->
     Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
 });
 
-// User Profile Routes
-Route::prefix('profil')->name('profil.')->middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/', [ProfilController::class, 'index'])->name('index');
-    Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
-    Route::patch('/update', [ProfilController::class, 'update'])->name('update');
-    Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
-    
-    // Signature routes
-    Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
-    Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
-    Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
-    Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
-    Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
-});
-
-// Manager Profile Routes
-Route::prefix('manager/profil')->name('manager.profil.')->middleware(['auth', 'role:manager'])->group(function () {
-    Route::get('/', [ProfilController::class, 'index'])->name('index');
-    Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
-    Route::patch('/update', [ProfilController::class, 'update'])->name('update');
-    Route::delete('/delete', [ProfilController::class, 'destroy'])->name('destroy');
-    
-    // Signature routes
-    Route::get('/signature', [ProfilController::class, 'signatureIndex'])->name('signature.index');
-    Route::get('/signature/create', [ProfilController::class, 'createSignature'])->name('signature.create');
-    Route::post('/signature/upload', [ProfilController::class, 'uploadSignature'])->name('signature.upload');
-    Route::post('/signature/save', [ProfilController::class, 'saveSignature'])->name('signature.save');
-    Route::delete('/signature/delete', [ProfilController::class, 'deleteSignature'])->name('signature.delete');
-});
-
-Route::prefix('asmen/profil')->name('asmen.profil.')->middleware(['auth', 'role:asisten_manager'])->group(function () {
+// Single profile route group accessible to all authenticated users
+Route::prefix('profil')->name('profil.')->middleware('auth')->group(function () {
     Route::get('/', [ProfilController::class, 'index'])->name('index');
     Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
     Route::patch('/update', [ProfilController::class, 'update'])->name('update');
@@ -339,11 +310,11 @@ Route::prefix('marketing')
 Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
     $query = $request->input('q');
     
-    $users = App\Models\User::where('role', 'user')
-        ->where(function($q) use ($query) {
+    $users = App\Models\User::where(function($q) use ($query) {
             $q->where('name', 'like', "%$query%")
               ->orWhere('username', 'like', "%$query%");
         })
+        ->whereIn('role', ['user', 'asisten_manager'])
         ->with('divisi')
         ->limit(10)
         ->get()
@@ -352,7 +323,9 @@ Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
                 'id' => $user->id,
                 'name' => $user->name,
                 'jabatan' => $user->jabatan ?? '-',
-                'divisi_nama' => $user->divisi->nama ?? '-'
+                'divisi_nama' => $user->divisi->nama ?? '-',
+                'divisi_id' => $user->divisi->id ?? null, // Tambahkan divisi_id
+                'role' => $user->role
             ];
         });
 
@@ -365,10 +338,13 @@ Route::prefix('asmen')
         Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])
             ->name('asmen.dashboard');
         
-        Route::prefix('memo')->group(function () {
-            Route::get('inbox', [MemoController::class, 'inbox'])
-                ->name('asmen.memo.inbox');
-        });
+        Route::prefix('asmen/memo')->name('asmen.memo.')->group(function () {
+    Route::get('inbox', [MemoController::class, 'inbox'])->name('inbox');
+    Route::get('{memo}', [MemoController::class, 'show'])->name('show');
+    Route::post('{memo}/approve', [MemoController::class, 'approve'])->name('approve');
+    Route::post('{memo}/reject', [MemoController::class, 'reject'])->name('reject');
+    Route::post('{memo}/request-revision', [MemoController::class, 'requestRevision'])->name('request-revision');
+});
         
         Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->group(function () {
         Route::get('arsip', [ArsipController::class, 'index'])->name('asmen.arsip');

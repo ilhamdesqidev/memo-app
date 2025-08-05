@@ -42,6 +42,11 @@ class Memo extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    public function divisiAsal()
+    {
+        return $this->belongsTo(Divisi::class, 'dari', 'nama');
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'dibuat_oleh_user_id');

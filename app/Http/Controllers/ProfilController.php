@@ -12,33 +12,25 @@ class ProfilController extends Controller
 {
     use AuthorizesRequests;
 
-    // Method untuk mendapatkan base route berdasarkan role
-    protected function getBaseRoute(): string
-    {
-        return Auth::user()->role === 'manager' ? 'manager.profil.' : 'profil.';
-    }
-
     // Method untuk mendapatkan semua route yang diperlukan
     protected function getAllRoutes(): array
-{
-    $base = $this->getBaseRoute(); // Ini sudah mengembalikan 'profil.' atau 'manager.profil.'
-    
-    return [
-        'profil' => [ // Ganti 'profile' menjadi 'profil' untuk konsistensi
-            'index' => $base.'index',
-            'edit' => $base.'edit',
-            'update' => $base.'update',
-            'destroy' => $base.'destroy'
-        ],
-        'signature' => [
-            'index' => $base.'signature.index',
-            'create' => $base.'signature.create',
-            'upload' => $base.'signature.upload',
-            'save' => $base.'signature.save',
-            'delete' => $base.'signature.delete'
-        ]
-    ];
-}
+    {
+        return [
+            'profil' => [
+                'index' => 'profil.index',
+                'edit' => 'profil.edit',
+                'update' => 'profil.update',
+                'destroy' => 'profil.destroy'
+            ],
+            'signature' => [
+                'index' => 'profil.signature.index',
+                'create' => 'profil.signature.create',
+                'upload' => 'profil.signature.upload',
+                'save' => 'profil.signature.save',
+                'delete' => 'profil.signature.delete'
+            ]
+        ];
+    }
 
     // Tampilan utama profil
     public function index(): View
@@ -48,8 +40,7 @@ class ProfilController extends Controller
         
         return view('profil.index', [
             'user' => $user,
-            'routes' => $routes,
-            'baseRoute' => $this->getBaseRoute()
+            'routes' => $routes
         ]);
     }
     
@@ -61,8 +52,7 @@ class ProfilController extends Controller
         
         return view('profil.edit', [
             'user' => $user,
-            'routes' => $routes,
-            'baseRoute' => $this->getBaseRoute()
+            'routes' => $routes
         ]);
     }
 
@@ -101,16 +91,15 @@ class ProfilController extends Controller
 
     // Tampilan index signature
     public function signatureIndex(): View
-{
-    $user = auth()->user();
-    $routes = $this->getAllRoutes();
-    
-    return view('profil.signature.index', [
-        'user' => $user,
-        'routes' => $routes,
-        'baseRoute' => $this->getBaseRoute()
-    ]);
-}
+    {
+        $user = auth()->user();
+        $routes = $this->getAllRoutes();
+        
+        return view('profil.signature.index', [
+            'user' => $user,
+            'routes' => $routes
+        ]);
+    }
 
     // Tampilan create signature
     public function createSignature(): View
@@ -120,8 +109,7 @@ class ProfilController extends Controller
         
         return view('profil.signature.create', [
             'user' => $user,
-            'routes' => $routes,
-            'baseRoute' => $this->getBaseRoute()
+            'routes' => $routes
         ]);
     }
 

@@ -98,7 +98,7 @@ class BaseMemoController extends Controller
     ]);
 }
 
-        public function store(Request $request)
+      public function store(Request $request)
 {
     $validated = $request->validate([
         'nomor' => 'required|string|max:50|unique:memos',
@@ -111,6 +111,9 @@ class BaseMemoController extends Controller
         'lampiran' => 'nullable|integer|min:0|max:10',
     ]);
 
+    // Dapatkan data penerima
+    $penerima = \App\Models\User::find($request->kepada_id);
+
     $memoData = $request->only([
         'nomor', 'tanggal', 'kepada', 'kepada_id', 'perihal', 
         'divisi_tujuan', 'isi', 'lampiran'
@@ -118,11 +121,29 @@ class BaseMemoController extends Controller
     
     $memoData['dari'] = $this->divisiName;
     $memoData['dibuat_oleh_user_id'] = auth()->id();
+    
+    // Jika penerima adalah asisten manager, kirim ke divisinya
+    if ($penerima->role === 'asisten_manager') {
+        $memoData['divisi_tujuan'] = $penerima->divisi->nama;
+        $memoData['status'] = 'diajukan';
+    } else {
+        $memoData['status'] = 'diajukan';
+    }
 
-    Memo::create($memoData);
+    $memo = Memo::create($memoData);
+
+    // Log pembuatan memo
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'divisi' => $this->divisiName,
+        'aksi' => 'pembuatan',
+        'catatan' => 'Memo dibuat oleh ' . auth()->user()->name,
+        'user_id' => auth()->id(),
+        'waktu' => now()->toDateTimeString(),
+    ]);
 
     return redirect()->route($this->routePrefix . '.memo.index')
-        ->with('success', 'Memo berhasil dibuat');
+        ->with('success', 'Memo berhasil dibuat dan diajukan');
 }
 
     public function updateStatus(Request $request)
