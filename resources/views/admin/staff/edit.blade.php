@@ -121,7 +121,8 @@
                         <select name="divisi_id" 
                                 id="divisi_id" 
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('divisi_id') border-red-500 @enderror" 
-                                required>
+                                required
+                                {{ old('role', $user->role) === 'manager' ? 'disabled' : '' }}>
                             <option value="">-- Pilih Divisi --</option>
                             @foreach ($divisis as $divisi)
                                 <option value="{{ $divisi->id }}" {{ old('divisi_id', $user->divisi_id) == $divisi->id ? 'selected' : '' }}>
@@ -244,10 +245,61 @@
 </div>
 
 <script>
-function togglePassword(fieldId) {
-    const field = document.getElementById(fieldId);
-    const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
-    field.setAttribute('type', type);
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the elements
+    const roleSelect = document.getElementById('role');
+    const divisiSelect = document.getElementById('divisi_id');
+    const passwordField = document.getElementById('password');
+    const passwordConfirmField = document.getElementById('password_confirmation');
+
+    // Function to handle role change
+    function handleRoleChange() {
+        if (roleSelect.value === 'manager') {
+            // Disable divisi select for manager
+            divisiSelect.disabled = true;
+            divisiSelect.value = ''; // Clear selection
+            divisiSelect.required = false; // Remove required validation
+        } else {
+            // Enable divisi select for other roles
+            divisiSelect.disabled = false;
+            divisiSelect.required = true; // Add required validation
+        }
+    }
+
+    // Function to toggle password visibility
+    function togglePassword(fieldId) {
+        const field = document.getElementById(fieldId);
+        const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+        field.setAttribute('type', type);
+    }
+
+    // Initialize on page load
+    handleRoleChange();
+
+    // Add event listeners
+    roleSelect.addEventListener('change', handleRoleChange);
+    
+    // Password toggle buttons
+    document.querySelectorAll('[onclick^="togglePassword"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const fieldId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+            togglePassword(fieldId);
+        });
+    });
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Clear disabled field values before submission
+        if (divisiSelect.disabled) {
+            divisiSelect.value = '';
+        }
+        
+        // Password confirmation check if password is filled
+        if (passwordField.value && passwordField.value !== passwordConfirmField.value) {
+            e.preventDefault();
+            alert('Password dan konfirmasi password tidak cocok!');
+        }
+    });
+});
 </script>
 @endsection

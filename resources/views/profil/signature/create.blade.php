@@ -105,7 +105,7 @@
                                     class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition-colors duration-200"
                                     required>
                             </div>
-                            <p class="mt-2 text-xs text-gray-500">PNG, JPG, JPEG up to 2MB</p>
+                            <p class="mt-2 text-xs text-gray-500">PNG, JPG, JPEG up to 5MB</p>
                         </div>
                         
                         <div class="flex flex-wrap gap-3">
