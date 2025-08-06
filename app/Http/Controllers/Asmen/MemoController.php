@@ -59,7 +59,7 @@ class MemoController extends Controller
     ]);
 }
 
- public function approve(Request $request, $id)
+public function approve(Request $request, $id)
 {
     $user = Auth::user();
     $memo = Memo::findOrFail($id);
@@ -69,12 +69,20 @@ class MemoController extends Controller
         abort(403, 'Tidak dapat memproses memo ini.');
     }
 
+    // Tentukan tindakan lanjutan
+    $nextAction = $request->input('next_action', 'approve');
+    
     // Update data memo
     $updateData = [
-        'status' => 'disetujui',
         'approved_by' => $user->id,
-        'approval_date' => now()
+        'approval_date' => now(),
+        'status' => ($nextAction === 'forward') ? 'diajukan' : 'disetujui'
     ];
+
+    // Jika diteruskan ke Manager, update divisi tujuan ke 'Manager'
+    if ($nextAction === 'forward') {
+        $updateData['divisi_tujuan'] = 'Manager';
+    }
 
     // Handle signature
     if ($request->has('include_signature') && $user->signature) {
@@ -85,18 +93,24 @@ class MemoController extends Controller
 
     $memo->update($updateData);
 
-    // Create log - dengan divisi
+    // Create log
+    $logMessage = ($nextAction === 'forward') 
+        ? 'Memo disetujui dan diteruskan ke Manager' 
+        : 'Memo disetujui';
+    
     MemoLog::create([
         'memo_id' => $memo->id,
         'user_id' => $user->id,
-        'divisi' => $user->divisi->nama, // Pastikan ini sesuai struktur database Anda
-        'aksi' => 'persetujuan',
-        'catatan' => $request->catatan ?? 'Memo disetujui',
+        'divisi' => $user->divisi->nama,
+        'aksi' => ($nextAction === 'forward') ? 'penerusan' : 'persetujuan',
+        'catatan' => $request->catatan ?? $logMessage,
         'waktu' => now()
     ]);
 
     return redirect()->route('asmen.memo.inbox')
-        ->with('success', 'Memo berhasil disetujui');
+        ->with('success', ($nextAction === 'forward') 
+            ? 'Memo berhasil disetujui dan diteruskan ke Manager' 
+            : 'Memo berhasil disetujui');
 }
 
    public function reject(Request $request, $id)

@@ -138,9 +138,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
     Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
     
-    // Memo routes within the same manager group
+    // Memo routes
     Route::prefix('memo')->name('memo.')->group(function () {
         Route::get('/inbox', [ManagerMemoController::class, 'inbox'])->name('inbox');
+        Route::get('/{memo}', [ManagerMemoController::class, 'show'])->name('show');
+        Route::post('/{memo}/approve', [ManagerMemoController::class, 'approve'])->name('approve');
+        Route::post('/{memo}/reject', [ManagerMemoController::class, 'reject'])->name('reject');
     });
 });
 
