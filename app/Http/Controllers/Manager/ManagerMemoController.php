@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\MemoLog;
+use App\Models\Divisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,10 +34,14 @@ class ManagerMemoController extends Controller
             abort(403, 'Anda tidak memiliki akses ke memo ini.');
         }
 
+        // Dapatkan semua divisi kecuali divisi pengirim
+        $otherDivisions = Divisi::where('nama', '!=', $memo->dari)->get();
+
         return view('manager.memo.show', [
             'memo' => $memo,
             'title' => 'Detail Memo - Manager',
-            'canProcess' => $memo->status === 'diajukan'
+            'canProcess' => $memo->status === 'diajukan',
+            'otherDivisions' => $otherDivisions
         ]);
     }
 
@@ -50,25 +55,48 @@ class ManagerMemoController extends Controller
             abort(403, 'Tidak dapat memproses memo ini.');
         }
 
-        // Update memo
-        $memo->update([
-            'status' => 'disetujui',
+        // Tentukan divisi tujuan jika ada
+        $divisiTujuan = $request->input('divisi_tujuan');
+        
+        // Update data memo
+        $updateData = [
             'approved_by' => $user->id,
-            'approval_date' => now()
-        ]);
+            'approval_date' => now(),
+            'status' => $divisiTujuan ? 'diajukan' : 'disetujui'
+        ];
 
-        // Buat log
+        // Jika ada divisi tujuan, update
+        if ($divisiTujuan) {
+            $updateData['divisi_tujuan'] = $divisiTujuan;
+        }
+
+        // Handle signature
+        if ($request->has('include_signature') && $user->signature) {
+            $updateData['signature_path'] = $user->signature;
+            $updateData['signed_by'] = $user->id;
+            $updateData['signed_at'] = now();
+        }
+
+        $memo->update($updateData);
+
+        // Create log
+        $logMessage = $divisiTujuan 
+            ? "Memo disetujui dan diteruskan ke divisi $divisiTujuan" 
+            : 'Memo disetujui oleh Manager';
+        
         MemoLog::create([
             'memo_id' => $memo->id,
             'user_id' => $user->id,
             'divisi' => 'Manager',
-            'aksi' => 'persetujuan_final',
-            'catatan' => $request->catatan ?? 'Memo disetujui oleh Manager',
+            'aksi' => $divisiTujuan ? 'penerusan' : 'persetujuan_final',
+            'catatan' => $request->catatan ?? $logMessage,
             'waktu' => now()
         ]);
 
         return redirect()->route('manager.memo.inbox')
-            ->with('success', 'Memo berhasil disetujui');
+            ->with('success', $divisiTujuan 
+                ? "Memo berhasil disetujui dan diteruskan ke $divisiTujuan" 
+                : 'Memo berhasil disetujui');
     }
 
     public function reject(Request $request, $id)
