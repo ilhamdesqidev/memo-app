@@ -28,7 +28,6 @@ use App\Http\Controllers\AsistenManagerController;
 use App\Http\Controllers\Asmen\ArsipController;
 use App\Http\Controllers\Asmen\MemoController;
 
-
 /*-------------------------------------------------------------------------
 | Public Routes
 |-------------------------------------------------------------------------*/
@@ -136,17 +135,33 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
 /*-------------------------------------------------------------------------
 | Manager Routes
 |-------------------------------------------------------------------------*/
-
-    Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
-        Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
-        // Memo routes within the same manager group
-        Route::prefix('memo')->name('memo.')->group(function () {
-            Route::get('/inbox', [ManagerMemoController::class, 'inbox'])->name('inbox');
-        });
+Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')->group(function () {
+    Route::get('/dashboard', [DashboardManagerController::class, 'index'])->name('dashboard');
+    
+    // Memo routes within the same manager group
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/inbox', [ManagerMemoController::class, 'inbox'])->name('inbox');
     });
+});
 
-
-
+/*-------------------------------------------------------------------------
+| Asisten Manager Routes
+|-------------------------------------------------------------------------*/
+Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asmen.')->group(function () {
+    Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])->name('dashboard');
+    
+    // Memo routes
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/inbox', [MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/{memo}', [MemoController::class, 'show'])->name('show');
+        Route::post('/{memo}/approve', [MemoController::class, 'approve'])->name('approve');
+        Route::post('/{memo}/reject', [MemoController::class, 'reject'])->name('reject');
+        Route::post('/{memo}/request-revision', [MemoController::class, 'requestRevision'])->name('request-revision');
+    });
+    
+    // Arsip routes
+    Route::get('/arsip', [ArsipController::class, 'index'])->name('arsip');
+});
 
 /*-------------------------------------------------------------------------
 | Divisi Routes
@@ -165,6 +180,8 @@ Route::prefix('pengembangan')
             Route::get('/create', [PengembanganMemoController::class, 'create'])->name('create');
             Route::post('/', [PengembanganMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [PengembanganMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [PengembanganMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [PengembanganMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [PengembanganMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [PengembanganMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [PengembanganMemoController::class, 'viewPdf'])->name('pdf');
@@ -184,6 +201,8 @@ Route::prefix('opwil1')
             Route::get('/create', [Op1MemoController::class, 'create'])->name('create');
             Route::post('/', [Op1MemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [Op1MemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [Op1MemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [Op1MemoController::class, 'update'])->name('update');
             Route::post('/update-status', [Op1MemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [Op1MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [Op1MemoController::class, 'viewPdf'])->name('pdf');
@@ -203,6 +222,8 @@ Route::prefix('opwil2')
             Route::get('/create', [Op2MemoController::class, 'create'])->name('create');
             Route::post('/', [Op2MemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [Op2MemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [Op2MemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [Op2MemoController::class, 'update'])->name('update');
             Route::post('/update-status', [Op2MemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [Op2MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [Op2MemoController::class, 'viewPdf'])->name('pdf');
@@ -222,6 +243,8 @@ Route::prefix('umumlegal')
             Route::get('/create', [UmumLegalMemoController::class, 'create'])->name('create');
             Route::post('/', [UmumLegalMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [UmumLegalMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [UmumLegalMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [UmumLegalMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [UmumLegalMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [UmumLegalMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [UmumLegalMemoController::class, 'viewPdf'])->name('pdf');
@@ -241,6 +264,8 @@ Route::prefix('adminkeu')
             Route::get('/create', [AdminKeuMemoController::class, 'create'])->name('create');
             Route::post('/', [AdminKeuMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [AdminKeuMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [AdminKeuMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [AdminKeuMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [AdminKeuMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [AdminKeuMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [AdminKeuMemoController::class, 'viewPdf'])->name('pdf');
@@ -260,6 +285,8 @@ Route::prefix('sipil')
             Route::get('/create', [SipilMemoController::class, 'create'])->name('create');
             Route::post('/', [SipilMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [SipilMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [SipilMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [SipilMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [SipilMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [SipilMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [SipilMemoController::class, 'viewPdf'])->name('pdf');
@@ -279,6 +306,8 @@ Route::prefix('food')
             Route::get('/create', [FoodMemoController::class, 'create'])->name('create');
             Route::post('/', [FoodMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [FoodMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [FoodMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [FoodMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [FoodMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [FoodMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [FoodMemoController::class, 'viewPdf'])->name('pdf');
@@ -298,6 +327,8 @@ Route::prefix('marketing')
             Route::get('/create', [MarketingMemoController::class, 'create'])->name('create');
             Route::post('/', [MarketingMemoController::class, 'store'])->name('store');
             Route::get('/{memo}', [MarketingMemoController::class, 'show'])->name('show');
+            Route::get('/{memo}/edit', [MarketingMemoController::class, 'edit'])->name('edit');
+            Route::put('/{memo}', [MarketingMemoController::class, 'update'])->name('update');
             Route::post('/update-status', [MarketingMemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [MarketingMemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [MarketingMemoController::class, 'viewPdf'])->name('pdf');
@@ -324,29 +355,10 @@ Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
                 'name' => $user->name,
                 'jabatan' => $user->jabatan ?? '-',
                 'divisi_nama' => $user->divisi->nama ?? '-',
-                'divisi_id' => $user->divisi->id ?? null, // Tambahkan divisi_id
+                'divisi_id' => $user->divisi->id ?? null,
                 'role' => $user->role
             ];
         });
 
     return response()->json($users);
 })->middleware('auth')->name('api.search-users');
-
-Route::prefix('asmen')
-    ->middleware(['auth', 'role:asisten_manager'])
-    ->group(function () {
-        Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])
-            ->name('asmen.dashboard');
-        
-        Route::prefix('asmen/memo')->name('asmen.memo.')->group(function () {
-    Route::get('inbox', [MemoController::class, 'inbox'])->name('inbox');
-    Route::get('{memo}', [MemoController::class, 'show'])->name('show');
-    Route::post('{memo}/approve', [MemoController::class, 'approve'])->name('approve');
-    Route::post('{memo}/reject', [MemoController::class, 'reject'])->name('reject');
-    Route::post('{memo}/request-revision', [MemoController::class, 'requestRevision'])->name('request-revision');
-});
-        
-        Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->group(function () {
-        Route::get('arsip', [ArsipController::class, 'index'])->name('asmen.arsip');
-    });
-});
