@@ -82,22 +82,27 @@
                         </button>
                     </form>
 
-                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="catatan_revisi" class="block text-sm font-medium text-gray-700">Catatan Revisi *</label>
-                            <textarea name="catatan_revisi" id="catatan_revisi" rows="2" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            <label for="catatan_revisi" class="block text-sm font-medium text-gray-700">
+                                Catatan Revisi *
+                            </label>
+                            <textarea name="catatan_revisi" id="catatan_revisi" rows="3" required
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                        <button type="submit" 
+                            class="w-full bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                             Minta Revisi
                         </button>
                     </form>
 
-                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="alasan" class="block text-sm font-medium text-gray-700">Alasan Penolakan *</label>
-                            <textarea name="alasan" id="alasan" rows="2" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            <textarea name="alasan" id="alasan" rows="3" required
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
                         </div>
                         <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             Tolak Memo

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Asmen;
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\MemoLog;
+use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -98,69 +99,84 @@ class MemoController extends Controller
         ->with('success', 'Memo berhasil disetujui');
 }
 
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'alasan' => 'required|string|max:500'
-        ]);
+   public function reject(Request $request, $id)
+{
+    $request->validate([
+        'alasan' => 'required|string|max:500'
+    ]);
 
-        $memo = Memo::findOrFail($id);
-        $user = Auth::user();
+    $user = Auth::user();
+    $memo = Memo::findOrFail($id);
 
-        // Authorization check
-        if ($memo->divisi_tujuan != $user->divisi_id || 
-            $memo->status != 'diajukan') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Update memo status
-        $memo->status = 'ditolak';
-        $memo->save();
-
-        // Log the rejection
-        MemoLog::create([
-            'memo_id' => $memo->id,
-            'user_id' => $user->id,
-            'aksi' => 'penolakan',
-            'catatan' => $request->alasan,
-            'waktu' => now()
-        ]);
-
-        return redirect()->route('asmen.memo.inbox')
-            ->with('success', 'Memo berhasil ditolak');
+    // Perbaikan validasi otorisasi:
+    if ($memo->divisi_tujuan !== $user->divisi->nama || $memo->status !== 'diajukan') {
+        abort(403, 'Unauthorized action.');
     }
 
-    public function requestRevision(Request $request, $id)
-    {
-        $request->validate([
-            'catatan_revisi' => 'required|string|max:500'
-        ]);
+    // Update status memo
+    $memo->update([
+        'status' => 'ditolak',
+        'rejected_by' => $user->id,
+        'rejection_date' => now()
+    ]);
 
-        $memo = Memo::findOrFail($id);
-        $user = Auth::user();
+    // Buat log memo
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'user_id' => $user->id,
+        'divisi' => $user->divisi->nama, // Pastikan kolom ini ada di tabel
+        'aksi' => 'penolakan',
+        'catatan' => $request->alasan,
+        'waktu' => now()
+    ]);
 
-        // Authorization check
-        if ($memo->divisi_tujuan != $user->divisi_id || 
-            $memo->status != 'diajukan') {
-            abort(403, 'Unauthorized action.');
-        }
+    return redirect()->route('asmen.memo.inbox')
+        ->with('success', 'Memo berhasil ditolak');
+}
 
-        // Update memo status
-        $memo->status = 'revisi';
-        $memo->save();
+   public function requestRevision(Request $request, $id)
+{
+    $request->validate([
+        'catatan_revisi' => 'required|string|max:500'
+    ]);
 
-        // Log the revision request
-        MemoLog::create([
-            'memo_id' => $memo->id,
-            'user_id' => $user->id,
-            'aksi' => 'permintaan_revisi',
-            'catatan' => $request->catatan_revisi,
-            'waktu' => now()
-        ]);
+    $user = Auth::user();
+    $memo = Memo::findOrFail($id);
 
-        return redirect()->route('asmen.memo.inbox')
-            ->with('success', 'Permintaan revisi berhasil dikirim');
+    // Debugging
+    Log::info("Divisi Tujuan Memo: ".$memo->divisi_tujuan);
+    Log::info("Divisi User: ".$user->divisi->nama);
+    Log::info("Status Memo: ".$memo->status);
+
+    // Validasi
+    if ($memo->divisi_tujuan !== $user->divisi->nama) {
+        abort(403, 'Anda tidak berhak memproses memo ini');
     }
+
+    if (!in_array($memo->status, ['diajukan', 'revisi'])) {
+        abort(403, 'Memo sudah diproses sebelumnya');
+    }
+
+    // Update memo
+    $memo->update([
+        'status' => 'revisi',
+        'revision_requested_by' => $user->id,
+        'revision_requested_at' => now()
+    ]);
+
+    // Buat log
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'user_id' => $user->id,
+        'divisi' => $user->divisi->nama,
+        'aksi' => 'permintaan_revisi',
+        'catatan' => $request->catatan_revisi,
+        'waktu' => now()
+    ]);
+
+    return redirect()->route('asmen.memo.inbox')
+        ->with('success', 'Permintaan revisi berhasil dikirim');
+}
 
     protected function regeneratePdf($memoId)
 {
