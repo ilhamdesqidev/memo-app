@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('memo_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('memo_id')->constrained()->onDelete('cascade');
-            $table->string('divisi');
+            $table->string('divisi')->nullable(); // Tambahkan kolom divisi yang nullable
             $table->string('aksi'); // setujui / tolak / revisi / kirim
             $table->text('catatan')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();

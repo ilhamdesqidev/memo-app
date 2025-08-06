@@ -208,37 +208,27 @@
         @endif
         
         <div class="signature-container">
-            <!-- Current signature only -->
             @if($memo->signed_by)
             <div class="signature-box">
                 @php
-                    $currentSignaturePath = $memo->signature_path 
-                        ? storage_path('app/public/' . $memo->signature_path) 
-                        : null;
-                    $currentImageData = null;
-                    if ($currentSignaturePath && file_exists($currentSignaturePath)) {
-                        $currentImageData = base64_encode(file_get_contents($currentSignaturePath));
-                        $currentImageInfo = getimagesize($currentSignaturePath);
-                        $currentMimeType = $currentImageInfo['mime'];
-                    }
+                    $signaturePath = storage_path('app/public/' . $memo->signature_path);
+                    if (file_exists($signaturePath)) {
+                        $signatureData = base64_encode(file_get_contents($signaturePath));
+                        $signatureMime = mime_content_type($signaturePath);
                 @endphp
                 
-                @if(isset($currentImageData))
-                    <img src="data:{{ $currentMimeType }};base64,{{ $currentImageData }}" 
-                         class="signature-img" alt="Tanda Tangan">
-                @else
-                    <div class="signature-line"></div>
-                @endif
+                <img src="data:{{ $signatureMime }};base64,{{ $signatureData }}" 
+                     class="signature-img" alt="Tanda Tangan">
                 
                 <div class="signature-name">{{ $memo->disetujuiOleh->name ?? '.........................' }}</div>
                 <div class="signature-position">{{ $memo->disetujuiOleh->jabatan ?? '.........................' }}</div>
                 <div class="signature-date">
                     {{ safeDateFormat($memo->signed_at) }}
                 </div>
+                @php } @endphp
             </div>
             @endif
             
-            <!-- Next approver placeholder if memo is still pending -->
             @if($memo->status === 'diajukan')
             <div class="signature-box">
                 <div class="signature-line"></div>
@@ -248,8 +238,6 @@
             </div>
             @endif
         </div>
-        
-       
     </div>
 </body>
 </html>
