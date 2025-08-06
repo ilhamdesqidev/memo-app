@@ -1,7 +1,7 @@
 @extends('layouts.asisten_manager')
 
 @section('content')
-<div class="container mx-auto px-4 py-6">
+<div class="container mx-auto px-4 py-6 max-w-4xl"> <!-- Tambahkan max-w-4xl untuk batas lebar -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
@@ -44,13 +44,13 @@
 
             <div class="mb-4">
                 <p class="text-sm text-gray-500">Isi Memo</p>
-                <div class="prose max-w-none mt-2">
+                <div class="prose max-w-none mt-2 break-words"> <!-- Tambahkan break-words -->
                     {!! $memo->isi !!}
                 </div>
             </div>
 
             @if($canProcess)
-            <div class="bg-white p-4 rounded-lg shadow mt-4">
+            <div class="bg-white p-4 rounded-lg shadow mt-4 max-w-full"> <!-- Tambahkan max-w-full -->
                 <h3 class="font-bold text-lg mb-4">Process Memo</h3>
                 <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="mb-3">
                     @csrf
@@ -58,8 +58,6 @@
                         Setujui
                     </button>
                 </form>
-
-                <!-- Tambahkan form untuk tolak dan revisi -->
             </div>
             @endif
 
@@ -67,7 +65,7 @@
             <div class="mt-6 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Tindakan</h3>
                 <div class="flex flex-wrap gap-3">
-                    <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="flex-1">
+                    <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]"> <!-- Tambahkan min-w-[250px] -->
                         @csrf
                         <div class="mb-3">
                             <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
@@ -82,7 +80,7 @@
                         </button>
                     </form>
 
-                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST">
+                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]"> <!-- Tambahkan min-w-[250px] -->
                         @csrf
                         <div class="mb-3">
                             <label for="catatan_revisi" class="block text-sm font-medium text-gray-700">
@@ -97,7 +95,7 @@
                         </button>
                     </form>
 
-                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST">
+                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]"> <!-- Tambahkan min-w-[250px] -->
                         @csrf
                         <div class="mb-3">
                             <label for="alasan" class="block text-sm font-medium text-gray-700">Alasan Penolakan *</label>
@@ -112,7 +110,7 @@
             </div>
             @endif
 
-                    <div class="mt-8 border-t border-gray-200 pt-4">
+            <div class="mt-8 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Riwayat Memo</h3>
                 <div class="space-y-4">
                     @foreach($memo->logs as $log)
@@ -122,10 +120,10 @@
                                 <span class="text-gray-600 text-sm">{{ substr($log->user->name, 0, 1) }}</span>
                             </div>
                         </div>
-                        <div class="flex-1">
-                            <div class="text-sm font-medium text-gray-900">{{ $log->user->name }}</div>
+                        <div class="flex-1 min-w-0"> <!-- Tambahkan min-w-0 untuk mencegah overflow -->
+                            <div class="text-sm font-medium text-gray-900 truncate">{{ $log->user->name }}</div> <!-- Tambahkan truncate -->
                             <div class="text-sm text-gray-500">{{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}</div>
-                            <div class="mt-1 text-sm text-gray-700">{{ $log->catatan }}</div>
+                            <div class="mt-1 text-sm text-gray-700 break-words">{{ $log->catatan }}</div> <!-- Tambahkan break-words -->
                         </div>
                     </div>
                     @endforeach
@@ -134,4 +132,18 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* Tambahkan style untuk memastikan konten tidak melebar */
+    .container {
+        max-width: 100%;
+    }
+    .prose {
+        max-width: 100%;
+        overflow-wrap: break-word;
+    }
+    textarea {
+        max-width: 100%;
+    }
+</style>
 @endsection
