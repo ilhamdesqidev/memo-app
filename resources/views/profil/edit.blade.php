@@ -9,7 +9,7 @@
         <!-- Breadcrumb Navigation -->
         <nav class="mb-6">
             <div class="flex items-center space-x-2 text-sm">
-                <a href="{{ route($baseRoute.'index') }}" class="text-indigo-600 hover:text-indigo-800 transition-colors duration-200 flex items-center">
+                <a href="{{ route('profil.index') }}" class="text-indigo-600 hover:text-indigo-800 transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
@@ -50,7 +50,7 @@
                 @endif
 
                 <!-- Form -->
-                <form method="POST" action="{{ route($baseRoute.'update') }}" class="space-y-6">
+                <form method="POST" action="{{ route('profil.update') }}" class="space-y-6">
                     @csrf
                     @method('patch')
 
@@ -152,7 +152,7 @@
 
                     <!-- Action Buttons -->
                     <div class="flex items-center justify-between pt-6 border-t border-gray-200">
-                        <a href="{{ route($baseRoute.'index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
+                        <a href="{{ route('profil.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
