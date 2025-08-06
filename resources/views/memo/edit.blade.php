@@ -6,7 +6,7 @@
         <!-- Header Section -->
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Edit Memo</h1>
-            <p class="text-gray-600 mt-1">Perbarui memo untuk komunikasi antar divisi</p>
+            <p class="text-gray-600 mt-1">Perbarui dan ajukan kembali memo</p>
         </div>
 
         @if ($errors->any())
@@ -27,9 +27,14 @@
         @endif
 
         <!-- Form Section -->
-        <form action="{{ route($routePrefix . '.memo.update', $memo->id) }}" method="POST">
+        <form action="{{ route($routePrefix . '.memo.update', $memo->id) }}" method="POST" id="memoForm">
             @csrf
             @method('PUT')
+            
+            <!-- Hidden fields untuk memastikan konsistensi data -->
+            <input type="hidden" name="dari" value="{{ $memo->dari }}">
+            <input type="hidden" name="dibuat_oleh_user_id" value="{{ $memo->dibuat_oleh_user_id }}">
+            <input type="hidden" name="status" value="diajukan">
             
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -50,14 +55,22 @@
                     <!-- Kepada -->
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700">Kepada *</label>
-                        <input type="text" id="kepada_search" 
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                               placeholder="Cari nama penerima..." 
-                               value="{{ $memo->kepada }} ({{ $memo->divisi_tujuan }})"
-                               autocomplete="off">
+                        <select name="kepada_id" id="kepada_id" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                            <option value="">Pilih Penerima</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}" 
+                                    {{ old('kepada_id', $memo->kepada_id) == $user->id ? 'selected' : '' }}
+                                    data-info="{{ json_encode([
+                                        'role' => $user->role,
+                                        'divisi_nama' => $user->divisi->nama,
+                                        'name' => $user->name
+                                    ]) }}">
+                                    {{ $user->name }} ({{ $user->divisi->nama }})
+                                </option>
+                            @endforeach
+                        </select>
                         <input type="hidden" name="kepada" id="kepada" value="{{ old('kepada', $memo->kepada) }}">
-                        <input type="hidden" name="kepada_id" id="kepada_id" value="{{ old('kepada_id', $memo->kepada_id) }}">
-                        <div id="kepadaDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"></div>
                     </div>
 
                     <!-- Dari -->
@@ -65,7 +78,6 @@
                         <label class="block text-sm font-medium text-gray-700">Dari</label>
                         <input type="text" value="{{ $memo->dari }}" readonly
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <input type="hidden" name="dari" value="{{ $memo->dari }}">
                     </div>
 
                     <!-- Perihal -->
@@ -81,6 +93,14 @@
                         <input type="text" name="divisi_tujuan" id="divisi_tujuan" 
                                value="{{ old('divisi_tujuan', $memo->divisi_tujuan) }}"
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                    </div>
+
+                    <!-- Lampiran -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Jumlah Lampiran</label>
+                        <input type="number" name="lampiran" min="0" max="10" 
+                               value="{{ old('lampiran', $memo->lampiran) }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <!-- Isi Memo dengan Rich Text Editor -->
@@ -101,7 +121,7 @@
                         Batal
                     </a>
                     <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Simpan Perubahan
+                        Ajukan Kembali
                     </button>
                 </div>
             </div>
@@ -120,15 +140,13 @@ document.addEventListener('DOMContentLoaded', function() {
         theme: 'snow',
         modules: {
             toolbar: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                 ['bold', 'italic', 'underline', 'strike'],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['link', 'image'],
+                ['link'],
                 ['clean']
             ]
         },
-        placeholder: 'Tulis isi memo di sini...',
-        bounds: '#editor-container'
+        placeholder: 'Tulis isi memo di sini...'
     });
 
     // Set initial content from hidden textarea
@@ -139,98 +157,52 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('isi_memo').value = quill.root.innerHTML;
     });
 
-    // User search functionality
-    const searchInput = document.getElementById('kepada_search');
+    // Auto-set divisi tujuan dan nama penerima
+    const kepadaSelect = document.getElementById('kepada_id');
+    const divisiTujuanInput = document.getElementById('divisi_tujuan');
     const kepadaInput = document.getElementById('kepada');
-    const kepadaIdInput = document.getElementById('kepada_id');
-    const divisiInput = document.getElementById('divisi_tujuan');
-    const dropdown = document.getElementById('kepadaDropdown');
-
-    // Load selected user data
-    const selectedUserId = kepadaIdInput.value;
-    if (selectedUserId) {
-        fetch(`/api/search-users?id=${selectedUserId}`)
-            .then(response => response.json())
-            .then(user => {
-                if (user) {
-                    searchInput.value = `${user.name} (${user.divisi_nama})`;
-                    kepadaInput.value = user.name;
-                    kepadaIdInput.value = user.id;
-                    divisiInput.value = user.divisi_nama;
-                }
-            });
-    }
-
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim();
+    
+    // Set initial values if already selected
+    if (kepadaSelect.value) {
+        const selectedOption = kepadaSelect.options[kepadaSelect.selectedIndex];
+        const userInfo = JSON.parse(selectedOption.dataset.info);
+        kepadaInput.value = userInfo.name;
         
-        if (query.length < 2) {
-            dropdown.classList.add('hidden');
-            return;
+        if (userInfo.role === 'asisten_manager') {
+            divisiTujuanInput.value = userInfo.divisi_nama;
         }
-
-        fetch(`/api/search-users?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(users => {
-                dropdown.innerHTML = '';
-                
-                if (users.length === 0) {
-                    dropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">Tidak ditemukan</div>';
-                } else {
-                    users.forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
-                        
-                        div.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <div class="font-medium">${user.name}</div>
-                                    <div class="text-xs text-gray-500">${user.divisi_nama}</div>
-                                </div>
-                                <span class="px-2 py-1 text-xs rounded-full 
-                                    ${user.role === 'asisten_manager' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                                    ${user.role === 'asisten_manager' ? 'Asmen' : 'User'}
-                                </span>
-                            </div>
-                        `;
-                        
-                        div.addEventListener('click', () => {
-                            searchInput.value = `${user.name} (${user.divisi_nama})`;
-                            kepadaInput.value = user.name;
-                            kepadaIdInput.value = user.id;
-                            
-                            // Jika penerima adalah asisten manager, set divisi tujuan ke divisi asisten manager tersebut
-                            if (user.role === 'asisten_manager') {
-                                divisiInput.value = user.divisi_nama;
-                            } else {
-                                divisiInput.value = user.divisi_nama;
-                            }
-                            
-                            dropdown.classList.add('hidden');
-                        });
-                        dropdown.appendChild(div);
-                    });
-                }
-                dropdown.classList.remove('hidden');
-            });
-    });
-
-    document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+    }
+    
+    kepadaSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        if (selectedOption.value) {
+            const userInfo = JSON.parse(selectedOption.dataset.info);
+            
+            // Update nama penerima
+            kepadaInput.value = userInfo.name;
+            
+            // Jika penerima adalah asisten manager, set divisi tujuan ke divisinya
+            if (userInfo.role === 'asisten_manager') {
+                divisiTujuanInput.value = userInfo.divisi_nama;
+            }
+        } else {
+            kepadaInput.value = '';
         }
     });
 
-    // Form submission handler
-    document.querySelector('form').addEventListener('submit', function(e) {
-        // Ensure Quill content is saved to textarea before submission
+    // Form validation before submission
+    document.getElementById('memoForm').addEventListener('submit', function(e) {
+        // Ensure Quill content is saved
         document.getElementById('isi_memo').value = quill.root.innerHTML;
         
         // Validate recipient selection
-        if (!kepadaIdInput.value) {
+        if (!kepadaSelect.value) {
             e.preventDefault();
-            alert('Silakan pilih penerima memo dari daftar');
+            alert('Silakan pilih penerima memo');
+            return false;
         }
+        
+        return true;
     });
 });
 </script>
@@ -258,34 +230,12 @@ document.addEventListener('DOMContentLoaded', function() {
     min-height: 250px !important;
 }
 
-.ql-editor.ql-blank::before {
-    color: #9ca3af !important;
-    font-style: normal !important;
-}
-
-/* Focus styles */
-.ql-container.ql-snow.ql-focused {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 1px #3b82f6 !important;
-}
-
-.ql-toolbar.ql-snow.ql-focused {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 1px #3b82f6 !important;
-}
-
-/* Style untuk dropdown pencarian user */
-#kepadaDropdown {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-#kepadaDropdown div {
-    transition: background-color 0.2s;
-}
-
-#kepadaDropdown div:hover {
-    background-color: #f3f4f6;
+/* Style untuk select penerima */
+select:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: #3b82f6;
+    border-color: #3b82f6;
 }
 </style>
 @endsection

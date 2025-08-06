@@ -174,10 +174,11 @@ class BaseMemoController extends Controller
     public function update(Request $request, $id)
     {
         $memo = Memo::findOrFail($id);
-        
+        $user = auth()->user();
+
         // Validasi otorisasi
-        if ($memo->dari !== $this->divisiName || $memo->status !== 'revisi') {
-            abort(403, 'Anda hanya dapat mengedit draft memo dari divisi Anda.');
+        if ($memo->dari !== $user->divisi->nama) {
+            abort(403, 'Memo tidak berasal dari divisi Anda.');
         }
 
         // Validasi input
@@ -189,23 +190,31 @@ class BaseMemoController extends Controller
             'perihal' => 'required|string|max:255',
             'divisi_tujuan' => 'required|string',
             'isi' => 'required|string',
+            'lampiran' => 'nullable|integer|min:0|max:10',
         ]);
 
-        // Update data memo
-        $memo->update($validated);
+        // Update data memo dan langsung ajukan
+        $memo->update(array_merge($validated, [
+            'status' => 'diajukan',
+            'approved_by' => null,
+            'approval_date' => null
+        ]));
 
-        // Tambahkan log perubahan
+        // Log perubahan
         MemoLog::create([
             'memo_id' => $memo->id,
             'divisi' => $this->divisiName,
-            'aksi' => 'pembaruan',
-            'catatan' => 'Memo diperbarui oleh ' . auth()->user()->name,
-            'user_id' => auth()->id(),
+            'aksi' => 'pengajuan_ulang',
+            'catatan' => 'Memo diajukan kembali oleh ' . $user->name,
+            'user_id' => $user->id,
             'waktu' => now()->toDateTimeString(),
         ]);
 
+        // Regenerate PDF
+        $this->regeneratePdf($memo->id);
+
         return redirect()->route($this->routePrefix . '.memo.index')
-            ->with('success', 'Memo berhasil diperbarui');
+            ->with('success', 'Memo berhasil diajukan kembali');
     }
 
     public function updateStatus(Request $request)
