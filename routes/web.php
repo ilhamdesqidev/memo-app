@@ -341,14 +341,14 @@ Route::prefix('marketing')
 /*-------------------------------------------------------------------------
 | API Routes
 |-------------------------------------------------------------------------*/
-Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
+Route::get('/api/search-asisten-manager', function (Illuminate\Http\Request $request) {
     $query = $request->input('q');
     
     $users = App\Models\User::where(function($q) use ($query) {
             $q->where('name', 'like', "%$query%")
               ->orWhere('username', 'like', "%$query%");
         })
-        ->whereIn('role', ['user', 'asisten_manager'])
+        ->where('role', 'asisten_manager')
         ->with('divisi')
         ->limit(10)
         ->get()
@@ -364,4 +364,4 @@ Route::get('/api/search-users', function (Illuminate\Http\Request $request) {
         });
 
     return response()->json($users);
-})->middleware('auth')->name('api.search-users');
+})->middleware('auth')->name('api.search-asisten-manager');

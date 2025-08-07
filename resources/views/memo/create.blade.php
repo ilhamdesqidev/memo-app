@@ -45,15 +45,11 @@
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
-                    <!-- Kepada -->
-                    <div class="relative">
+                    <!-- Kepada (Manual Input) -->
+                    <div>
                         <label class="block text-sm font-medium text-gray-700">Kepada *</label>
-                        <input type="text" id="kepada_search" 
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                               placeholder="Cari nama penerima..." autocomplete="off">
-                        <input type="hidden" name="kepada" id="kepada">
-                        <input type="hidden" name="kepada_id" id="kepada_id">
-                        <div id="kepadaDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"></div>
+                        <input type="text" name="kepada" value="{{ old('kepada') }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
                     <!-- Dari -->
@@ -64,18 +60,30 @@
                         <input type="hidden" name="dari" value="{{ auth()->user()->divisi->nama }}">
                     </div>
 
+                    <!-- Divisi Tujuan (Searchable Dropdown) -->
+                    <div class="relative md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Divisi Tujuan *</label>
+                        <div class="relative">
+                            <input type="text" id="divisi_search" 
+                                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="Cari nama atau divisi asisten manager..." autocomplete="off">
+                            <input type="hidden" name="divisi_tujuan" id="divisi_tujuan">
+                            <input type="hidden" name="kepada_id" id="kepada_id">
+                            <div id="divisiDropdown" class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"></div>
+                            <button type="button" id="clearSelection" class="absolute right-2.5 bottom-2.5 text-gray-400 hover:text-gray-600 hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="mt-1 text-sm text-gray-500" id="selectedDivisiText"></p>
+                    </div>
+
                     <!-- Perihal -->
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium text-gray-700">Perihal *</label>
                         <input type="text" name="perihal" value="{{ old('perihal') }}"
                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-
-                    <!-- Divisi Tujuan -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700">Divisi Tujuan *</label>
-                        <input type="text" name="divisi_tujuan" id="divisi_tujuan" readonly
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                     </div>
 
                     <!-- Isi Memo dengan Rich Text Editor -->
@@ -140,71 +148,108 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('isi_memo').value = quill.root.innerHTML;
     });
 
-    // User search functionality
-    const searchInput = document.getElementById('kepada_search');
-    const kepadaInput = document.getElementById('kepada');
+    // Divisi Tujuan search functionality (only for asisten_manager)
+    const divisiSearchInput = document.getElementById('divisi_search');
+    const divisiTujuanInput = document.getElementById('divisi_tujuan');
     const kepadaIdInput = document.getElementById('kepada_id');
-    const divisiInput = document.getElementById('divisi_tujuan');
-    const dropdown = document.getElementById('kepadaDropdown');
+    const divisiDropdown = document.getElementById('divisiDropdown');
+    const clearSelectionBtn = document.getElementById('clearSelection');
+    const selectedDivisiText = document.getElementById('selectedDivisiText');
 
-    searchInput.addEventListener('input', function() {
+    // Search functionality with debounce
+    let searchTimeout;
+    divisiSearchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
         const query = this.value.trim();
         
-        if (query.length < 2) {
-            dropdown.classList.add('hidden');
-            return;
-        }
-
-        fetch(`/api/search-users?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(users => {
-                dropdown.innerHTML = '';
-                
-                if (users.length === 0) {
-                    dropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">Tidak ditemukan</div>';
-                } else {
-                    users.forEach(user => {
-                        const div = document.createElement('div');
-                        div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
-                        
-                        // Tambahkan badge role
-                        div.innerHTML = `
-                            <div class="flex justify-between items-center">
-                                <div>
-                                    <div class="font-medium">${user.name}</div>
-                                    <div class="text-xs text-gray-500">${user.divisi_nama}</div>
-                                </div>
-                                <span class="px-2 py-1 text-xs rounded-full 
-                                    ${user.role === 'asisten_manager' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                                    ${user.role === 'asisten_manager' ? 'Asmen' : 'User'}
-                                </span>
-                            </div>
-                        `;
-                        
-                        div.addEventListener('click', () => {
-                            searchInput.value = user.name;
-                            kepadaInput.value = user.name;
-                            kepadaIdInput.value = user.id;
-                            
-                            // Jika penerima adalah asisten manager, set divisi tujuan ke divisi asisten manager tersebut
-                            if (user.role === 'asisten_manager') {
-                                divisiInput.value = user.divisi_nama;
-                            } else {
-                                divisiInput.value = user.divisi_nama;
-                            }
-                            
-                            dropdown.classList.add('hidden');
-                        });
-                        dropdown.appendChild(div);
+        searchTimeout = setTimeout(() => {
+            if (query.length >= 2) {
+                fetch(`/api/search-asisten-manager?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(users => {
+                        populateDropdown(users);
                     });
-                }
-                dropdown.classList.remove('hidden');
-            });
+            } else if (query.length === 0) {
+                // Show all when empty
+                fetch(`/api/search-asisten-manager?q=`)
+                    .then(response => response.json())
+                    .then(users => {
+                        populateDropdown(users);
+                    });
+            } else {
+                divisiDropdown.classList.add('hidden');
+            }
+        }, 300);
     });
 
+    function populateDropdown(users) {
+        divisiDropdown.innerHTML = '';
+        
+        if (users.length === 0) {
+            divisiDropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">Tidak ditemukan asisten manager</div>';
+        } else {
+            users.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'px-4 py-2 hover:bg-gray-100 cursor-pointer';
+                div.dataset.userId = user.id;
+                div.dataset.userName = user.name;
+                div.dataset.divisiNama = user.divisi_nama;
+                
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-medium">${user.name}</div>
+                            <div class="text-xs text-gray-500">${user.divisi_nama} - ${user.jabatan}</div>
+                        </div>
+                        <span class="px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
+                            Asmen
+                        </span>
+                    </div>
+                `;
+                
+                div.addEventListener('click', () => {
+                    // Set the display value to search input
+                    divisiSearchInput.value = user.name;
+                    // Store the actual divisi name in the hidden input
+                    divisiTujuanInput.value = user.divisi_nama;
+                    kepadaIdInput.value = user.id;
+                    // Show selected text below
+                    selectedDivisiText.textContent = `Dipilih: ${user.name} - ${user.divisi_nama}`;
+                    divisiDropdown.classList.add('hidden');
+                    clearSelectionBtn.classList.remove('hidden');
+                });
+                divisiDropdown.appendChild(div);
+            });
+        }
+        divisiDropdown.classList.remove('hidden');
+    }
+
+    // Show dropdown when clicked
+    divisiSearchInput.addEventListener('focus', function() {
+        if (this.value === '') {
+            fetch(`/api/search-asisten-manager?q=`)
+                .then(response => response.json())
+                .then(users => {
+                    populateDropdown(users);
+                });
+        }
+    });
+
+    // Clear selection button
+    clearSelectionBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        divisiSearchInput.value = '';
+        divisiTujuanInput.value = '';
+        kepadaIdInput.value = '';
+        selectedDivisiText.textContent = '';
+        this.classList.add('hidden');
+        divisiDropdown.classList.add('hidden');
+    });
+
+    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
-        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+        if (!divisiSearchInput.contains(e.target) && !divisiDropdown.contains(e.target)) {
+            divisiDropdown.classList.add('hidden');
         }
     });
 
@@ -213,17 +258,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure Quill content is saved to textarea before submission
         document.getElementById('isi_memo').value = quill.root.innerHTML;
         
-        // Validate recipient selection
-        if (!kepadaIdInput.value) {
+        // Validate divisi selection
+        if (!divisiTujuanInput.value) {
             e.preventDefault();
-            alert('Silakan pilih penerima memo dari daftar');
-        }
-        
-        // Additional validation for assistant manager
-        const selectedRole = document.querySelector(`#kepadaDropdown div[data-role="asisten_manager"]`);
-        if (selectedRole && !divisiInput.value) {
-            e.preventDefault();
-            alert('Divisi tujuan harus diisi ketika mengirim ke Asisten Manager');
+            alert('Silakan pilih divisi tujuan dari daftar asisten manager');
         }
     });
 });
@@ -281,18 +319,28 @@ document.addEventListener('DOMContentLoaded', function() {
     color: #1d4ed8 !important;
 }
 
-/* Style untuk dropdown pencarian user */
-#kepadaDropdown {
+/* Style untuk dropdown pencarian divisi */
+#divisiDropdown {
     max-height: 300px;
     overflow-y: auto;
 }
 
-#kepadaDropdown div {
+#divisiDropdown div {
     transition: background-color 0.2s;
 }
 
-#kepadaDropdown div:hover {
+#divisiDropdown div:hover {
     background-color: #f3f4f6;
+}
+
+/* Clear selection button */
+#clearSelection {
+    transition: color 0.2s;
+}
+
+/* Selected divisi text */
+#selectedDivisiText {
+    min-height: 1.25rem;
 }
 </style>
 @endsection
