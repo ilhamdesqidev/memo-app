@@ -13,8 +13,6 @@
         </div>
 
         <div class="px-6 py-4">
-            <!-- Konten detail memo sama seperti di asisten manager -->
-            <!-- ... -->
 
             <!-- Bagian form persetujuan -->
             @if($canProcess)

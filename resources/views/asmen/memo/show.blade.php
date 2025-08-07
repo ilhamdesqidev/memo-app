@@ -49,18 +49,6 @@
                 </div>
             </div>
 
-            @if($canProcess)
-            <div class="bg-white p-4 rounded-lg shadow mt-4 max-w-full"> <!-- Tambahkan max-w-full -->
-                <h3 class="font-bold text-lg mb-4">Process Memo</h3>
-                <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="mb-3">
-                    @csrf
-                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
-                        Setujui
-                    </button>
-                </form>
-            </div>
-            @endif
-
             @if($memo->status == 'diajukan')
             <div class="mt-6 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Tindakan</h3>
