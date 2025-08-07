@@ -55,48 +55,47 @@ class ManagerMemoController extends Controller
             abort(403, 'Tidak dapat memproses memo ini.');
         }
 
-        // Tentukan divisi tujuan jika ada
+        $request->validate([
+            'divisi_tujuan' => 'required|exists:divisis,nama'
+        ]);
+
         $divisiTujuan = $request->input('divisi_tujuan');
-        
+
+        // Cari Asisten Manager dari divisi tujuan
+        $asmen = \App\Models\User::where('divisi_id', function($query) use ($divisiTujuan) {
+                $query->select('id')->from('divisis')->where('nama', $divisiTujuan);
+            })
+            ->where('role', 'asisten_manager')
+            ->first();
+
+        if (!$asmen) {
+            return back()->with('error', 'Divisi tujuan tidak memiliki Asisten Manager yang aktif');
+        }
+
         // Update data memo
         $updateData = [
-            'approved_by' => $user->id,
-            'approval_date' => now(),
-            'status' => $divisiTujuan ? 'diajukan' : 'disetujui'
+            'status' => 'diajukan',
+            'divisi_tujuan' => $divisiTujuan,
+            'kepada' => $asmen->name,
+            'kepada_id' => $asmen->id,
+            'forwarded_by' => $user->id,
+            'forwarded_at' => now()
         ];
-
-        // Jika ada divisi tujuan, update
-        if ($divisiTujuan) {
-            $updateData['divisi_tujuan'] = $divisiTujuan;
-        }
-
-        // Handle signature
-        if ($request->has('include_signature') && $user->signature) {
-            $updateData['signature_path'] = $user->signature;
-            $updateData['signed_by'] = $user->id;
-            $updateData['signed_at'] = now();
-        }
 
         $memo->update($updateData);
 
         // Create log
-        $logMessage = $divisiTujuan 
-            ? "Memo disetujui dan diteruskan ke divisi $divisiTujuan" 
-            : 'Memo disetujui oleh Manager';
-        
         MemoLog::create([
             'memo_id' => $memo->id,
             'user_id' => $user->id,
             'divisi' => 'Manager',
-            'aksi' => $divisiTujuan ? 'penerusan' : 'persetujuan_final',
-            'catatan' => $request->catatan ?? $logMessage,
+            'aksi' => 'penerusan_ke_divisi',
+            'catatan' => $request->catatan ?? "Memo diteruskan ke Asisten Manager $divisiTujuan",
             'waktu' => now()
         ]);
 
         return redirect()->route('manager.memo.inbox')
-            ->with('success', $divisiTujuan 
-                ? "Memo berhasil disetujui dan diteruskan ke $divisiTujuan" 
-                : 'Memo berhasil disetujui');
+            ->with('success', "Memo berhasil diteruskan ke Asisten Manager $divisiTujuan");
     }
 
     public function reject(Request $request, $id)

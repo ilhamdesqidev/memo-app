@@ -43,4 +43,11 @@ class Divisi extends Model
         
         return $nama;
     }
+
+    public function asistenManagers()
+    {
+        return $this->hasMany(User::class)
+            ->where('role', 'asisten_manager')
+            ->where('active', true);
+    }
 }

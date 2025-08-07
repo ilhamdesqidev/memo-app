@@ -36,7 +36,7 @@ class StaffController extends Controller
         }
 
         // Paginate the results (5 items per page)
-        $users = $query->paginate(5);
+        $users = $query->paginate(15);
 
         // Pass the search term back to view to repopulate the search input
         if ($request->has('search')) {

@@ -84,4 +84,10 @@ public function getRoutePrefixAttribute()
     
     return $divisiMap[$this->divisi->nama] ?? null;
 }
+
+    public function scopeAsistenManager($query)
+    {
+        return $query->where('role', 'asisten_manager')
+            ->where('active', true);
+    }
 }
