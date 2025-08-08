@@ -12,65 +12,51 @@ use Illuminate\Validation\Rule;
 
 class StaffController extends Controller
 {
-    const MAX_MANAGER = 1;
     const MAX_ASSISTANT_MANAGER = 8;
+    const MAX_REGULAR_ASSISTANT = 20;
 
-   public function index(Request $request)
-{
-    $query = User::with('divisi')
-                ->whereIn('role', ['user', 'manager', 'asisten_manager'])
-                ->orderBy('name');
+    public function index(Request $request)
+    {
+        $query = User::with('divisi')
+                    ->whereIn('role', ['user', 'manager', 'asisten_manager', 'asisten'])
+                    ->orderBy('name');
 
-    if ($request->has('search') && !empty($request->search)) {
-        $searchTerm = $request->search;
-        $query->where(function($q) use ($searchTerm) {
-            $q->where('name', 'like', "%$searchTerm%")
-              ->orWhere('username', 'like', "%$searchTerm%")
-              ->orWhere('jabatan', 'like', "%$searchTerm%")
-              ->orWhereHas('divisi', function($q) use ($searchTerm) {
-                  $q->where('nama', 'like', "%$searchTerm%");
-              });
-        });
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', "%$searchTerm%")
+                  ->orWhere('username', 'like', "%$searchTerm%")
+                  ->orWhere('jabatan', 'like', "%$searchTerm%")
+                  ->orWhereHas('divisi', function($q) use ($searchTerm) {
+                      $q->where('nama', 'like', "%$searchTerm%");
+                  });
+            });
+        }
+
+        $users = $query->paginate(5);
+
+        if ($request->has('search')) {
+            $users->appends(['search' => $request->search]);
+        }
+
+        return view('admin.staff.index', compact('users'));
     }
-
-    // Ubah angka 5 sesuai jumlah data per halaman yang diinginkan
-    $users = $query->paginate(5);
-
-    if ($request->has('search')) {
-        $users->appends(['search' => $request->search]);
-    }
-
-    return view('admin.staff.index', compact('users'));
-}
 
     public function create()
     {
         $divisis = Divisi::orderBy('urutan')->get();
-        $currentManagers = User::where('role', 'manager')->count();
         $currentAssistants = User::where('role', 'asisten_manager')->count();
+        $currentRegularAssistants = User::where('role', 'asisten')->count();
         
-        return view('admin.staff.create', compact('divisis', 'currentManagers', 'currentAssistants'));
-    }
-
-    public function checkQuotas()
-    {
-        return response()->json([
-            'manager_full' => User::where('role', 'manager')->count() >= self::MAX_MANAGER,
-            'asisten_manager_full' => User::where('role', 'asisten_manager')->count() >= self::MAX_ASSISTANT_MANAGER
-        ]);
+        return view('admin.staff.create', compact(
+            'divisis', 
+            'currentAssistants',
+            'currentRegularAssistants'
+        ));
     }
 
     public function store(Request $request)
     {
-        if ($request->role === 'manager') {
-            $currentManagers = User::where('role', 'manager')->count();
-            if ($currentManagers >= self::MAX_MANAGER) {
-                return back()->withInput()->withErrors([
-                    'role' => 'Kuota manager sudah penuh (maksimal 1 manager)'
-                ]);
-            }
-        }
-
         if ($request->role === 'asisten_manager') {
             $currentAssistants = User::where('role', 'asisten_manager')->count();
             if ($currentAssistants >= self::MAX_ASSISTANT_MANAGER) {
@@ -80,12 +66,21 @@ class StaffController extends Controller
             }
         }
 
+        if ($request->role === 'asisten') {
+            $currentRegularAssistants = User::where('role', 'asisten')->count();
+            if ($currentRegularAssistants >= self::MAX_REGULAR_ASSISTANT) {
+                return back()->withInput()->withErrors([
+                    'role' => 'Kuota asisten sudah penuh (maksimal 20 asisten)'
+                ]);
+            }
+        }
+
         $validationRules = [
             'name'       => 'required|string|max:255',
             'username'   => 'required|string|max:255|unique:users',
             'password'   => 'required|string|min:8|confirmed',
             'jabatan'    => 'required|string|max:255',
-            'role'       => 'required|string|in:user,manager,asisten_manager',
+            'role'       => 'required|string|in:user,manager,asisten_manager,asisten',
         ];
 
         if ($request->role === 'manager') {
@@ -102,6 +97,8 @@ class StaffController extends Controller
             $jabatanValue = 'Manager';
         } elseif ($request->role === 'asisten_manager') {
             $jabatanValue = 'Ketua';
+        } elseif ($request->role === 'asisten') {
+            $jabatanValue = 'Asisten';
         }
 
         User::create([
@@ -129,10 +126,15 @@ class StaffController extends Controller
     {
         $user = User::with('divisi')->findOrFail($id);
         $divisis = Divisi::orderBy('urutan')->get();
-        $currentManagers = User::where('role', 'manager')->count();
         $currentAssistants = User::where('role', 'asisten_manager')->count();
+        $currentRegularAssistants = User::where('role', 'asisten')->count();
         
-        return view('admin.staff.edit', compact('user', 'divisis', 'currentManagers', 'currentAssistants'));
+        return view('admin.staff.edit', compact(
+            'user', 
+            'divisis', 
+            'currentAssistants',
+            'currentRegularAssistants'
+        ));
     }
 
     public function update(Request $request, $id)
@@ -140,20 +142,20 @@ class StaffController extends Controller
         $user = User::findOrFail($id);
 
         if ($request->role !== $user->role) {
-            if ($request->role === 'manager') {
-                $currentManagers = User::where('role', 'manager')->count();
-                if ($currentManagers >= self::MAX_MANAGER) {
-                    return back()->withInput()->withErrors([
-                        'role' => 'Kuota manager sudah penuh (maksimal 1 manager)'
-                    ]);
-                }
-            }
-
             if ($request->role === 'asisten_manager') {
                 $currentAssistants = User::where('role', 'asisten_manager')->count();
                 if ($currentAssistants >= self::MAX_ASSISTANT_MANAGER) {
                     return back()->withInput()->withErrors([
                         'role' => 'Kuota asisten manager sudah penuh (maksimal 8 asisten manager)'
+                    ]);
+                }
+            }
+
+            if ($request->role === 'asisten') {
+                $currentRegularAssistants = User::where('role', 'asisten')->count();
+                if ($currentRegularAssistants >= self::MAX_REGULAR_ASSISTANT) {
+                    return back()->withInput()->withErrors([
+                        'role' => 'Kuota asisten sudah penuh (maksimal 20 asisten)'
                     ]);
                 }
             }
@@ -169,10 +171,10 @@ class StaffController extends Controller
             ],
             'password'   => 'nullable|string|min:8|confirmed',
             'jabatan'    => 'required|string|max:255',
-            'role'       => 'required|string|in:user,manager,asisten_manager',
+            'role'       => 'required|string|in:user,manager,asisten_manager,asisten',
         ];
 
-        if (!in_array($request->role, ['manager', 'asisten_manager'])) {
+        if (!in_array($request->role, ['manager', 'asisten_manager', 'asisten'])) {
             $validationRules['divisi_id'] = 'required|exists:divisis,id';
         } else {
             $validationRules['divisi_id'] = 'nullable';
@@ -186,13 +188,15 @@ class StaffController extends Controller
             $jabatanValue = 'Manager';
         } elseif ($request->role === 'asisten_manager') {
             $jabatanValue = 'Ketua';
+        } elseif ($request->role === 'asisten') {
+            $jabatanValue = 'Asisten';
         }
 
         $user->name = $request->name;
         $user->username = $request->username;
         $user->jabatan = $jabatanValue;
         $user->role = $request->role;
-        $user->divisi_id = in_array($request->role, ['manager', 'asisten_manager']) ? null : $request->divisi_id;
+        $user->divisi_id = in_array($request->role, ['manager', 'asisten_manager', 'asisten']) ? null : $request->divisi_id;
         
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -209,12 +213,6 @@ class StaffController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
-        
-        if ($user->role === 'manager' && User::where('role', 'manager')->count() <= 1) {
-            return redirect()->route('admin.staff.index')
-                ->with('error', 'Tidak dapat menghapus satu-satunya manager yang ada.');
-        }
-        
         $userName = $user->name;
         $user->delete();
 
@@ -236,16 +234,6 @@ class StaffController extends Controller
 
         $users = User::whereIn('id', $request->user_ids)->get();
         $count = $users->count();
-
-        if ($request->action === 'delete') {
-            $managerCount = $users->where('role', 'manager')->count();
-            $totalManagers = User::where('role', 'manager')->count();
-            
-            if ($managerCount > 0 && ($totalManagers - $managerCount) < 1) {
-                return redirect()->route('admin.staff.index')
-                    ->with('error', 'Tidak dapat menghapus semua manager. Harus ada minimal 1 manager.');
-            }
-        }
 
         switch ($request->action) {
             case 'delete':

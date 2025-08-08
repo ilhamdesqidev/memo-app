@@ -168,6 +168,14 @@ Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asme
 });
 
 /*-------------------------------------------------------------------------
+| Asisten  Routes
+|-------------------------------------------------------------------------*/
+
+Route::prefix('asisten')->middleware(['auth', 'role:asisten'])->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Asisten\DashboardController::class, 'index'])->name('asisten.dashboard');
+});
+
+/*-------------------------------------------------------------------------
 | Divisi Routes
 |-------------------------------------------------------------------------*/
 

@@ -41,7 +41,11 @@ public function store(LoginRequest $request): RedirectResponse
 
     if ($user->role === 'asisten_manager') {
         return redirect()->route('asmen.dashboard');
-    }    
+    }
+    
+    if ($user->role === 'asisten') {
+        return redirect()->route('asisten.dashboard');
+    }
     
     if ($user->role === 'user') {
         // pastikan relasi divisi termuat
