@@ -87,6 +87,49 @@
                         </div>
                     </div>
 
+                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h5 class="text-sm font-medium text-blue-800 mb-2">Kuota Role:</h5>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Manager: {{ $currentManagers }}/1
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Asisten Manager: {{ $currentAssistants }}/8
+                        </li>
+                    </ul>
+                </div>
+
+                        <!-- Role Selection -->
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                        Role
+                        <span class="text-red-500">*</span>
+                    </label>
+                    <select name="role"
+                            id="role"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
+                        <option value="">-- Pilih Role --</option>
+                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Manager</option>
+                        <option value="asisten_manager" {{ old('role') == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
+                    </select>
+                    @error('role')
+                        <p class="text-red-500 text-sm mt-1 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
                     <!-- Jabatan (Manual Input for user, auto-filled for other roles) -->
                     <div>
                         <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">
@@ -137,31 +180,6 @@
                             </p> 
                         @enderror
                     </div>
-                </div>
-
-                <!-- Role Selection -->
-                <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                        Role
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <select name="role"
-                            id="role"
-                            required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
-                        <option value="">-- Pilih Role --</option>
-                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
-                        <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Manager</option>
-                        <option value="asisten_manager" {{ old('role') == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
-                    </select>
-                    @error('role')
-                        <p class="text-red-500 text-sm mt-1 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
                 </div>
 
                 <!-- Security Section -->
@@ -272,7 +290,7 @@ function togglePassword(fieldId) {
     field.setAttribute('type', type);
 }
 
-// Function to handle role change - MODIFIED VERSION
+// Handle role change
 document.getElementById('role').addEventListener('change', function() {
     const jabatanField = document.getElementById('jabatan');
     const divisiSelect = document.getElementById('divisi_id');
@@ -307,7 +325,7 @@ document.getElementById('role').addEventListener('change', function() {
     }
 });
 
-// Initialize the state on page load - MODIFIED VERSION
+// Initialize the state on page load
 document.addEventListener('DOMContentLoaded', function() {
     const roleSelect = document.getElementById('role');
     const jabatanField = document.getElementById('jabatan');
@@ -327,7 +345,29 @@ document.addEventListener('DOMContentLoaded', function() {
         divisiSelect.disabled = false;
         divisiSelect.required = true;
     }
-    // For 'user' role, fields remain as they are (editable)
+    
+    // Check role quotas
+    checkRoleQuotas();
 });
+
+function checkRoleQuotas() {
+    fetch('/admin/staff/check-quotas')
+        .then(response => response.json())
+        .then(data => {
+            const roleSelect = document.getElementById('role');
+            
+            if (data.manager_full) {
+                const managerOption = roleSelect.querySelector('option[value="manager"]');
+                managerOption.disabled = true;
+                managerOption.textContent = 'Manager (Kuota Penuh)';
+            }
+            
+            if (data.asisten_manager_full) {
+                const asistenOption = roleSelect.querySelector('option[value="asisten_manager"]');
+                asistenOption.disabled = true;
+                asistenOption.textContent = 'Asisten Manager (Kuota Penuh)';
+            }
+        });
+}
 </script>
 @endsection

@@ -130,6 +130,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         'update' => 'staff.update',
         'destroy' => 'staff.destroy'
     ]);
+    Route::get('/admin/staff/check-quotas', [StaffController::class, 'checkQuotas']);
 });
 
 /*-------------------------------------------------------------------------

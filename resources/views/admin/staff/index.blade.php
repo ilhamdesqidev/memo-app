@@ -189,10 +189,50 @@
             </table>
         </div>
         
-        <!-- Pagination -->
+        <!-- Pagination Section -->
         @if($users->hasPages())
         <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-            {{ $users->withQueryString()->links() }}
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+                <div class="text-sm text-gray-600">
+                    Menampilkan {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }} data
+                </div>
+                <div class="flex items-center space-x-2">
+                    <!-- Previous Page Link -->
+                    @if ($users->onFirstPage())
+                        <span class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
+                            &laquo; Sebelumnya
+                        </span>
+                    @else
+                        <a href="{{ $users->previousPageUrl() }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                            &laquo; Sebelumnya
+                        </a>
+                    @endif
+
+                    <!-- Page Numbers -->
+                    @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+                        @if ($page == $users->currentPage())
+                            <span class="px-3 py-1 rounded-md border border-blue-500 bg-blue-500 text-white">
+                                {{ $page }}
+                            </span>
+                        @else
+                            <a href="{{ $url }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                {{ $page }}
+                            </a>
+                        @endif
+                    @endforeach
+
+                    <!-- Next Page Link -->
+                    @if ($users->hasMorePages())
+                        <a href="{{ $users->nextPageUrl() }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                            Selanjutnya &raquo;
+                        </a>
+                    @else
+                        <span class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
+                            Selanjutnya &raquo;
+                        </span>
+                    @endif
+                </div>
+            </div>
         </div>
         @endif
     </div>
@@ -221,57 +261,6 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-    }
-    
-    /* Pagination Styles */
-    .pagination {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        padding: 0;
-    }
-    
-    .pagination li {
-        margin: 0 4px;
-    }
-    
-    .pagination li a, 
-    .pagination li span {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 32px;
-        height: 32px;
-        border-radius: 6px;
-        border: 1px solid #d1d5db;
-        background-color: white;
-        color: #4b5563;
-        font-size: 14px;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.2s ease;
-    }
-    
-    .pagination li a:hover {
-        background-color: #f3f4f6;
-        border-color: #9ca3af;
-    }
-    
-    .pagination li.active span {
-        background-color: #3b82f6;
-        border-color: #3b82f6;
-        color: white;
-    }
-    
-    .pagination li.disabled span {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    
-    .pagination .page-item:first-child .page-link,
-    .pagination .page-item:last-child .page-link {
-        width: auto;
-        padding: 0 12px;
     }
 </style>
 @endsection
