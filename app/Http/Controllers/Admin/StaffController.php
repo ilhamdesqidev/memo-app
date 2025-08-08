@@ -18,8 +18,8 @@ class StaffController extends Controller
     public function index(Request $request)
     {
         $query = User::with('divisi')
-                    ->whereIn('role', ['user', 'manager', 'asisten_manager', 'asisten'])
-                    ->orderBy('name');
+                        ->whereIn('role', ['staff', 'manager', 'asisten_manager', 'asisten'])
+                        ->orderBy('name');
 
         if ($request->has('search') && !empty($request->search)) {
             $searchTerm = $request->search;
@@ -80,7 +80,7 @@ class StaffController extends Controller
             'username'   => 'required|string|max:255|unique:users',
             'password'   => 'required|string|min:8|confirmed',
             'jabatan'    => 'required|string|max:255',
-            'role'       => 'required|string|in:user,manager,asisten_manager,asisten',
+            'role' => 'required|string|in:staff,manager,asisten_manager,asisten',
         ];
 
         if ($request->role === 'manager') {
@@ -171,7 +171,7 @@ class StaffController extends Controller
             ],
             'password'   => 'nullable|string|min:8|confirmed',
             'jabatan'    => 'required|string|max:255',
-            'role'       => 'required|string|in:user,manager,asisten_manager,asisten',
+            'role' => 'required|string|in:staff,manager,asisten_manager,asisten',
         ];
 
         if (!in_array($request->role, ['manager', 'asisten_manager', 'asisten'])) {

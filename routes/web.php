@@ -27,6 +27,8 @@ use App\Http\Controllers\Divisi\sipil\MemoController as SipilMemoController;
 use App\Http\Controllers\AsistenManagerController;
 use App\Http\Controllers\Asmen\ArsipController;
 use App\Http\Controllers\Asmen\MemoController;
+use App\Http\Controllers\Asisten\DashboardController as AsistenDashboardController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 
 /*-------------------------------------------------------------------------
 | Public Routes
@@ -64,13 +66,15 @@ Route::middleware(['auth'])->group(function () {
         }
 
         switch ($user->role) {
-            case 'manager':
-                return redirect()->route('manager.dashboard');
             case 'admin':
                 return redirect()->route('admin.dashboard');
+            case 'manager':
+                return redirect()->route('manager.dashboard');
             case 'asisten_manager':
                 return redirect()->route('asmen.dashboard');
-            default:
+            case 'asisten':
+                return redirect()->route('asisten.dashboard');
+            case 'staff':
                 $divisiRoutes = [
                     'Pengembangan Bisnis' => 'pengembangan.dashboard',
                     'Operasional Wilayah I' => 'opwil1.dashboard',
@@ -81,19 +85,18 @@ Route::middleware(['auth'])->group(function () {
                     'Food Beverage' => 'food.dashboard',
                     'Marketing dan Sales' => 'marketing.dashboard',
                 ];
-
-                return redirect()->route(
-                    $divisiRoutes[$user->divisi->nama ?? ''] ?? 'login'
-                );
+                return redirect()->route($divisiRoutes[$user->divisi->nama ?? ''] ?? 'login');
+            default:
+                return redirect()->route('login');
         }
     })->name('main.dashboard');
 });
 
 /*-------------------------------------------------------------------------
-| Profile Routes (Separated by role)
+| Profile Routes
 |-------------------------------------------------------------------------*/
 
-// ADMIN ONLY PROFILE ROUTES
+// Admin Profile Routes
 Route::prefix('profile')->name('profile.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('index');
     Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
@@ -101,7 +104,7 @@ Route::prefix('profile')->name('profile.')->middleware(['auth', 'role:admin'])->
     Route::delete('/delete', [ProfileController::class, 'destroy'])->name('destroy');
 });
 
-// Single profile route group accessible to all authenticated users
+// General Profile Routes (accessible to all authenticated users)
 Route::prefix('profil')->name('profil.')->middleware('auth')->group(function () {
     Route::get('/', [ProfilController::class, 'index'])->name('index');
     Route::get('/edit', [ProfilController::class, 'edit'])->name('edit');
@@ -130,7 +133,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->grou
         'update' => 'staff.update',
         'destroy' => 'staff.destroy'
     ]);
-    Route::get('/admin/staff/check-quotas', [StaffController::class, 'checkQuotas']);
+    Route::get('/staff/check-quotas', [StaffController::class, 'checkQuotas'])->name('staff.check-quotas');
 });
 
 /*-------------------------------------------------------------------------
@@ -168,20 +171,26 @@ Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asme
 });
 
 /*-------------------------------------------------------------------------
-| Asisten  Routes
+| Asisten Routes
 |-------------------------------------------------------------------------*/
-
-Route::prefix('asisten')->middleware(['auth', 'role:asisten'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Asisten\DashboardController::class, 'index'])->name('asisten.dashboard');
+Route::prefix('asisten')->middleware(['auth', 'role:asisten'])->name('asisten.')->group(function () {
+    Route::get('/dashboard', [AsistenDashboardController::class, 'index'])->name('dashboard');
 });
 
 /*-------------------------------------------------------------------------
-| Divisi Routes
+| Staff Routes (Previously User)
+|-------------------------------------------------------------------------*/
+Route::prefix('staff')->middleware(['auth', 'role:staff'])->name('staff.')->group(function () {
+    Route::get('/dashboard', [StaffDashboardController::class, 'index'])->name('dashboard');
+});
+
+/*-------------------------------------------------------------------------
+| Divisi Routes (for Staff)
 |-------------------------------------------------------------------------*/
 
 // Divisi Pengembangan Bisnis
 Route::prefix('pengembangan')
-    ->middleware(['auth', 'divisi:Pengembangan Bisnis'])
+    ->middleware(['auth', 'divisi:Pengembangan Bisnis', 'role:staff'])
     ->name('pengembangan.')
     ->group(function () {
         Route::get('/dashboard', [DashboardPengembanganController::class, 'index'])->name('dashboard');
@@ -202,7 +211,7 @@ Route::prefix('pengembangan')
 
 // Divisi Operasional Wilayah I
 Route::prefix('opwil1')
-    ->middleware(['auth', 'divisi:Operasional Wilayah I'])
+    ->middleware(['auth', 'divisi:Operasional Wilayah I', 'role:staff'])
     ->name('opwil1.')
     ->group(function () {
         Route::get('/dashboard', [DashboardOp1Controller::class, 'index'])->name('dashboard');
@@ -223,7 +232,7 @@ Route::prefix('opwil1')
 
 // Divisi Operasional Wilayah II
 Route::prefix('opwil2')
-    ->middleware(['auth', 'divisi:Operasional Wilayah II'])
+    ->middleware(['auth', 'divisi:Operasional Wilayah II', 'role:staff'])
     ->name('opwil2.')
     ->group(function () {
         Route::get('/dashboard', [DashboardOp2Controller::class, 'index'])->name('dashboard');
@@ -244,7 +253,7 @@ Route::prefix('opwil2')
 
 // Divisi Umum dan Legal
 Route::prefix('umumlegal')
-    ->middleware(['auth', 'divisi:Umum dan Legal'])
+    ->middleware(['auth', 'divisi:Umum dan Legal', 'role:staff'])
     ->name('umumlegal.')
     ->group(function () {
         Route::get('/dashboard', [DashboardUmumLegalController::class, 'index'])->name('dashboard');
@@ -265,7 +274,7 @@ Route::prefix('umumlegal')
 
 // Divisi Administrasi dan Keuangan
 Route::prefix('adminkeu')
-    ->middleware(['auth', 'divisi:Administrasi dan Keuangan'])
+    ->middleware(['auth', 'divisi:Administrasi dan Keuangan', 'role:staff'])
     ->name('adminkeu.')
     ->group(function () {
         Route::get('/dashboard', [DashboardAdminkeuController::class, 'index'])->name('dashboard');
@@ -286,7 +295,7 @@ Route::prefix('adminkeu')
 
 // Divisi Infrastruktur dan Sipil
 Route::prefix('sipil')
-    ->middleware(['auth', 'divisi:Infrastruktur dan Sipil'])
+    ->middleware(['auth', 'divisi:Infrastruktur dan Sipil', 'role:staff'])
     ->name('sipil.')
     ->group(function () {
         Route::get('/dashboard', [DashboardSipilController::class, 'index'])->name('dashboard');
@@ -307,7 +316,7 @@ Route::prefix('sipil')
 
 // Divisi Food Beverage
 Route::prefix('food')
-    ->middleware(['auth', 'divisi:Food Beverage'])
+    ->middleware(['auth', 'divisi:Food Beverage', 'role:staff'])
     ->name('food.')
     ->group(function () {
         Route::get('/dashboard', [DashboardFoodController::class, 'index'])->name('dashboard');
@@ -328,7 +337,7 @@ Route::prefix('food')
 
 // Divisi Marketing dan Sales
 Route::prefix('marketing')
-    ->middleware(['auth', 'divisi:Marketing dan Sales'])
+    ->middleware(['auth', 'divisi:Marketing dan Sales', 'role:staff'])
     ->name('marketing.')
     ->group(function () {
         Route::get('/dashboard', [DashboardMarketingController::class, 'index'])->name('dashboard');
@@ -360,7 +369,7 @@ Route::get('/api/search-asisten-manager', function (Illuminate\Http\Request $req
         })
         ->where('role', 'asisten_manager')
         ->whereHas('divisi', function($q) use ($currentDivisi) {
-            $q->where('nama', '=', $currentDivisi); // Hanya divisi yang sama
+            $q->where('nama', '=', $currentDivisi);
         })
         ->with('divisi')
         ->limit(10)

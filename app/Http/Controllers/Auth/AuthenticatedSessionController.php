@@ -24,49 +24,41 @@ class AuthenticatedSessionController extends Controller
      */
    // app/Http/Controllers/Auth/AuthenticatedSessionController.php
 // app/Http/Controllers/Auth/AuthenticatedSessionController.php
-public function store(LoginRequest $request): RedirectResponse
-{
-    $request->authenticate();
-    $request->session()->regenerate();
+ public function store(LoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
 
-    $user = Auth::user();
+        $request->session()->regenerate();
 
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-    
-    if ($user->role === 'manager') {
-        return redirect()->route('manager.dashboard');
+        return $this->authenticated($request, Auth::user());
     }
 
-    if ($user->role === 'asisten_manager') {
-        return redirect()->route('asmen.dashboard');
+    protected function authenticated(Request $request, $user)
+    {
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'manager') {
+            return redirect()->route('manager.dashboard');
+        } elseif ($user->role === 'asisten_manager') {
+            return redirect()->route('asmen.dashboard');
+        } elseif ($user->role === 'asisten') {
+            return redirect()->route('asisten.dashboard');
+        } elseif ($user->role === 'staff') {
+            $divisi = $user->divisi->nama ?? null;
+            $divisiRoutes = [
+                'Pengembangan Bisnis' => 'pengembangan.dashboard',
+                'Operasional Wilayah I' => 'opwil1.dashboard',
+                'Operasional Wilayah II' => 'opwil2.dashboard',
+                'Umum dan Legal' => 'umumlegal.dashboard',
+                'Administrasi dan Keuangan' => 'adminkeu.dashboard',
+                'Infrastruktur dan Sipil' => 'sipil.dashboard',
+                'Food Beverage' => 'food.dashboard',
+                'Marketing dan Sales' => 'marketing.dashboard',
+            ];
+            return redirect()->route($divisiRoutes[$divisi] ?? 'login');
+        }
+        abort(403, 'Unauthorized access.');
     }
-    
-    if ($user->role === 'asisten') {
-        return redirect()->route('asisten.dashboard');
-    }
-    
-    if ($user->role === 'user') {
-        // pastikan relasi divisi termuat
-        $divisi = $user->divisi->nama ?? null;
-    
-        $divisiRoutes = [
-            'Pengembangan Bisnis' => 'pengembangan.dashboard',
-            'Operasional Wilayah I' => 'opwil1.dashboard',
-            'Operasional Wilayah II' => 'opwil2.dashboard',
-            'Umum dan Legal' => 'umumlegal.dashboard',
-            'Administrasi dan Keuangan' => 'adminkeu.dashboard',
-            'Infrastruktur dan Sipil' => 'sipil.dashboard',
-            'Food Beverage' => 'food.dashboard',
-            'Marketing dan Sales' => 'marketing.dashboard',
-        ];
-    
-        return redirect()->route($divisiRoutes[$divisi] ?? 'login');
-    }
-    
-    abort(403);
-}
 
     /**
      * Destroy an authenticated session.

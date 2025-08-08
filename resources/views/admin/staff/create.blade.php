@@ -98,7 +98,7 @@
                                 required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
                             <option value="">-- Pilih Role --</option>
-                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                            <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
                             <option value="manager" {{ old('role') == 'manager' ? 'selected' : '' }}>Manager</option>
                             <option value="asisten_manager" {{ old('role') == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
                             <option value="asisten" {{ old('role') == 'asisten' ? 'selected' : '' }}>Asisten</option>
