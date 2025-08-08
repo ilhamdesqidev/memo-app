@@ -343,12 +343,16 @@ Route::prefix('marketing')
 |-------------------------------------------------------------------------*/
 Route::get('/api/search-asisten-manager', function (Illuminate\Http\Request $request) {
     $query = $request->input('q');
+    $currentDivisi = $request->input('current_divisi');
     
     $users = App\Models\User::where(function($q) use ($query) {
             $q->where('name', 'like', "%$query%")
               ->orWhere('username', 'like', "%$query%");
         })
         ->where('role', 'asisten_manager')
+        ->whereHas('divisi', function($q) use ($currentDivisi) {
+            $q->where('nama', '=', $currentDivisi); // Hanya divisi yang sama
+        })
         ->with('divisi')
         ->limit(10)
         ->get()

@@ -98,7 +98,7 @@ class BaseMemoController extends Controller
         ]);
     }
 
-   public function store(Request $request)
+  public function store(Request $request)
 {
     $validated = $request->validate([
         'nomor' => 'required|string|max:50|unique:memos',
@@ -110,10 +110,10 @@ class BaseMemoController extends Controller
         'isi' => 'required|string',
     ]);
 
-    // Verify that the selected user is an asisten_manager
+    // Verify that the selected user is an asisten_manager from SAME division
     $penerima = \App\Models\User::findOrFail($request->kepada_id);
-    if ($penerima->role !== 'asisten_manager') {
-        return back()->withErrors(['kepada_id' => 'Penerima harus seorang Asisten Manager'])->withInput();
+    if ($penerima->role !== 'asisten_manager' || $penerima->divisi->nama !== $this->divisiName) {
+        return back()->withErrors(['kepada_id' => 'Penerima harus seorang Asisten Manager dari divisi Anda'])->withInput();
     }
 
     $memoData = $request->only([
@@ -124,7 +124,7 @@ class BaseMemoController extends Controller
     $memoData['dari'] = $this->divisiName;
     $memoData['dibuat_oleh_user_id'] = auth()->id();
     $memoData['status'] = 'diajukan';
-    $memoData['divisi_tujuan'] = $penerima->divisi->nama;
+    $memoData['divisi_tujuan'] = $penerima->divisi->nama; // Gunakan divisi dari user yang dipilih
 
     $memo = Memo::create($memoData);
 

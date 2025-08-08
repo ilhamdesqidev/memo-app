@@ -148,13 +148,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('isi_memo').value = quill.root.innerHTML;
     });
 
-    // Divisi Tujuan search functionality (only for asisten_manager)
+    // Divisi Tujuan search functionality (only for asisten_manager from other divisions)
     const divisiSearchInput = document.getElementById('divisi_search');
     const divisiTujuanInput = document.getElementById('divisi_tujuan');
     const kepadaIdInput = document.getElementById('kepada_id');
     const divisiDropdown = document.getElementById('divisiDropdown');
     const clearSelectionBtn = document.getElementById('clearSelection');
     const selectedDivisiText = document.getElementById('selectedDivisiText');
+
+    // Get current divisi from user data
+    const currentDivisi = '{{ auth()->user()->divisi->nama }}';
 
     // Search functionality with debounce
     let searchTimeout;
@@ -164,14 +167,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         searchTimeout = setTimeout(() => {
             if (query.length >= 2) {
-                fetch(`/api/search-asisten-manager?q=${encodeURIComponent(query)}`)
+                fetch(`/api/search-asisten-manager?q=${encodeURIComponent(query)}&current_divisi=${encodeURIComponent(currentDivisi)}`)
                     .then(response => response.json())
                     .then(users => {
                         populateDropdown(users);
                     });
             } else if (query.length === 0) {
-                // Show all when empty
-                fetch(`/api/search-asisten-manager?q=`)
+                // Show all asisten managers from other divisions when empty
+                fetch(`/api/search-asisten-manager?q=&current_divisi=${encodeURIComponent(currentDivisi)}`)
                     .then(response => response.json())
                     .then(users => {
                         populateDropdown(users);
@@ -186,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
         divisiDropdown.innerHTML = '';
         
         if (users.length === 0) {
-            divisiDropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">Tidak ditemukan asisten manager</div>';
+            divisiDropdown.innerHTML = '<div class="px-4 py-2 text-gray-500">Tidak ditemukan asisten manager dari divisi lain</div>';
         } else {
             users.forEach(user => {
                 const div = document.createElement('div');
@@ -224,10 +227,10 @@ document.addEventListener('DOMContentLoaded', function() {
         divisiDropdown.classList.remove('hidden');
     }
 
-    // Show dropdown when clicked
+    // Show dropdown when clicked (only showing asisten managers from other divisions)
     divisiSearchInput.addEventListener('focus', function() {
         if (this.value === '') {
-            fetch(`/api/search-asisten-manager?q=`)
+            fetch(`/api/search-asisten-manager?q=&current_divisi=${encodeURIComponent(currentDivisi)}`)
                 .then(response => response.json())
                 .then(users => {
                     populateDropdown(users);
@@ -261,7 +264,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Validate divisi selection
         if (!divisiTujuanInput.value) {
             e.preventDefault();
-            alert('Silakan pilih divisi tujuan dari daftar asisten manager');
+            alert('Silakan pilih asisten manager dari divisi lain');
+        }
+        
+        // Additional validation to ensure selected user is from different division
+        if (divisiTujuanInput.value === currentDivisi) {
+            e.preventDefault();
+            alert('Anda tidak dapat memilih asisten manager dari divisi Anda sendiri');
         }
     });
 });
