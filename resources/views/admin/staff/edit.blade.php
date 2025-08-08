@@ -86,22 +86,47 @@
                                 </p> 
                             @enderror
                         </div>
+                    </div>
 
-                    <!-- Jabatan -->
+                    <!-- Role Selection -->
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                            Role
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <select name="role"
+                                id="role"
+                                required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
+                            <option value="">-- Pilih Role --</option>
+                            <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
+                            <option value="manager" {{ old('role', $user->role) == 'manager' ? 'selected' : '' }}>Manager</option>
+                            <option value="asisten_manager" {{ old('role', $user->role) == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
+                            <option value="asisten" {{ old('role', $user->role) == 'asisten' ? 'selected' : '' }}>Asisten</option>
+                        </select>
+                        @error('role')
+                            <p class="text-red-500 text-sm mt-1 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
+                    <!-- Jabatan (Manual Input for user, auto-filled for other roles) -->
                     <div>
                         <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-2">
                             Jabatan
                             <span class="text-red-500">*</span>
                         </label>
-                        <select name="jabatan" 
-                                id="jabatan" 
-                                required 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror">
-                            <option value="">-- Pilih Jabatan --</option>
-                            <option value="asisten" {{ old('jabatan', $user->jabatan) == 'asisten' ? 'selected' : '' }}>Asisten</option>
-                            <option value="ketua" {{ old('jabatan', $user->jabatan) == 'ketua' ? 'selected' : '' }}>Ketua</option>
-                            <option value="pengadaan" {{ old('jabatan', $user->jabatan) == 'pengadaan' ? 'selected' : '' }}>Pengadaan</option>
-                        </select>
+                        <input type="text" 
+                               name="jabatan" 
+                               id="jabatan" 
+                               required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('jabatan') border-red-500 @enderror" 
+                               value="{{ old('jabatan', $user->jabatan) }}"
+                               placeholder="Masukkan jabatan (contoh: Asisten, Ketua, Pengadaan)">
                         @error('jabatan') 
                             <p class="text-red-500 text-sm mt-1 flex items-center">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,7 +137,7 @@
                         @enderror
                     </div>
 
-                    <!-- Position -->
+                    <!-- Divisi -->
                     <div>
                         <label for="divisi_id" class="block text-sm font-medium text-gray-700 mb-2">
                             Divisi
@@ -121,8 +146,7 @@
                         <select name="divisi_id" 
                                 id="divisi_id" 
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('divisi_id') border-red-500 @enderror" 
-                                required
-                                {{ old('role', $user->role) === 'manager' ? 'disabled' : '' }}>
+                                required>
                             <option value="">-- Pilih Divisi --</option>
                             @foreach ($divisis as $divisi)
                                 <option value="{{ $divisi->id }}" {{ old('divisi_id', $user->divisi_id) == $divisi->id ? 'selected' : '' }}>
@@ -139,31 +163,6 @@
                             </p> 
                         @enderror
                     </div>
-                </div>
-
-                <!-- Role Selection -->
-                <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
-                        Role
-                        <span class="text-red-500">*</span>
-                    </label>
-                    <select name="role"
-                            id="role"
-                            required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors @error('role') border-red-500 @enderror">
-                        <option value="">-- Pilih Role --</option>
-                        <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>User</option>
-                        <option value="manager" {{ old('role', $user->role) == 'manager' ? 'selected' : '' }}>Manager</option>
-                        <option value="asisten_manager" {{ old('role', $user->role) == 'asisten_manager' ? 'selected' : '' }}>Asisten Manager</option>
-                    </select>
-                    @error('role')
-                        <p class="text-red-500 text-sm mt-1 flex items-center">
-                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            {{ $message }}
-                        </p>
-                    @enderror
                 </div>
 
                 <!-- Security Section -->
@@ -216,12 +215,31 @@
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center"
                                         onclick="togglePassword('password_confirmation')">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg>
                                 </button>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Password Requirements -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h5 class="text-sm font-medium text-blue-800 mb-2">Persyaratan Password:</h5>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li class="flex items-center">
+                                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Minimal 8 karakter
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Kombinasi huruf dan angka direkomendasikan
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
@@ -245,61 +263,96 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the elements
-    const roleSelect = document.getElementById('role');
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+    field.setAttribute('type', type);
+}
+
+// Handle role change
+document.getElementById('role').addEventListener('change', function() {
+    const jabatanField = document.getElementById('jabatan');
     const divisiSelect = document.getElementById('divisi_id');
-    const passwordField = document.getElementById('password');
-    const passwordConfirmField = document.getElementById('password_confirmation');
-
-    // Function to handle role change
-    function handleRoleChange() {
-        if (roleSelect.value === 'manager') {
-            // Disable divisi select for manager
-            divisiSelect.disabled = true;
-            divisiSelect.value = ''; // Clear selection
-            divisiSelect.required = false; // Remove required validation
-        } else {
-            // Enable divisi select for other roles
-            divisiSelect.disabled = false;
-            divisiSelect.required = true; // Add required validation
-        }
-    }
-
-    // Function to toggle password visibility
-    function togglePassword(fieldId) {
-        const field = document.getElementById(fieldId);
-        const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
-        field.setAttribute('type', type);
-    }
-
-    // Initialize on page load
-    handleRoleChange();
-
-    // Add event listeners
-    roleSelect.addEventListener('change', handleRoleChange);
     
-    // Password toggle buttons
-    document.querySelectorAll('[onclick^="togglePassword"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const fieldId = this.getAttribute('onclick').match(/'([^']+)'/)[1];
-            togglePassword(fieldId);
-        });
-    });
-
-    // Form validation
-    document.querySelector('form').addEventListener('submit', function(e) {
-        // Clear disabled field values before submission
-        if (divisiSelect.disabled) {
-            divisiSelect.value = '';
-        }
+    if (this.value === 'manager') {
+        // Set jabatan to "Manager" and make it readonly
+        jabatanField.value = 'Manager';
+        jabatanField.readOnly = true;
         
-        // Password confirmation check if password is filled
-        if (passwordField.value && passwordField.value !== passwordConfirmField.value) {
-            e.preventDefault();
-            alert('Password dan konfirmasi password tidak cocok!');
+        // Disable divisi selection
+        divisiSelect.disabled = true;
+        divisiSelect.value = '';
+        divisiSelect.required = false;
+    } 
+    else if (this.value === 'asisten_manager') {
+        // Set jabatan to "Ketua" and make it readonly
+        jabatanField.value = 'Ketua';
+        jabatanField.readOnly = true;
+        
+        // Enable divisi selection
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+    else if (this.value === 'asisten') {
+        // Set jabatan to "Asisten" and make it readonly
+        jabatanField.value = 'Asisten';
+        jabatanField.readOnly = true;
+        
+        // Enable divisi selection
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+    else {
+        // For 'user' role, allow manual input and enable divisi
+        jabatanField.value = '';
+        jabatanField.readOnly = false;
+        jabatanField.placeholder = 'Masukkan jabatan (contoh: Asisten, Ketua, Pengadaan)';
+        
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
+});
+
+// Initialize the state on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const jabatanField = document.getElementById('jabatan');
+    const divisiSelect = document.getElementById('divisi_id');
+    
+    // Set initial state based on selected role (for form validation errors)
+    if (roleSelect.value === 'manager') {
+        jabatanField.readOnly = true;
+        divisiSelect.disabled = true;
+        divisiSelect.required = false;
+        // Only set jabatan if it's not already set to preserve existing data
+        if (jabatanField.value !== 'Manager') {
+            jabatanField.value = 'Manager';
         }
-    });
+    }
+    else if (roleSelect.value === 'asisten_manager') {
+        jabatanField.readOnly = true;
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+        // Only set jabatan if it's not already set to preserve existing data
+        if (jabatanField.value !== 'Ketua') {
+            jabatanField.value = 'Ketua';
+        }
+    }
+    else if (roleSelect.value === 'asisten') {
+        jabatanField.readOnly = true;
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+        // Only set jabatan if it's not already set to preserve existing data
+        if (jabatanField.value !== 'Asisten') {
+            jabatanField.value = 'Asisten';
+        }
+    }
+    else {
+        // For user role, ensure fields are editable
+        jabatanField.readOnly = false;
+        divisiSelect.disabled = false;
+        divisiSelect.required = true;
+    }
 });
 </script>
 @endsection
