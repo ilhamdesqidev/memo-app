@@ -20,7 +20,7 @@ class MemoController extends Controller
 
     public function create()
     {
-        return view('staff.memo.create');
+        return view('memo.create');
     }
 
  // app/Http/Controllers/MemoController.php (update store method)

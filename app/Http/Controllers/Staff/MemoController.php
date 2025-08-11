@@ -67,7 +67,7 @@ class MemoController extends Controller
     public function create()
     {
         $divisiTujuan = Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();
-        return view('staff.memo.create', [
+        return view('memo.create', [
             'divisiTujuan' => $divisiTujuan,
             'routePrefix' => $this->routePrefix
         ]);
