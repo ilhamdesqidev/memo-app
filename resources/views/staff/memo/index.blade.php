@@ -11,7 +11,7 @@
     <!-- Action Bar -->
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
         <div class="flex items-center gap-3">
-            <a href="{{ route('pengembangan.memo.inbox') }}" 
+            <a href="{{ route('staff.memo.inbox') }}" 
                class="flex items-center px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-all duration-200 shadow-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
@@ -29,7 +29,7 @@
             </select>
         </div>
         
-        <a href="{{ route('pengembangan.memo.create') }}" 
+        <a href="{{ route('staff.memo.create') }}" 
            class="flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -48,7 +48,7 @@
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-3">Belum ada memo keluar</h3>
             <p class="text-gray-500 mb-8 max-w-md mx-auto">Mulai dengan membuat memo baru untuk mengirim komunikasi ke divisi lain.</p>
-            <a href="{{ route('pengembangan.memo.create') }}" 
+            <a href="{{ route('staff.memo.create') }}" 
                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -164,7 +164,7 @@
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-center gap-1">
                                         <!-- View Button -->
-                                        <a href="{{ route('pengembangan.memo.show', $memo->id) }}" 
+                                        <a href="{{ route('staff.memo.show', $memo->id) }}" 
                                            class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
                                            title="Lihat Detail">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,13 +175,13 @@
                                         
                                         <!-- PDF Button -->
                                         @if(in_array(strtolower($memo->status), ['approved', 'disetujui']))
-                                            <a href="{{ route('pengembangan.memo.pdf', $memo->id) }}" 
-                                               target="_blank"
-                                               class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"
-                                               title="Download PDF">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
+                                        <a href="{{ route('staff.memo.pdf', $memo->id) }}" 
+                                            target="_blank"
+                                            class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"
+                                            title="Download PDF">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
                                             </a>
                                         @else
                                             <span class="p-2.5 text-gray-300 cursor-not-allowed rounded-xl" title="PDF tersedia hanya untuk memo yang disetujui">

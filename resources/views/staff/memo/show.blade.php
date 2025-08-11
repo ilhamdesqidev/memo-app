@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8 max-w-4xl">
     <!-- Header -->
     <div class="flex items-center mb-8">
-        <a href="{{ route('adminkeu.memo.index') }}" 
+        <a href="{{ route('staff.memo.index') }}" 
            class="p-2 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-800 transition-colors mr-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -56,7 +56,7 @@
                 </div>
             </div>
 
-        
+         
         </div>
 
         <!-- Content -->
@@ -138,7 +138,7 @@
         @if(auth()->user()->divisi->nama === $memo->divisi_tujuan && $memo->status === 'pending')
         <div class="border-t border-gray-100 p-6 bg-gray-50">
             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <form method="POST" action="{{ route('adminkeu.memo.approve', $memo->id) }}" class="flex-1">
+                <form method="POST" action="{{ route('sipil.memo.approve', $memo->id) }}" class="flex-1">
                     @csrf
                     @method('PUT')
                     <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
@@ -335,7 +335,7 @@
 function openRejectModal(memoId) {
     const modal = document.getElementById('rejectModal');
     const form = document.getElementById('rejectForm');
-    form.action = `/adminkeu/memo/${memoId}/reject`;
+    form.action = `/sipil/memo/${memoId}/reject`;
     modal.classList.remove('hidden');
 }
 
@@ -352,7 +352,7 @@ document.getElementById('rejectModal').addEventListener('click', function(e) {
 
 function regeneratePdf(memoId) {
     if (confirm('Anda yakin ingin membuat ulang PDF?')) {
-        fetch(`/adminkeu/memo/${memoId}/regenerate-pdf`, {
+        fetch(`/sipil/memo/${memoId}/regenerate-pdf`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,

@@ -9,6 +9,6 @@ class DashboardMarketingController extends Controller
 {
      public function index()
     {
-        return view('divisi.marketing.dashboard', ['divisi' => 'Marketing dan Sales']);
+        return view('divisi.staff.dashboard', ['divisi' => 'Marketing dan Sales']);
     }
 }

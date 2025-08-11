@@ -46,14 +46,14 @@ class AuthenticatedSessionController extends Controller
         } elseif ($user->role === 'staff') {
             $divisi = $user->divisi->nama ?? null;
             $divisiRoutes = [
-                'Pengembangan Bisnis' => 'pengembangan.dashboard',
-                'Operasional Wilayah I' => 'opwil1.dashboard',
-                'Operasional Wilayah II' => 'opwil2.dashboard',
-                'Umum dan Legal' => 'umumlegal.dashboard',
-                'Administrasi dan Keuangan' => 'adminkeu.dashboard',
-                'Infrastruktur dan Sipil' => 'sipil.dashboard',
-                'Food Beverage' => 'food.dashboard',
-                'Marketing dan Sales' => 'marketing.dashboard',
+                'Pengembangan Bisnis' => 'staff.dashboard',
+                'Operasional Wilayah I' => 'staff.dashboard',
+                'Operasional Wilayah II' => 'staff.dashboard',
+                'Umum dan Legal' => 'staff.dashboard',
+                'Administrasi dan Keuangan' => 'staff.dashboard',
+                'Infrastruktur dan Sipil' => 'staff.dashboard',
+                'Food Beverage' => 'staff.dashboard',
+                'Marketing dan Sales' => 'staff.dashboard',
             ];
             return redirect()->route($divisiRoutes[$divisi] ?? 'login');
         }
