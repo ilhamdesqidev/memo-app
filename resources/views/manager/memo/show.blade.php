@@ -33,12 +33,22 @@
                 </div>
             </div>
 
-            <!-- Isi memo -->
+            <!-- Tombol untuk melihat isi memo -->
             <div class="mb-6">
-                <h4 class="text-sm font-medium text-gray-500">Isi Memo</h4>
-                <div class="mt-2 p-4 bg-gray-50 rounded-md whitespace-pre-wrap">
-                    {{ strip_tags($memo->isi) }}
-                </div>
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Isi Memo</h4>
+                <button type="button" id="showMemoContent" class="w-full px-4 py-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg text-left transition-colors duration-200 group">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-blue-600 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <span class="text-blue-700 font-medium">Klik untuk melihat isi memo</span>
+                        </div>
+                        <svg class="h-5 w-5 text-blue-600 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </button>
             </div>
 
             <!-- Lampiran -->
@@ -143,10 +153,78 @@
     </div>
 </div>
 
+<!-- Modal untuk menampilkan isi memo -->
+<div id="memoContentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">Isi Memo</h3>
+                <button type="button" id="closeMemoModal" class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full p-1 transition-colors duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="px-6 py-4 overflow-y-auto flex-1">
+                <div class="prose max-w-none">
+                    <div class="bg-gray-50 rounded-lg p-4 text-gray-800 leading-relaxed break-words word-wrap" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
+                        {{ strip_tags($memo->isi) }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                <button type="button" id="closeMemoModalBottom" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors duration-200">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if($canProcess)
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality
+    const showMemoBtn = document.getElementById('showMemoContent');
+    const modal = document.getElementById('memoContentModal');
+    const closeModalTop = document.getElementById('closeMemoModal');
+    const closeModalBottom = document.getElementById('closeMemoModalBottom');
+    
+    // Show modal
+    showMemoBtn.addEventListener('click', function() {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    });
+    
+    // Close modal functions
+    function closeModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+    
+    closeModalTop.addEventListener('click', closeModal);
+    closeModalBottom.addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
+        }
+    });
+
     // Validasi form penerusan
     const divisiSelect = document.getElementById('divisiSelect');
     const forwardForm = document.getElementById('forwardForm');
@@ -179,6 +257,47 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!confirm('Apakah Anda yakin ingin menolak memo ini?')) {
             e.preventDefault();
             return false;
+        }
+    });
+});
+</script>
+@endpush
+@else
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Modal functionality (untuk user yang tidak bisa memproses)
+    const showMemoBtn = document.getElementById('showMemoContent');
+    const modal = document.getElementById('memoContentModal');
+    const closeModalTop = document.getElementById('closeMemoModal');
+    const closeModalBottom = document.getElementById('closeMemoModalBottom');
+    
+    // Show modal
+    showMemoBtn.addEventListener('click', function() {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    });
+    
+    // Close modal functions
+    function closeModal() {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+    
+    closeModalTop.addEventListener('click', closeModal);
+    closeModalBottom.addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+            closeModal();
         }
     });
 });
