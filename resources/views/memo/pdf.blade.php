@@ -28,6 +28,7 @@
             margin: 0 0 5px 0;
             font-size: 14px;
             font-weight: bold;
+            text-transform: uppercase;
         }
         
         .content { 
@@ -68,12 +69,12 @@
             font-size: 12px;
         }
         
-        .memo-body ol {
+        .memo-body ol, .memo-body ul {
             padding-left: 20px;
             margin: 10px 0;
         }
         
-        .memo-body ol li {
+        .memo-body ol li, .memo-body ul li {
             margin-bottom: 5px;
             line-height: 1.4;
         }
@@ -82,6 +83,7 @@
             margin: 20px 0;
             font-size: 12px;
             line-height: 1.6;
+            font-style: italic;
         }
         
         .signature-container { 
@@ -108,14 +110,14 @@
             text-align: left;
             margin-bottom: 15px;
             font-size: 12px;
+            font-weight: bold;
         }
         
         .signature-img { 
-            max-height: 60px; 
+            height: 60px;
             margin: 15px 0; 
             display: block;
-            margin-left: 0;
-            margin-right: auto;
+            max-width: 200px;
         }
         
         .signature-name { 
@@ -135,6 +137,7 @@
         .tembusan {
             margin-top: 40px;
             font-size: 12px;
+            page-break-inside: avoid;
         }
         
         .tembusan h4 {
@@ -163,15 +166,23 @@
                 width: 100%;
                 max-width: 100%;
                 padding: 0;
+                font-size: 11px;
             }
             .content {
                 padding: 0;
+            }
+            .signature-container {
+                page-break-inside: avoid;
+            }
+            .memo-body {
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
     @php
+    if (!function_exists('safeDateFormat')) {
         function safeDateFormat($date) {
             try {
                 if ($date instanceof \Carbon\Carbon) {
@@ -185,10 +196,11 @@
                 return '.........................';
             }
         }
+    }
     @endphp
 
     <div class="header">
-        <h2>MEMO</h2>
+        <h2>MEMO INTERNAL</h2>
     </div>
     
     <div class="content">
@@ -227,29 +239,34 @@
         </div>
         
         <div class="closing-text">
-            Demikian disampaikan, selanjutnya mohon arahan lebih lanjut.
+            Demikian disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
         </div>
         
         <div class="signature-container">
             <div class="signature-box">
-                <div class="signature-header">Hormat Kami,</div>
+                <div class="signature-header">Hormat kami,</div>
                 <div class="signature-position-text">{{ $memo->dari }}</div>
                 
                 @if($memo->signed_by && $memo->signature_path)
-                @php
-                    $signaturePath = storage_path('app/public/' . $memo->signature_path);
-                    if (file_exists($signaturePath)) {
-                        $signatureData = base64_encode(file_get_contents($signaturePath));
-                        $signatureMime = mime_content_type($signaturePath);
-                @endphp
-                
-                <img src="data:{{ $signatureMime }};base64,{{ $signatureData }}" 
-                     class="signature-img" alt="Tanda Tangan">
-                
-                @php } @endphp
+                    @php
+                        $signaturePath = storage_path('app/public/' . $memo->signature_path);
+                        if (file_exists($signaturePath)) {
+                            $signatureData = base64_encode(file_get_contents($signaturePath));
+                            $signatureMime = mime_content_type($signaturePath);
+                    @endphp
+                    
+                    <img src="data:{{ $signatureMime }};base64,{{ $signatureData }}" 
+                         class="signature-img" alt="Tanda Tangan">
+                    
+                    @php } @endphp
                 @endif
                 
                 <div class="signature-name">{{ $memo->disetujuiOleh->name ?? $memo->signed_by ?? 'Galla Pandegla' }}</div>
+                <div class="signature-position">
+                    @if($memo->disetujuiOleh)
+                        {{ $memo->disetujuiOleh->position ?? 'Asisten Manager' }}
+                    @endif
+                </div>
             </div>
         </div>
         

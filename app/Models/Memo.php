@@ -2,12 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Memo extends Model
 {
     use HasFactory;
+
+    const STATUS_DIAJUKAN = 'diajukan';
+    const STATUS_DISETUJUI = 'disetujui';
+    const STATUS_DITOLAK = 'ditolak';
+    const STATUS_REVISI = 'revisi';
 
     protected $fillable = [
         'nomor',
@@ -26,35 +32,27 @@ class Memo extends Model
         'signature_path',
         'signed_by',
         'signed_at',
-        'pdf_path'
+        'pdf_path',
+        'tembusan'
     ];
 
     protected $casts = [
         'tanggal' => 'datetime:Y-m-d',
         'approval_date' => 'datetime',
         'signed_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
+        'tembusan' => 'array'
     ];
 
-    public function approver()
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
+    protected $appends = ['has_signature'];
 
-    public function divisiAsal()
+    public static function getStatuses()
     {
-        return $this->belongsTo(Divisi::class, 'dari', 'nama');
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'dibuat_oleh_user_id');
-    }
-
-    public function logs()
-    {
-        return $this->hasMany(MemoLog::class);
+        return [
+            self::STATUS_DIAJUKAN => 'Diajukan',
+            self::STATUS_DISETUJUI => 'Disetujui',
+            self::STATUS_DITOLAK => 'Ditolak',
+            self::STATUS_REVISI => 'Revisi'
+        ];
     }
 
     public function dibuatOleh()
@@ -71,4 +69,32 @@ class Memo extends Model
     {
         return $this->belongsTo(User::class, 'signed_by');
     }
+
+    public function divisiAsal()
+    {
+        return $this->belongsTo(Divisi::class, 'dari', 'nama');
+    }
+
+    public function divisiTujuan()
+    {
+        return $this->belongsTo(Divisi::class, 'divisi_tujuan', 'nama');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(MemoLog::class);
+    }
+
+    public function getHasSignatureAttribute()
+    {
+        return !empty($this->signature_path) && Storage::exists($this->signature_path);
+    }
+    public function getFormattedTanggalAttribute()
+{
+    try {
+        return $this->tanggal->format('d M Y');
+    } catch (\Exception $e) {
+        return '.........................';
+    }
+}
 }
