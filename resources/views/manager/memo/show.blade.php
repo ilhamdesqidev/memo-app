@@ -36,8 +36,8 @@
             <!-- Isi memo -->
             <div class="mb-6">
                 <h4 class="text-sm font-medium text-gray-500">Isi Memo</h4>
-                <div class="mt-2 p-4 bg-gray-50 rounded-md">
-                    {!! nl2br(e($memo->isi)) !!}
+                <div class="mt-2 p-4 bg-gray-50 rounded-md whitespace-pre-wrap">
+                    {{ strip_tags($memo->isi) }}
                 </div>
             </div>
 
