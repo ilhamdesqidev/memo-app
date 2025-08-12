@@ -54,35 +54,49 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Tindakan</h3>
                 <div class="flex flex-wrap gap-3">
                 <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]">
-                @csrf
-                <div class="mb-3">
-                    <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
-                    <textarea name="catatan" id="catatan" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                </div>
-                
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700">Tindakan Lanjutan</label>
-                    <div class="mt-2 space-y-2">
-                        <div class="flex items-center">
-                            <input type="radio" id="action_approve" name="next_action" value="approve" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <label for="action_approve" class="ml-2 block text-sm text-gray-700">Setujui dan simpan</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input type="radio" id="action_forward" name="next_action" value="forward" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <label for="action_forward" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Manager</label>
+                    @csrf
+                    <div class="mb-3">
+                        <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
+                        <textarea name="catatan" id="catatan" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="block text-sm font-medium text-gray-700">Tindakan Lanjutan</label>
+                        <div class="mt-2 space-y-2">
+                            <div class="flex items-center">
+                                <input type="radio" id="action_approve" name="next_action" value="approve" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <label for="action_approve" class="ml-2 block text-sm text-gray-700">Setujui dan simpan</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="action_forward_manager" name="next_action" value="forward_manager" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <label for="action_forward_manager" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Manager</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="radio" id="action_forward_staff" name="next_action" value="forward_staff" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                <label for="action_forward_staff" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Staff</label>
+                            </div>
+                            
+                            <div id="staffSelection" class="hidden ml-6 mt-2">
+                                <label for="forward_to_staff_id" class="block text-sm font-medium text-gray-700">Pilih Staff</label>
+                                <select name="forward_to_staff_id" id="forward_to_staff_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="">-- Pilih Staff --</option>
+                                    @foreach($staffList as $staff)
+                                        <option value="{{ $staff->id }}">{{ $staff->name }} ({{ $staff->divisi->nama }})</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="flex items-center mb-3">
-                    <input type="checkbox" name="include_signature" id="include_signature" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                    <label for="include_signature" class="ml-2 block text-sm text-gray-700">Sertakan tanda tangan digital</label>
-                </div>
-                
-                <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                    Proses Memo
-                </button>
-            </form>
+                    
+                    <div class="flex items-center mb-3">
+                        <input type="checkbox" name="include_signature" id="include_signature" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="include_signature" class="ml-2 block text-sm text-gray-700">Sertakan tanda tangan digital</label>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Proses Memo
+                    </button>
+                </form>
 
                     <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]"> <!-- Tambahkan min-w-[250px] -->
                         @csrf
@@ -150,4 +164,23 @@
         max-width: 100%;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const staffSelection = document.getElementById('staffSelection');
+    const staffRadios = document.querySelectorAll('input[name="next_action"]');
+    
+    staffRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'forward_staff') {
+                staffSelection.classList.remove('hidden');
+                document.getElementById('forward_to_staff_id').required = true;
+            } else {
+                staffSelection.classList.add('hidden');
+                document.getElementById('forward_to_staff_id').required = false;
+            }
+        });
+    });
+});
+</script>
 @endsection

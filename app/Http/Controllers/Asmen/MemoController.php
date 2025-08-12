@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class MemoController extends Controller
@@ -41,21 +42,28 @@ class MemoController extends Controller
     ]);
 }
 
-   public function show($id)
+public function show($id)
 {
     $user = Auth::user();
     $memo = Memo::with(['dibuatOleh', 'divisiAsal', 'logs.user'])->findOrFail($id);
 
-    // Validasi otorisasi yang lebih baik
+    // Validasi otorisasi
     if ($memo->divisi_tujuan !== $user->divisi->nama) {
         abort(403, 'Anda tidak memiliki akses ke memo ini.');
     }
 
-    // Jika status sudah diproses, tetap boleh dilihat
+    // Ambil daftar staff di divisi yang sama
+    $staffList = User::where('divisi_id', $user->divisi_id)
+                    ->where('id', '!=', $user->id)
+                    ->whereIn('role', ['staff', 'supervisor'])
+                    ->with('divisi')
+                    ->get();
+
     return view('asmen.memo.show', [
         'memo' => $memo,
         'title' => 'Detail Memo',
-        'canProcess' => $memo->status === 'diajukan' // Tambahkan flag ini
+        'canProcess' => $memo->status === 'diajukan',
+        'staffList' => $staffList
     ]);
 }
 
@@ -71,17 +79,28 @@ public function approve(Request $request, $id)
 
     // Tentukan tindakan lanjutan
     $nextAction = $request->input('next_action', 'approve');
+    $forwardToStaffId = $request->input('forward_to_staff_id');
     
     // Update data memo
     $updateData = [
         'approved_by' => $user->id,
         'approval_date' => now(),
-        'status' => ($nextAction === 'forward') ? 'diajukan' : 'disetujui'
     ];
 
-    // Jika diteruskan ke Manager, update divisi tujuan ke 'Manager'
-    if ($nextAction === 'forward') {
+    // Handle different actions
+    if ($nextAction === 'forward_manager') {
+        $updateData['status'] = 'diajukan';
         $updateData['divisi_tujuan'] = 'Manager';
+    } 
+    elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
+        $staff = User::findOrFail($forwardToStaffId);
+        $updateData['status'] = 'diajukan';
+        $updateData['divisi_tujuan'] = $staff->divisi->nama;
+        $updateData['kepada_id'] = $staff->id;
+        $updateData['kepada'] = $staff->name;
+    } 
+    else {
+        $updateData['status'] = 'disetujui';
     }
 
     // Handle signature
@@ -94,23 +113,33 @@ public function approve(Request $request, $id)
     $memo->update($updateData);
 
     // Create log
-    $logMessage = ($nextAction === 'forward') 
-        ? 'Memo disetujui dan diteruskan ke Manager' 
-        : 'Memo disetujui';
+    $logMessage = '';
+    $aksi = 'persetujuan';
     
+    if ($nextAction === 'forward_manager') {
+        $logMessage = 'Memo disetujui dan diteruskan ke Manager';
+        $aksi = 'penerusan_manager';
+    } 
+    elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
+        $staff = User::find($forwardToStaffId);
+        $logMessage = 'Memo disetujui dan diteruskan ke Staff: ' . $staff->name;
+        $aksi = 'penerusan_staff';
+    } 
+    else {
+        $logMessage = 'Memo disetujui';
+    }
+
     MemoLog::create([
         'memo_id' => $memo->id,
         'user_id' => $user->id,
         'divisi' => $user->divisi->nama,
-        'aksi' => ($nextAction === 'forward') ? 'penerusan' : 'persetujuan',
+        'aksi' => $aksi,
         'catatan' => $request->catatan ?? $logMessage,
         'waktu' => now()
     ]);
 
     return redirect()->route('asmen.memo.inbox')
-        ->with('success', ($nextAction === 'forward') 
-            ? 'Memo berhasil disetujui dan diteruskan ke Manager' 
-            : 'Memo berhasil disetujui');
+        ->with('success', $logMessage);
 }
 
    public function reject(Request $request, $id)
