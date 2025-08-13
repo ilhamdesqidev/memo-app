@@ -52,7 +52,7 @@
             <div class="mb-8">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Administrasi Keuangan Dashboard</h1>
+                        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
                         <p class="mt-2 text-sm text-gray-600">Welcome back! Here's your memo management overview.</p>
                     </div>
                     <div class="flex items-center space-x-4">

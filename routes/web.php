@@ -29,6 +29,7 @@ use App\Http\Controllers\Asmen\ArsipController;
 use App\Http\Controllers\Asmen\MemoController;
 use App\Http\Controllers\Asisten\DashboardController as AsistenDashboardController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Asisten\AsistenMemoController;
 
 
 /*-------------------------------------------------------------------------
@@ -176,6 +177,10 @@ Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asme
 |-------------------------------------------------------------------------*/
 Route::prefix('asisten')->middleware(['auth', 'role:asisten'])->name('asisten.')->group(function () {
     Route::get('/dashboard', [AsistenDashboardController::class, 'index'])->name('dashboard');
+     // Halaman utama (index)
+    Route::get('/index', [AsistenMemoController::class, 'index'])->name('index');
+    // Halaman detail show
+    Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
 });
 
 /*-------------------------------------------------------------------------

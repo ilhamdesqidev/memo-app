@@ -83,7 +83,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21l3-9 3 9-3-2-3 2zm0 0l-3-9h3m3 9h3l-3-9M5 12h14"></path>
                         </svg>
                     </div>
-                    <span class="ml-3 text-xl font-bold text-primary-800 font-playfair">Mesrtakara</span>
+                    <span class="ml-3 text-xl font-bold text-primary-800 font-playfair">Mestakara</span>
                 </div>
 
                 <!-- Desktop Navigation -->
