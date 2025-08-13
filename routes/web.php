@@ -175,13 +175,21 @@ Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asme
 /*-------------------------------------------------------------------------
 | Asisten Routes
 |-------------------------------------------------------------------------*/
-Route::prefix('asisten')->middleware(['auth', 'role:asisten'])->name('asisten.')->group(function () {
-    Route::get('/dashboard', [AsistenDashboardController::class, 'index'])->name('dashboard');
-     // Halaman utama (index)
-    Route::get('/index', [AsistenMemoController::class, 'index'])->name('index');
-    // Halaman detail show
-    Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
-});
+Route::prefix('asisten')
+    ->middleware(['auth', 'role:asisten'])
+    ->name('asisten.')
+    ->group(function () {
+        
+        Route::get('/dashboard', [AsistenDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        Route::prefix('memo')
+            ->name('memo.')
+            ->group(function () {
+                Route::get('/index', [AsistenMemoController::class, 'index'])->name('index');
+                Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
+            });
+    });
 
 /*-------------------------------------------------------------------------
 | Staff Routes (Previously User)

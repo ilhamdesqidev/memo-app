@@ -9,11 +9,11 @@ class AsistenMemoController extends Controller
 {
       public function index()
     {
-        return view('asisten.index');
+        return view('asisten.memo.index');
     }
 
     public function show($id)
     {
-        return view('asisten.show', ['id' => $id]);
+        return view('asisten.memo.show', ['id' => $id]);
     }
 }
