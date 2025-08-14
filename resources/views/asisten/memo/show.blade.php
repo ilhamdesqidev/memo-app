@@ -72,9 +72,9 @@
 
         <div class="border-t border-gray-200 pt-6">
             <h3 class="text-sm font-medium text-gray-500">Isi Memo</h3>
-            <div class="mt-1 text-sm text-gray-900 memo-content">
-                {!! $memo->isi !!}
-            </div>
+            <button onclick="toggleMemoContent()" class="mt-2 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Lihat Isi Memo
+            </button>
         </div>
 
         @if($memo->lampiran)
@@ -83,6 +83,37 @@
             <p class="mt-1 text-sm text-gray-900">{{ $memo->lampiran }} file terlampir</p>
         </div>
         @endif
+    </div>
+
+    <!-- Memo Content Modal -->
+    <div id="memoContentModal" class="fixed inset-0 overflow-y-auto hidden z-50">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75" onclick="toggleMemoContent()"></div>
+            </div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                Isi Memo
+                            </h3>
+                            <div class="mt-2 memo-content">
+                                {!! $memo->isi !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" onclick="toggleMemoContent()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Approval History -->
@@ -113,13 +144,24 @@
     @endif
 </div>
 
+<script>
+function toggleMemoContent() {
+    const modal = document.getElementById('memoContentModal');
+    modal.classList.toggle('hidden');
+}
+</script>
+
 <style>
 .memo-content {
     line-height: 1.6;
+    max-height: 70vh;
+    overflow-y: auto;
 }
 
 .memo-content p {
     margin-bottom: 1em;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .memo-content ul, .memo-content ol {
@@ -133,6 +175,17 @@
 
 .memo-content ol {
     list-style-type: decimal;
+}
+
+/* Modal transition */
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transform {
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 </style>
 @endsection
