@@ -75,46 +75,57 @@ class MemoController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'nomor' => 'required|string|max:50|unique:memos',
-            'tanggal' => 'required|date',
-            'kepada' => 'required|string|max:100',
-            'kepada_id' => 'required|exists:users,id',
-            'perihal' => 'required|string|max:255',
-            'divisi_tujuan' => 'required|string',
-            'isi' => 'required|string',
-        ]);
+{
+    $validated = $request->validate([
+        'nomor' => 'required|string|max:50|unique:memos',
+        'tanggal' => 'required|date',
+        'kepada' => 'required|string|max:100',
+        'kepada_id' => 'required|exists:users,id',
+        'perihal' => 'required|string|max:255',
+        'divisi_tujuan' => 'required|string|in:' . auth()->user()->divisi->nama, // Hanya boleh memilih divisi sendiri
+        'isi' => 'required|string',
+        'lampiran' => 'nullable|integer|min:0|max:10',
+    ]);
 
-        $penerima = User::findOrFail($request->kepada_id);
-        
-        if ($penerima->role !== 'asisten_manager' || $penerima->divisi->nama !== auth()->user()->divisi->nama) {
-            return back()->withErrors(['kepada_id' => 'Penerima harus seorang Asisten Manager dari divisi Anda'])->withInput();
-        }
-
-        $memoData = $request->only([
-            'nomor', 'tanggal', 'kepada', 'kepada_id', 'perihal', 
-            'divisi_tujuan', 'isi'
-        ]);
-        
-        $memoData['dari'] = auth()->user()->divisi->nama;
-        $memoData['dibuat_oleh_user_id'] = auth()->id();
-        $memoData['status'] = 'diajukan';
-
-        $memo = Memo::create($memoData);
-
-        MemoLog::create([
-            'memo_id' => $memo->id,
-            'divisi' => auth()->user()->divisi->nama,
-            'aksi' => 'pembuatan',
-            'catatan' => 'Memo dibuat oleh ' . auth()->user()->name,
-            'user_id' => auth()->id(),
-            'waktu' => now()->toDateTimeString(),
-        ]);
-
-        return redirect()->route('staff.memo.index')
-            ->with('success', 'Memo berhasil dibuat dan diajukan');
+    // Validasi penerima harus asisten manager dari divisi yang sama
+    $penerima = User::findOrFail($request->kepada_id);
+    if ($penerima->role !== 'asisten_manager' || $penerima->divisi_id !== auth()->user()->divisi_id) {
+        return back()->withErrors([
+            'kepada_id' => 'Penerima harus seorang Asisten Manager dari divisi Anda'
+        ])->withInput();
     }
+
+    $memoData = $request->only([
+        'nomor', 'tanggal', 'kepada', 'kepada_id', 'perihal', 
+        'divisi_tujuan', 'isi', 'lampiran'
+    ]);
+    
+    // Set data tambahan
+    $memoData['dari'] = auth()->user()->divisi->nama;
+    $memoData['dibuat_oleh_user_id'] = auth()->id();
+    $memoData['status'] = 'diajukan';
+    $memoData['approval_date'] = null;
+    $memoData['approved_by'] = null;
+
+    // Buat memo
+    $memo = Memo::create($memoData);
+
+    // Buat log memo
+    MemoLog::create([
+        'memo_id' => $memo->id,
+        'divisi' => auth()->user()->divisi->nama,
+        'aksi' => 'pembuatan',
+        'catatan' => 'Memo dibuat oleh ' . auth()->user()->name,
+        'user_id' => auth()->id(),
+        'waktu' => now()->toDateTimeString(),
+    ]);
+
+    // Generate PDF pertama kali
+    $this->generatePdf($memo->id);
+
+    return redirect()->route('staff.memo.index')
+        ->with('success', 'Memo berhasil dibuat dan diajukan');
+}
 
     public function edit($id)
     {

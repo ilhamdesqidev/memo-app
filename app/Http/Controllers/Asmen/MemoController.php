@@ -71,9 +71,10 @@ public function approve(Request $request, $id)
 {
     $user = Auth::user();
     $memo = Memo::findOrFail($id);
+    $currentDivisi = $user->divisi->nama;
 
     // Validasi otorisasi
-    if ($memo->divisi_tujuan !== $user->divisi->nama || $memo->status !== 'diajukan') {
+    if ($memo->divisi_tujuan !== $currentDivisi || $memo->status !== 'diajukan') {
         abort(403, 'Tidak dapat memproses memo ini.');
     }
 
@@ -91,28 +92,42 @@ public function approve(Request $request, $id)
     if ($nextAction === 'forward_manager') {
         $updateData['status'] = 'diajukan';
         $updateData['divisi_tujuan'] = 'Manager';
+        $updateData['forwarded_by'] = $user->id;
+        $updateData['forwarded_at'] = now();
     } 
     elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
         $staff = User::findOrFail($forwardToStaffId);
+        
+        // Validasi tidak meneruskan ke staff divisi sendiri
+        if ($staff->divisi_id === $user->divisi_id) {
+            return back()->with('error', 'Tidak bisa meneruskan ke staff divisi sendiri');
+        }
+        
         $updateData['status'] = 'diajukan';
         $updateData['divisi_tujuan'] = $staff->divisi->nama;
         $updateData['kepada_id'] = $staff->id;
         $updateData['kepada'] = $staff->name;
+        $updateData['forwarded_by'] = $user->id;
+        $updateData['forwarded_at'] = now();
     } 
     else {
         $updateData['status'] = 'disetujui';
     }
 
     // Handle signature
-    if ($request->has('include_signature') && $user->signature) {
-        $updateData['signature_path'] = $user->signature;
-        $updateData['signed_by'] = $user->id;
-        $updateData['signed_at'] = now();
+    if ($request->has('include_signature')) {
+        if ($user->signature) {
+            $updateData['signature_path'] = $user->signature;
+            $updateData['signed_by'] = $user->id;
+            $updateData['signed_at'] = now();
+        } else {
+            return back()->with('error', 'Anda belum memiliki tanda tangan digital');
+        }
     }
 
     $memo->update($updateData);
 
-    // Create log
+    // Create log dengan divisi asal
     $logMessage = '';
     $aksi = 'persetujuan';
     
@@ -122,7 +137,7 @@ public function approve(Request $request, $id)
     } 
     elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
         $staff = User::find($forwardToStaffId);
-        $logMessage = 'Memo disetujui dan diteruskan ke Staff: ' . $staff->name;
+        $logMessage = 'Memo disetujui dan diteruskan ke Staff: ' . $staff->name . ' (Divisi: ' . $staff->divisi->nama . ')';
         $aksi = 'penerusan_staff';
     } 
     else {
@@ -132,11 +147,23 @@ public function approve(Request $request, $id)
     MemoLog::create([
         'memo_id' => $memo->id,
         'user_id' => $user->id,
-        'divisi' => $user->divisi->nama,
+        'divisi' => $currentDivisi,
         'aksi' => $aksi,
         'catatan' => $request->catatan ?? $logMessage,
         'waktu' => now()
     ]);
+
+    // Jika diteruskan, buat log tambahan di divisi tujuan
+    if (in_array($nextAction, ['forward_manager', 'forward_staff'])) {
+        MemoLog::create([
+            'memo_id' => $memo->id,
+            'user_id' => $user->id,
+            'divisi' => $updateData['divisi_tujuan'],
+            'aksi' => 'penerimaan',
+            'catatan' => 'Memo diterima dari Divisi ' . $currentDivisi,
+            'waktu' => now()
+        ]);
+    }
 
     return redirect()->route('asmen.memo.inbox')
         ->with('success', $logMessage);

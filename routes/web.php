@@ -188,6 +188,7 @@ Route::prefix('asisten')
             ->group(function () {
                 Route::get('/index', [AsistenMemoController::class, 'index'])->name('index');
                 Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
+                Route::get('/memo/pdf/{id}', [AsistenMemoController::class, 'viewPdf'])->name('asisten.memo.pdf');
             });
     });
 
