@@ -89,9 +89,50 @@
                         <p class="text-xs text-gray-500 mt-1">Hanya divisi dengan Asisten Manager aktif yang ditampilkan</p>
                     </div>
 
+                    <!-- Opsi Tanda Tangan -->
+                    <div class="mb-4">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0">
+                                <input type="checkbox" id="include_signature" name="include_signature" value="1" 
+                                       class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                       {{ auth()->user()->signature ? '' : 'disabled' }}>
+                            </div>
+                            <div class="flex-1">
+                                <label for="include_signature" class="block text-sm font-medium text-gray-700">
+                                    Sertakan Tanda Tangan Manager
+                                    @if(auth()->user()->signature)
+                                        <span class="text-green-600 text-xs">(✓ Tersedia)</span>
+                                    @else
+                                        <span class="text-red-600 text-xs">(Belum tersedia)</span>
+                                    @endif
+                                </label>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    @if(auth()->user()->signature)
+                                        Centang untuk menyertakan tanda tangan digital Anda pada dokumen PDF
+                                    @else
+                                        <span class="text-red-500">Anda belum memiliki tanda tangan digital. 
+                                        <a href="{{ route('profil.signature.index') }}" target="_blank" class="text-blue-600 hover:underline">Buat tanda tangan</a>
+                                        </span>
+                                    @endif
+                                </p>
+                                
+                                @if(auth()->user()->signature)
+                                <div id="signaturePreview" class="mt-2 hidden">
+                                    <p class="text-xs text-gray-600 mb-1">Preview tanda tangan:</p>
+                                    <div class="border border-gray-200 rounded p-2 bg-white inline-block">
+                                        <img src="{{ asset('storage/' . auth()->user()->signature) }}" 
+                                             alt="Preview Tanda Tangan" 
+                                             class="max-h-16 max-w-32 object-contain">
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
-                        <textarea name="catatan" rows="3" class="w-full border border-gray-300 rounded-md p-2"></textarea>
+                        <textarea name="catatan" rows="3" class="w-full border border-gray-300 rounded-md p-2" placeholder="Tambahkan catatan untuk penerusan memo ini..."></textarea>
                     </div>
 
                     <div class="flex justify-end space-x-3">
@@ -170,7 +211,7 @@
             <!-- Modal Body -->
             <div class="px-6 py-4 overflow-y-auto flex-1">
                 <div class="prose max-w-none">
-                    <div class="bg-gray-50 rounded-lg p-4 text-gray-800 leading-relaxed break-words word-wrap" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
+                    <div class="bg-gray-50 rounded-lg p-4 text-gray-800 leading-relaxed break-words" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
                         {{ strip_tags($memo->isi) }}
                     </div>
                 </div>
@@ -199,13 +240,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Show modal
     showMemoBtn.addEventListener('click', function() {
         modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
     });
     
     // Close modal functions
     function closeModal() {
         modal.classList.add('hidden');
-        document.body.style.overflow = 'auto'; // Restore scrolling
+        document.body.style.overflow = 'auto';
     }
     
     closeModalTop.addEventListener('click', closeModal);
@@ -225,6 +266,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Signature preview functionality
+    const signatureCheckbox = document.getElementById('include_signature');
+    const signaturePreview = document.getElementById('signaturePreview');
+    
+    if (signatureCheckbox && signaturePreview) {
+        signatureCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                signaturePreview.classList.remove('hidden');
+            } else {
+                signaturePreview.classList.add('hidden');
+            }
+        });
+    }
+
     // Validasi form penerusan
     const divisiSelect = document.getElementById('divisiSelect');
     const forwardForm = document.getElementById('forwardForm');
@@ -233,6 +288,18 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!divisiSelect.value) {
             e.preventDefault();
             alert('Silakan pilih divisi tujuan terlebih dahulu');
+            return false;
+        }
+
+        // Konfirmasi penerusan dengan/tanpa tanda tangan
+        const includeSignature = signatureCheckbox && signatureCheckbox.checked;
+        const confirmMessage = includeSignature 
+            ? 'Apakah Anda yakin ingin meneruskan memo ini dengan tanda tangan digital Anda?'
+            : 'Apakah Anda yakin ingin meneruskan memo ini?';
+            
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+            return false;
         }
     });
 

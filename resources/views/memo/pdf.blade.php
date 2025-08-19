@@ -86,18 +86,21 @@
             font-style: italic;
         }
         
+        /* Dual Signature Container */
         .signature-container { 
             margin-top: 50px;
             display: flex;
-            justify-content: flex-start;
+            justify-content: space-between;
             align-items: flex-start;
             width: 100%;
+            gap: 30px;
         }
         
         .signature-box { 
             text-align: left;
             width: 250px;
             margin-bottom: 30px;
+            flex: 1;
         }
         
         .signature-header {
@@ -156,6 +159,22 @@
             list-style-type: disc;
         }
 
+        /* Responsive untuk signature pada print */
+        @media print {
+            .signature-container {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                page-break-inside: avoid;
+                margin-top: 40px;
+            }
+            
+            .signature-box {
+                width: 48%;
+                margin-bottom: 20px;
+            }
+        }
+
         @page {
             size: A4;
             margin: 20mm;
@@ -171,9 +190,6 @@
             .content {
                 padding: 0;
             }
-            .signature-container {
-                page-break-inside: avoid;
-            }
             .memo-body {
                 page-break-inside: avoid;
             }
@@ -182,19 +198,70 @@
 </head>
 <body>
     @php
-    if (!function_exists('safeDateFormat')) {
-        function safeDateFormat($date) {
-            try {
-                if ($date instanceof \Carbon\Carbon) {
-                    return $date->format('d M Y');
-                }
-                if (is_string($date)) {
-                    return \Carbon\Carbon::parse($date)->format('d M Y');
-                }
-                return '.........................';
-            } catch (\Exception $e) {
-                return '.........................';
+    $safeDateFormat = function($date) {
+        try {
+            if ($date instanceof \Carbon\Carbon) {
+                return $date->format('d M Y');
             }
+            if (is_string($date)) {
+                return \Carbon\Carbon::parse($date)->format('d M Y');
+            }
+            return '.........................';
+        } catch (\Exception $e) {
+            return '.........................';
+        }
+    };
+
+    $firstSignerName = 'Pejabat Berwenang';
+    $firstSignerPosition = 'Asisten Manager';
+    $firstSignerDivision = $memo->dari;
+    $firstSignaturePath = null;
+
+    $secondSignerName = null;
+    $secondSignerPosition = null;
+    $secondSignerDivision = null;
+    $secondSignaturePath = null;
+
+    if ($memo->signature_path) {
+        if ($memo->dibuatOleh) {
+            $firstSignerName = $memo->dibuatOleh->name;
+            $firstSignerPosition = $memo->dibuatOleh->role === 'asisten_manager' ? 'Asisten Manager' : 'Staff';
+            $firstSignerDivision = $memo->dibuatOleh->divisi->nama ?? $memo->dari;
+        }
+        $firstSignaturePath = $memo->signature_path;
+    } elseif ($memo->dibuat_oleh_user_id) {
+        $creator = \App\Models\User::find($memo->dibuat_oleh_user_id);
+        if ($creator) {
+            $firstSignerName = $creator->name;
+            $firstSignerPosition = $creator->role === 'asisten_manager' ? 'Asisten Manager' : 'Staff';
+            $firstSignerDivision = $creator->divisi->nama ?? $memo->dari;
+            if ($creator->signature && (!$memo->manager_signed || !$memo->manager_signature_path)) {
+                $firstSignaturePath = $creator->signature;
+            }
+        }
+    }
+
+    if ($memo->manager_signature_path && $memo->manager_signed) {
+        $managerUser = null;
+        if ($memo->forwarded_by) {
+            $managerUser = \App\Models\User::find($memo->forwarded_by);
+        } elseif ($memo->signed_by) {
+            $managerUser = \App\Models\User::find($memo->signed_by);
+        }
+
+        if ($managerUser && $managerUser->role === 'manager') {
+            $secondSignerName = $managerUser->name;
+            $secondSignerPosition = 'Manager';
+            $secondSignerDivision = 'Manager';
+            $secondSignaturePath = $memo->manager_signature_path;
+        }
+    } elseif ($memo->signature_path && $memo->manager_signed && $memo->signed_by) {
+        $managerSigner = \App\Models\User::find($memo->signed_by);
+        if ($managerSigner && $managerSigner->role === 'manager') {
+            $secondSignerName = $managerSigner->name;
+            $secondSignerPosition = 'Manager';
+            $secondSignerDivision = 'Manager';
+            $secondSignaturePath = $memo->signature_path;
         }
     }
     @endphp
@@ -229,7 +296,7 @@
                 <tr>
                     <td class="label">Tanggal</td>
                     <td class="colon">:</td>
-                    <td>{{ safeDateFormat($memo->tanggal) }}</td>
+                    <td>{{ $safeDateFormat($memo->tanggal) }}</td>
                 </tr>
             </table>
         </div>
@@ -242,33 +309,46 @@
             Demikian disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
         </div>
         
-        <div class="signature-container">
-            <div class="signature-box">
-                <div class="signature-header">Hormat kami,</div>
-                <div class="signature-position-text">{{ $memo->dari }}</div>
-                
-                @if($memo->signed_by && $memo->signature_path)
-                    @php
-                        $signaturePath = storage_path('app/public/' . $memo->signature_path);
-                        if (file_exists($signaturePath)) {
-                            $signatureData = base64_encode(file_get_contents($signaturePath));
-                            $signatureMime = mime_content_type($signaturePath);
-                    @endphp
-                    
-                    <img src="data:{{ $signatureMime }};base64,{{ $signatureData }}" 
-                         class="signature-img" alt="Tanda Tangan">
-                    
-                    @php } @endphp
-                @endif
-                
-                <div class="signature-name">{{ $memo->disetujuiOleh->name ?? $memo->signed_by ?? 'Galla Pandegla' }}</div>
-                <div class="signature-position">
-                    @if($memo->disetujuiOleh)
-                        {{ $memo->disetujuiOleh->position ?? 'Asisten Manager' }}
-                    @endif
-                </div>
-            </div>
+        <div class="signature-box">
+            <div class="signature-header">Hormat kami,</div>
+            <div class="signature-position-text">{{ $memo->dari }}</div>
+            
+            @if($memo->signature_path)
+                <img src="{{ public_path('storage/'.$memo->signature_path) }}" 
+                    class="signature-img" 
+                    alt="Tanda Tangan Pembuat">
+            @elseif($memo->dibuatOleh && $memo->dibuatOleh->signature)
+                <img src="{{ public_path('storage/'.$memo->dibuatOleh->signature) }}" 
+                    class="signature-img" 
+                    alt="Tanda Tangan Pembuat">
+            @else
+                <div class="signature-placeholder" style="height:60px;"></div>
+            @endif
+            
+            <div class="signature-name">{{ $memo->dibuatOleh->name ?? 'Pembuat Memo' }}</div>
         </div>
+
+        <!-- Tanda tangan Manager (jika ada) -->
+        @if($memo->manager_signature_path || ($memo->forwarded_by && $memo->forwardedBy->signature))
+        <div class="signature-box">
+            <div class="signature-header">Disetujui oleh,</div>
+            <div class="signature-position-text">Manager</div>
+            
+            @if($memo->manager_signature_path)
+                <img src="{{ public_path('storage/'.$memo->manager_signature_path) }}" 
+                    class="signature-img" 
+                    alt="Tanda Tangan Manager">
+            @elseif($memo->forwarded_by && $memo->forwardedBy->signature)
+                <img src="{{ public_path('storage/'.$memo->forwardedBy->signature) }}" 
+                    class="signature-img" 
+                    alt="Tanda Tangan Manager">
+            @else
+                <div class="signature-placeholder" style="height:60px;"></div>
+            @endif
+            
+            <div class="signature-name">{{ $memo->forwardedBy->name ?? 'Manager' }}</div>
+        </div>
+        @endif
         
         @if(isset($memo->tembusan) && $memo->tembusan)
         <div class="tembusan">
@@ -279,7 +359,8 @@
                     <li>{{ $item }}</li>
                     @endforeach
                 @else
-                    <li>Asisten Manager Administrasi dan Umum</li>
+                    <li>Manager</li>
+                    <li>Asisten Manager terkait</li>
                     <li>Arsip</li>
                 @endif
             </ul>
