@@ -86,7 +86,7 @@
             font-style: italic;
         }
         
-        /* Dual Signature Container */
+        /* Signature Container dengan posisi yang benar */
         .signature-container { 
             margin-top: 50px;
             display: flex;
@@ -94,6 +94,7 @@
             align-items: flex-start;
             width: 100%;
             gap: 30px;
+            min-height: 150px;
         }
         
         .signature-box { 
@@ -137,6 +138,15 @@
             text-align: left;
         }
         
+        /* Posisi signature kiri dan kanan */
+        .signature-left {
+            order: 1;
+        }
+        
+        .signature-right {
+            order: 2;
+        }
+        
         .tembusan {
             margin-top: 40px;
             font-size: 12px;
@@ -159,7 +169,6 @@
             list-style-type: disc;
         }
 
-        /* Responsive untuk signature pada print */
         @media print {
             .signature-container {
                 display: flex;
@@ -212,56 +221,92 @@
         }
     };
 
-    $firstSignerName = 'Pejabat Berwenang';
-    $firstSignerPosition = 'Asisten Manager';
-    $firstSignerDivision = $memo->dari;
-    $firstSignaturePath = null;
+    // Default values
+    $leftSignerName = null;
+    $leftSignerPosition = null;
+    $leftSignerDivision = $memo->dari;
+    $leftSignaturePath = null;
 
-    $secondSignerName = null;
-    $secondSignerPosition = null;
-    $secondSignerDivision = null;
-    $secondSignaturePath = null;
+    $rightSignerName = null;
+    $rightSignerPosition = null;
+    $rightSignerDivision = null;
+    $rightSignaturePath = null;
 
-    if ($memo->signature_path) {
-        if ($memo->dibuatOleh) {
-            $firstSignerName = $memo->dibuatOleh->name;
-            $firstSignerPosition = $memo->dibuatOleh->role === 'asisten_manager' ? 'Asisten Manager' : 'Staff';
-            $firstSignerDivision = $memo->dibuatOleh->divisi->nama ?? $memo->dari;
+    // Cari asisten manager dari divisi asal (sama dengan pembuat memo)
+    $originalDivisionAssistant = null;
+    
+    // Cek di logs untuk mencari siapa asisten manager yang approve dari divisi asal
+    $approvalLogs = $memo->logs()->where('aksi', 'disetujui')
+                                 ->where('divisi', $memo->dari) // divisi asal memo
+                                 ->with('user')
+                                 ->get();
+    
+    foreach ($approvalLogs as $log) {
+        if ($log->user && $log->user->role === 'asisten_manager' && $log->user->divisi->nama === $memo->dari) {
+            $originalDivisionAssistant = $log->user;
+            break;
         }
-        $firstSignaturePath = $memo->signature_path;
-    } elseif ($memo->dibuat_oleh_user_id) {
-        $creator = \App\Models\User::find($memo->dibuat_oleh_user_id);
-        if ($creator) {
-            $firstSignerName = $creator->name;
-            $firstSignerPosition = $creator->role === 'asisten_manager' ? 'Asisten Manager' : 'Staff';
-            $firstSignerDivision = $creator->divisi->nama ?? $memo->dari;
-            if ($creator->signature && (!$memo->manager_signed || !$memo->manager_signature_path)) {
-                $firstSignaturePath = $creator->signature;
-            }
+    }
+    
+    // Jika tidak ditemukan di logs, cari berdasarkan approved_by yang divisinya sama dengan asal memo
+    if (!$originalDivisionAssistant && $memo->approved_by) {
+        $approver = \App\Models\User::find($memo->approved_by);
+        if ($approver && $approver->divisi->nama === $memo->dari && $approver->role === 'asisten_manager') {
+            $originalDivisionAssistant = $approver;
         }
     }
 
+    // Jika masih tidak ada, fallback ke signed_by yang divisinya sama
+    if (!$originalDivisionAssistant && $memo->signed_by) {
+        $signer = \App\Models\User::find($memo->signed_by);
+        if ($signer && $signer->divisi->nama === $memo->dari && $signer->role === 'asisten_manager') {
+            $originalDivisionAssistant = $signer;
+        }
+    }
+
+    // Set signature berdasarkan asisten manager dari divisi asal
+    if ($originalDivisionAssistant) {
+        $leftSignerName = $originalDivisionAssistant->name;
+        $leftSignerPosition = 'Asisten Manager';
+        $leftSignerDivision = $originalDivisionAssistant->divisi->nama;
+        
+        // Cari signature yang tepat
+        if ($memo->signature_path) {
+            $leftSignaturePath = $memo->signature_path;
+        } elseif ($originalDivisionAssistant->signature) {
+            $leftSignaturePath = $originalDivisionAssistant->signature;
+        }
+    } else {
+        // Fallback ke pembuat memo jika tidak ada asisten manager yang approve
+        if ($memo->dibuatOleh) {
+            $leftSignerName = $memo->dibuatOleh->name;
+            $leftSignerPosition = $memo->dibuatOleh->role === 'asisten_manager' ? 'Asisten Manager' : 'Staff';
+            $leftSignerDivision = $memo->dibuatOleh->divisi->nama ?? $memo->dari;
+            
+            if ($memo->dibuatOleh->signature) {
+                $leftSignaturePath = $memo->dibuatOleh->signature;
+            }
+        }
+    }
+    
+    // Manager signature (jika ada)
     if ($memo->manager_signature_path && $memo->manager_signed) {
         $managerUser = null;
         if ($memo->forwarded_by) {
             $managerUser = \App\Models\User::find($memo->forwarded_by);
         } elseif ($memo->signed_by) {
             $managerUser = \App\Models\User::find($memo->signed_by);
+            // Pastikan ini manager, bukan asisten manager
+            if ($managerUser && $managerUser->role !== 'manager') {
+                $managerUser = null;
+            }
         }
 
         if ($managerUser && $managerUser->role === 'manager') {
-            $secondSignerName = $managerUser->name;
-            $secondSignerPosition = 'Manager';
-            $secondSignerDivision = 'Manager';
-            $secondSignaturePath = $memo->manager_signature_path;
-        }
-    } elseif ($memo->signature_path && $memo->manager_signed && $memo->signed_by) {
-        $managerSigner = \App\Models\User::find($memo->signed_by);
-        if ($managerSigner && $managerSigner->role === 'manager') {
-            $secondSignerName = $managerSigner->name;
-            $secondSignerPosition = 'Manager';
-            $secondSignerDivision = 'Manager';
-            $secondSignaturePath = $memo->signature_path;
+            $rightSignerName = $managerUser->name;
+            $rightSignerPosition = 'Manager';
+            $rightSignerDivision = 'Manager';
+            $rightSignaturePath = $memo->manager_signature_path;
         }
     }
     @endphp
@@ -309,46 +354,45 @@
             Demikian disampaikan, atas perhatian dan kerjasamanya diucapkan terima kasih.
         </div>
         
-        <div class="signature-box">
-            <div class="signature-header">Hormat kami,</div>
-            <div class="signature-position-text">{{ $memo->dari }}</div>
-            
-            @if($memo->signature_path)
-                <img src="{{ public_path('storage/'.$memo->signature_path) }}" 
-                    class="signature-img" 
-                    alt="Tanda Tangan Pembuat">
-            @elseif($memo->dibuatOleh && $memo->dibuatOleh->signature)
-                <img src="{{ public_path('storage/'.$memo->dibuatOleh->signature) }}" 
-                    class="signature-img" 
-                    alt="Tanda Tangan Pembuat">
-            @else
-                <div class="signature-placeholder" style="height:60px;"></div>
+        <div class="signature-container">
+            <!-- Signature Utama (Kiri) - Asisten Manager yang menandatangani -->
+            @if($leftSignerName)
+            <div class="signature-box signature-left">
+                <div class="signature-header">Hormat kami,</div>
+                <div class="signature-position-text">{{ $leftSignerDivision }}</div>
+                
+                @if($leftSignaturePath)
+                    <img src="{{ public_path('storage/'.$leftSignaturePath) }}" 
+                        class="signature-img" 
+                        alt="Tanda Tangan">
+                @else
+                    <div class="signature-placeholder" style="height:60px;"></div>
+                @endif
+                
+                <div class="signature-name">{{ $leftSignerName }}</div>
+                <div class="signature-position">{{ $leftSignerPosition }}</div>
+            </div>
             @endif
-            
-            <div class="signature-name">{{ $memo->dibuatOleh->name ?? 'Pembuat Memo' }}</div>
-        </div>
 
-        <!-- Tanda tangan Manager (jika ada) -->
-        @if($memo->manager_signature_path || ($memo->forwarded_by && $memo->forwardedBy->signature))
-        <div class="signature-box">
-            <div class="signature-header">Disetujui oleh,</div>
-            <div class="signature-position-text">Manager</div>
-            
-            @if($memo->manager_signature_path)
-                <img src="{{ public_path('storage/'.$memo->manager_signature_path) }}" 
-                    class="signature-img" 
-                    alt="Tanda Tangan Manager">
-            @elseif($memo->forwarded_by && $memo->forwardedBy->signature)
-                <img src="{{ public_path('storage/'.$memo->forwardedBy->signature) }}" 
-                    class="signature-img" 
-                    alt="Tanda Tangan Manager">
-            @else
-                <div class="signature-placeholder" style="height:60px;"></div>
+            <!-- Signature Manager (Kanan) - Jika ada manager yang juga menandatangani -->
+            @if($rightSignerName)
+            <div class="signature-box signature-right">
+                <div class="signature-header">Disetujui oleh,</div>
+                <div class="signature-position-text">{{ $rightSignerDivision }}</div>
+                
+                @if($rightSignaturePath)
+                    <img src="{{ public_path('storage/'.$rightSignaturePath) }}" 
+                        class="signature-img" 
+                        alt="Tanda Tangan Manager">
+                @else
+                    <div class="signature-placeholder" style="height:60px;"></div>
+                @endif
+                
+                <div class="signature-name">{{ $rightSignerName }}</div>
+                <div class="signature-position">{{ $rightSignerPosition }}</div>
+            </div>
             @endif
-            
-            <div class="signature-name">{{ $memo->forwardedBy->name ?? 'Manager' }}</div>
         </div>
-        @endif
         
         @if(isset($memo->tembusan) && $memo->tembusan)
         <div class="tembusan">
