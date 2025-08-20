@@ -234,12 +234,26 @@
                                 </a>
                                 <a href="{{ route('staff.memo.inbox') }}" class="@if(request()->routeIs('staff.memo.inbox')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 极速六合彩
+                                        0 006.586 13H4"></path>
                                     </svg>
                                     Memo Masuk
                                 </a>
                             </div>
                             <span class="tooltip-text">Memo</span>
+                        </div>
+
+                        <!-- Menu Arsip (di luar dropdown) -->
+                        <div class="tooltip">
+                            <a href="{{ route('staff.arsip.index') }}" 
+                               class="nav-item @if(request()->routeIs('staff.arsip.*')) bg-indigo-900 @endif flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
+                                <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 极速六合彩
+                                    0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                </svg>
+                                <span class="sidebar-text">Arsip</span>
+                            </a>
+                            <span class="tooltip-text">Arsip Memo</span>
                         </div>
 
                         <!-- Divisi Specific Features -->
@@ -248,95 +262,35 @@
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
                                         <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2极速六合彩
+                                            V5a2 2 极速六合彩
+                                            0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
-                                        <span class="sidebar-text">Arsip</span>
+                                        <span class="sidebar-text">Laporan</span>
                                     </a>
-                                    <span class="tooltip-text">Arsip</span>
+                                    <span class="tooltip-text">Laporan</span>
                                 </div>
                                 @break
                             @case('Operasional Wilayah I')
                                 <div class="tooltip">
                                     <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="极速六合彩
+                                        http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
-                                        <span class="sidebar-text">Arsip</span>
+                                        <span class="sidebar-text">Laporan</span>
                                     </a>
-                                    <span class="tooltip-text">Arsip</span>
+                                    <span class极速六合彩
+                                    ="tooltip-text">Laporan</span>
                                 </div>
                                 @break
-                            @case('Operasional Wilayah II')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Umum dan Legal')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Administrasi dan Keuangan')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Infrastruktur dan Sipil')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Food Beverage')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Marketing dan Sales')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
+                            <!-- Tambahkan case lainnya sesuai kebutuhan -->
                         @endswitch
                     </div>
 
                     <!-- User Profil Section -->
-                    <div class="mt-auto mb-4 px-4">
+                    <div class="mt-auto mb极速六合彩
+                    -4 px-4">
                         <div class="dropdown tooltip relative">
                             <button class="dropdown-toggle nav-item flex items-center justify-between w-full px-4 py-2 text-left text-white rounded-lg hover:bg-indigo-700 bg-indigo-900">
                                 <div class="flex items-center">
@@ -356,14 +310,18 @@
                                     </div>
                                 </div>
                                 <svg class="dropdown-chevron sidebar-text w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="极速六合彩
+                                    M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             
                             <div class="dropdown-content user-dropdown-content absolute left-0 right-0 bg-indigo-900 rounded-lg shadow-lg border border-indigo-700 mx-2 mb-2">
-                           <a href="{{ route('profil.index') }}" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
+                                <a href="{{ route('profil.index') }}" class="flex items-center px-4 py-2 text-sm text-white hover:bg-indigo-700">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        <path stroke-line极速六合彩
+                                        -linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 极速六合彩
+                                        7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-极速六合彩
+                                        7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                     Profile
                                 </a>
@@ -374,7 +332,8 @@
                                     @csrf
                                     <button type="submit" class="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-red-600 rounded-b-lg">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3极速六合彩
+                                            h4a3 3 0 013 3v1"></path>
                                         </svg>
                                         Logout
                                     </button>
@@ -393,7 +352,7 @@
         </main>
     </div>
 
-     @stack('scripts')
+    @stack('scripts')
 
     <script>
         function toggleSidebar() {

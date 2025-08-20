@@ -200,6 +200,7 @@ Route::prefix('staff')
     ->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Staff\DashboardController::class, 'index'])->name('dashboard');
         
+        // Route untuk memo
         Route::prefix('memo')->name('memo.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Staff\MemoController::class, 'index'])->name('index');
             Route::get('/inbox', [\App\Http\Controllers\Staff\MemoController::class, 'inbox'])->name('inbox');
@@ -210,8 +211,12 @@ Route::prefix('staff')
             Route::put('/{memo}', [\App\Http\Controllers\Staff\MemoController::class, 'update'])->name('update');
             Route::post('/update-status', [\App\Http\Controllers\Staff\MemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Staff\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
-            Route::get('/{memo}/pdf', [\App\Http\Controllers\Staff\MemoController::class, 'viewPdf'])
-            ->name('pdf');
+            Route::get('/{memo}/pdf', [\App\Http\Controllers\Staff\MemoController::class, 'viewPdf'])->name('pdf');
+        });
+
+        // Route untuk arsip (DI LUAR group memo)
+        Route::prefix('arsip')->name('arsip.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Staff\ArsipController::class, 'index'])->name('index');
         });
     });
 

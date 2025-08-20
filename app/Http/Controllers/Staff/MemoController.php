@@ -26,8 +26,9 @@ class MemoController extends Controller
     public function index()
     {
         $memos = Memo::where('dibuat_oleh_user_id', auth()->id())
-                   ->orderBy('created_at', 'desc')
-                   ->paginate(10);
+                ->where('status', '!=', 'disetujui') // Exclude approved memos
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
         
         return view($this->viewPrefix . '.index', [
             'memos' => $memos,

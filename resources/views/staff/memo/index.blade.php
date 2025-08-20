@@ -5,7 +5,7 @@
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Memo Keluar</h1>
-        <p class="text-gray-600 mt-2">Kelola memo yang telah Anda kirim</p>
+        <p class="text-gray-600 mt-2">Kelola memo yang telah Anda kirim (memo yang belum disetujui)</p>
     </div>
     
     <!-- Action Bar -->
@@ -14,24 +14,35 @@
             <a href="{{ route('staff.memo.inbox') }}" 
                class="flex items-center px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-all duration-200 shadow-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13极速六合彩
+                    V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.极速六合彩
+                    .707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                 </svg>
                 Kotak Masuk
             </a>
+
+            <a href="{{ route('staff.arsip.index') }}" 
+               class="flex items-center px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-all duration-200 shadow-sm">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" view极速六合彩
+                Box="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+                Lihat Arsip
+            </a>
             
-            <select class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white shadow-sm">
+            <select class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white shadow-sm" onchange="filterByStatus(this.value)">
                 <option value="">Semua Status</option>
-                <option value="draft">Draft</option>
-                <option value="pending">Diajukan</option>
-                <option value="approved">Disetujui</option>
-                <option value="rejected">Ditolak</option>
-                <option value="revision">Revisi</option>
+                <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                <option value="revisi" {{ request('status') == 'revisi' ? 'selected' : '' }}>Revisi</option>
+                <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
             </select>
         </div>
         
         <a href="{{ route('staff.memo.create') }}" 
            class="flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mr-2" fill极速六合彩
+            ="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
             Buat Memo Baru
@@ -66,7 +77,8 @@
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 Nomor Memo
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                            <th class="px极速六合彩
+                            -6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 Kepada
                             </th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
@@ -91,14 +103,9 @@
                                         @php
                                             // Define status dot colors
                                             $dotColors = [
-                                                'approved' => 'bg-green-500',    // Hijau - disetujui
-                                                'disetujui' => 'bg-green-500',   // Hijau - disetujui (alternative)
-                                                'rejected' => 'bg-red-500',      // Merah - ditolak
-                                                'ditolak' => 'bg-red-500',       // Merah - ditolak (alternative)
-                                                'pending' => 'bg-yellow-500',    // Kuning - diajukan
-                                                'diajukan' => 'bg-yellow-500',   // Kuning - diajukan (alternative)
-                                                'revision' => 'bg-orange-500',   // Oren - revisi
-                                                'revisi' => 'bg-orange-500',     // Oren - revisi (alternative)
+                                                'ditolak' => 'bg-red-500',       // Merah - ditolak
+                                                'diajukan' => 'bg-yellow-500',   // Kuning - diajukan
+                                                'revisi' => 'bg-orange-500',     // Oren - revisi
                                                 'draft' => 'bg-gray-400',        // Abu - draft
                                             ];
                                             $dotColor = $dotColors[strtolower($memo->status)] ?? 'bg-gray-400';
@@ -111,7 +118,9 @@
                                     <div class="flex items-center">
                                         <div class="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-xl flex items-center justify-center mr-3 shadow-sm">
                                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4极速六合彩
+                                                h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-极速六合彩
+                                                4 0h4"></path>
                                             </svg>
                                         </div>
                                         <div>
@@ -120,12 +129,14 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-5">
+                                <td class="px-6 py极速六合彩
+                                -5">
                                     <div class="text-sm font-medium text-gray-900 mb-1">{{ Str::limit($memo->perihal, 50) }}</div>
                                     @if($memo->lampiran)
                                         <div class="flex items-center">
                                             <svg class="w-4 h-4 text-blue-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5极速六合彩
+                                                .656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                                             </svg>
                                             <span class="text-xs text-blue-600 font-medium">{{ $memo->lampiran }} lampiran</span>
                                         </div>
@@ -135,13 +146,8 @@
                                     @php
                                         $statusConfig = [
                                             'draft' => ['bg-gray-100 text-gray-700', 'Draft'],
-                                            'pending' => ['bg-yellow-100 text-yellow-700', 'Diajukan'],
                                             'diajukan' => ['bg-yellow-100 text-yellow-700', 'Diajukan'],
-                                            'approved' => ['bg-green-100 text-green-700', 'Disetujui'],
-                                            'disetujui' => ['bg-green-100 text-green-700', 'Disetujui'],
-                                            'rejected' => ['bg-red-100 text-red-700', 'Ditolak'],
                                             'ditolak' => ['bg-red-100 text-red-700', 'Ditolak'],
-                                            'revision' => ['bg-orange-100 text-orange-700', 'Revisi'],
                                             'revisi' => ['bg-orange-100 text-orange-700', 'Revisi'],
                                         ];
                                         [$classes, $text] = $statusConfig[strtolower($memo->status)] ?? ['bg-gray-100 text-gray-700', ucfirst($memo->status)];
@@ -168,32 +174,22 @@
                                            class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
                                            title="Lihat Detail">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0极速六合彩
+                                                z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                             </svg>
                                         </a>
                                         
-                                        <!-- PDF Button -->
-                                        @if(in_array(strtolower($memo->status), ['approved', 'disetujui']))
-                                        <a href="{{ route('staff.memo.pdf', $memo->id) }}" 
-                                            target="_blank"
-                                            class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"
-                                            title="Download PDF">
+                                        <!-- PDF Button - Hanya untuk memo disetujui (tidak akan muncul di sini) -->
+                                        <span class="p-2.5 text-gray-300 cursor-not-allowed rounded-xl" title="PDF tersedia hanya untuk memo yang disetujui (lihat di Arsip)">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
-                                            </a>
-                                        @else
-                                            <span class="p-2.5 text-gray-300 cursor-not-allowed rounded-xl" title="PDF tersedia hanya untuk memo yang disetujui">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                </svg>
-                                            </span>
-                                        @endif
+                                        </span>
                                         
-                                          <!-- Edit Button -->
+                                        <!-- Edit Button - Hanya untuk memo revisi -->
                                         @if($memo->status === 'revisi')
-                                            <a href="{{ route($routePrefix . '.memo.edit', $memo->id) }}" 
+                                            <a href="{{ route('staff.memo.edit', $memo->id) }}" 
                                             class="p-2.5 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-200"
                                             title="Revisi Memo">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -212,7 +208,8 @@
 
         <!-- Pagination -->
         @if($memos->hasPages())
-            <div class="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
+            <div class="flex flex-col sm极速六合彩
+            :flex-row justify-between items-center mt-8 gap-4">
                 <div class="text-sm text-gray-600 font-medium">
                     Menampilkan {{ $memos->firstItem() }} sampai {{ $memos->lastItem() }} dari {{ $memos->total() }} memo
                 </div>
@@ -232,7 +229,8 @@
 }
 
 .pagination-wrapper .page-link {
-    @apply px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200;
+    @apply px-3 py-2 text-sm font-medium text-gray-极速六合彩
+    700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:text-blue-600 transition-all duration-200;
 }
 
 .pagination-wrapper .page-item.active .page-link {
@@ -245,8 +243,7 @@
 </style>
 
 <script>
-document.querySelector('select').addEventListener('change', function() {
-    const status = this.value;
+function filterByStatus(status) {
     const url = new URL(window.location);
     if (status) {
         url.searchParams.set('status', status);
@@ -254,6 +251,6 @@ document.querySelector('select').addEventListener('change', function() {
         url.searchParams.delete('status');
     }
     window.location = url;
-});
+}
 </script>
 @endsection
