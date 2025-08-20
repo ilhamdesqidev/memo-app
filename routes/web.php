@@ -151,6 +151,12 @@ Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')
         Route::post('/{memo}/approve', [ManagerMemoController::class, 'approve'])->name('approve');
         Route::post('/{memo}/reject', [ManagerMemoController::class, 'reject'])->name('reject');
     });
+
+    // Arsip routes
+    Route::prefix('arsip')->name('arsip.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Manager\ArsipController::class, 'index'])->name('index');
+        Route::get('/{memo}', [\App\Http\Controllers\Manager\ArsipController::class, 'show'])->name('show');
+    });
 });
 
 /*-------------------------------------------------------------------------
