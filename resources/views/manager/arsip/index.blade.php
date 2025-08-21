@@ -156,7 +156,7 @@
                                         
                                         <!-- PDF Button -->
                                         @if($memo->status == 'disetujui')
-                                            <a href="{{ route('staff.memo.pdf', $memo->id) }}" 
+                                            <a href="{{ route('manager.arsip.pdf', $memo->id) }}" 
                                                 target="_blank"
                                                 class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
                                                 title="Download PDF">
@@ -164,10 +164,24 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                             </a>
+                                            
+                                            <!-- PDF Viewer Button -->
+                                            <button onclick="showPdfModal('{{ route('manager.arsip.pdf', $memo->id) }}')"
+                                                class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                                                title="Lihat PDF">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </button>
                                         @else
                                             <span class="p-2.5 text-gray-300 cursor-not-allowed rounded-xl" title="PDF hanya tersedia untuk memo yang disetujui">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </span>
+                                            <span class="p-2.5 text-gray-300 cursor-not-allowed rounded-xl" title="PDF hanya tersedia untuk memo yang disetujui">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                             </span>
                                         @endif
@@ -194,6 +208,23 @@
     @endif
 </div>
 
+<!-- PDF Modal -->
+<div id="pdfModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl w-11/12 h-5/6 max-w-6xl flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-900">Preview PDF Memo</h3>
+            <button onclick="closePdfModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1">
+            <iframe id="pdfViewer" class="w-full h-full" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Custom Pagination Styling */
 .pagination-wrapper .pagination {
@@ -212,6 +243,11 @@
 .pagination-wrapper .page-item.disabled .page-link {
     @apply text-gray-300 cursor-not-allowed hover:bg-white hover:text-gray-300;
 }
+
+/* PDF Modal Styling */
+#pdfModal {
+    transition: opacity 0.3s ease;
+}
 </style>
 
 <script>
@@ -224,6 +260,32 @@ function filterByStatus(status) {
     }
     window.location = url;
 }
+
+function showPdfModal(pdfUrl) {
+    document.getElementById('pdfViewer').src = pdfUrl;
+    document.getElementById('pdfModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePdfModal() {
+    document.getElementById('pdfModal').classList.add('hidden');
+    document.getElementById('pdfViewer').src = '';
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside content
+document.getElementById('pdfModal').addEventListener('click', function(e) {
+    if (e.target.id === 'pdfModal') {
+        closePdfModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePdfModal();
+    }
+});
 </script>
 
 @endsection

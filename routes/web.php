@@ -156,6 +156,7 @@ Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')
     Route::prefix('arsip')->name('arsip.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Manager\ArsipController::class, 'index'])->name('index');
         Route::get('/{memo}', [\App\Http\Controllers\Manager\ArsipController::class, 'show'])->name('show');
+        Route::get('/{memo}/pdf', [\App\Http\Controllers\Manager\ArsipController::class, 'showPdf'])->name('pdf'); // Route baru untuk PDF
     });
 });
 
