@@ -163,31 +163,21 @@ Route::prefix('manager')->middleware(['auth', 'role:manager'])->name('manager.')
 /*-------------------------------------------------------------------------
 | Asisten Manager Routes
 |-------------------------------------------------------------------------*/
-Route::prefix('asmen')
-    ->middleware(['auth', 'role:asisten_manager'])
-    ->name('asmen.')
-    ->group(function () {
-
-        Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])
-            ->name('dashboard');
-
-        // Memo routes
-        Route::prefix('memo')->name('memo.')->group(function () {
-            Route::get('/inbox', [MemoController::class, 'inbox'])->name('inbox');
-            Route::get('/{memo}', [MemoController::class, 'show'])->name('show');
-            Route::post('/{memo}/approve', [MemoController::class, 'approve'])->name('approve');
-            Route::post('/{memo}/reject', [MemoController::class, 'reject'])->name('reject');
-            Route::post('/{memo}/request-revision', [MemoController::class, 'requestRevision'])->name('request-revision');
-        });
-
-        // Arsip routes
-        Route::prefix('arsip')->name('arsip.')->group(function () {
-            // asmen.arsip.index
-            Route::get('/', [ArsipController::class, 'index'])->name('index');
-            // asmen.arsip.pdf
-            Route::get('/{memo}/pdf', [ArsipController::class, 'generatePdf'])->name('pdf');
-        });
+Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asmen.')->group(function () {
+    Route::get('/dashboard', [AsistenManagerController::class, 'dashboard'])->name('dashboard');
+    
+    // Memo routes
+    Route::prefix('memo')->name('memo.')->group(function () {
+        Route::get('/inbox', [MemoController::class, 'inbox'])->name('inbox');
+        Route::get('/{memo}', [MemoController::class, 'show'])->name('show');
+        Route::post('/{memo}/approve', [MemoController::class, 'approve'])->name('approve');
+        Route::post('/{memo}/reject', [MemoController::class, 'reject'])->name('reject');
+        Route::post('/{memo}/request-revision', [MemoController::class, 'requestRevision'])->name('request-revision');
     });
+    
+    // Arsip routes
+    Route::get('/arsip', [ArsipController::class, 'index'])->name('arsip');
+});
 
 /*-------------------------------------------------------------------------
 | Asisten Routes
