@@ -149,7 +149,7 @@
                                 <td class="px-6 py-5">
                                     <div class="flex items-center justify-center gap-1">
                                         <!-- View Button -->
-                                        <a href="{{ route('asmen.memo.show', $memo->id) }}" 
+                                        <a href="{{ route('asmen.arsip.show', $memo->id) }}" 
                                            class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
                                            title="Lihat Detail">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -178,6 +178,7 @@ Route::prefix('asmen')->middleware(['auth', 'role:asisten_manager'])->name('asme
     
     // Arsip routes
     Route::get('/arsip', [ArsipController::class, 'index'])->name('arsip');
+    Route::get('/arsip/{memo}', [ArsipController::class, 'show'])->name('arsip.show');
 });
 
 /*-------------------------------------------------------------------------

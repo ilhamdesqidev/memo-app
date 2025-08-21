@@ -96,4 +96,17 @@ class ArsipController extends Controller
         
         return $fileName;
     }
+
+    public function show($id)
+    {
+        $memo = Memo::with(['divisiTujuan', 'dibuatOleh', 'disetujuiOleh', 'ditolakOleh'])
+                   ->findOrFail($id);
+        
+        // Pastikan hanya memo dari divisi asisten manager yang bisa diakses
+        if ($memo->dari !== Auth::user()->divisi->nama) {
+            abort(403, 'ANDA TIDAK MEMILIKI AKSES KE MEMO INI.');
+        }
+        
+        return view('asmen.arsip.show', compact('memo'));
+    }
 }
