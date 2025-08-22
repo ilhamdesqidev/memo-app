@@ -198,12 +198,14 @@ Route::prefix('asisten')
             ->group(function () {
                 Route::get('/index', [AsistenMemoController::class, 'index'])->name('index');
                 Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
-                Route::get('/pdf/{id}', [AsistenMemoController::class, 'viewPdf'])->name('pdf');
             });
 
-        // Fix this line - use the full namespace or import the class
+        // Route untuk arsip
         Route::get('/arsip', [\App\Http\Controllers\Asisten\ArsipController::class, 'index'])->name('arsip');
+        Route::get('/arsip/pdf/{id}', [\App\Http\Controllers\Asisten\ArsipController::class, 'generatePdf'])->name('arsip.pdf');
+        Route::get('/arsip/show/{id}', [\App\Http\Controllers\Asisten\ArsipController::class, 'show'])->name('arsip.show'); // Pastikan ini ada
     });
+
 /*-------------------------------------------------------------------------
 | Staff Routes (Previously User)
 |-------------------------------------------------------------------------*/
