@@ -19,6 +19,13 @@
                 Semua Memo
             </a>
         </div>
+
+        <div class="flex items-center gap-3">
+            <select class="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white shadow-sm" onchange="filterByStatus(this.value)">
+                <option value="">Semua Status</option>
+                <option value="disetujui" {{ request('status') == 'disetujui' ? 'selected' : '' }}>Disetujui</option>
+            </select>
+        </div>
     </div>
 
     <!-- Content -->
@@ -64,7 +71,7 @@
                             <tr class="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 transition-all duration-200">
                                 <td class="px-6 py-5">
                                     <div class="flex items-center">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-3 shadow-sm"></div>
+                                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 mr-3 shadow-sm"></div>
                                         <span class="text-sm font-semibold text-gray-900">{{ $memo->nomor }}</span>
                                     </div>
                                 </td>
@@ -93,7 +100,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-5">
-                                    <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700 shadow-sm">
+                                    <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-full bg-green-100 text-green-700 shadow-sm">
                                         Disetujui
                                     </span>
                                 </td>
@@ -103,8 +110,13 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
                                         <div>
-                                            <div class="font-medium">{{ $memo->updated_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-gray-400">{{ $memo->updated_at->diffForHumans() }}</div>
+                                            @if($memo->approval_date)
+                                                <div class="font-medium">{{ \Carbon\Carbon::parse($memo->approval_date)->format('d/m/Y') }}</div>
+                                                <div class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($memo->approval_date)->diffForHumans() }}</div>
+                                            @else
+                                                <div class="font-medium">{{ $memo->updated_at->format('d/m/Y') }}</div>
+                                                <div class="text-xs text-gray-400">{{ $memo->updated_at->diffForHumans() }}</div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -129,6 +141,15 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
                                         </a>
+
+                                        <!-- PDF Viewer Button -->
+                                        <button onclick="showPdfModal('{{ route('staff.memo.pdf', $memo->id) }}')"
+                                            class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
+                                            title="Lihat PDF">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -152,6 +173,23 @@
     @endif
 </div>
 
+<!-- PDF Modal -->
+<div id="pdfModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl w-11/12 h-5/6 max-w-6xl flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-900">Preview PDF Memo</h3>
+            <button onclick="closePdfModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex-1">
+            <iframe id="pdfViewer" class="w-full h-full" frameborder="0"></iframe>
+        </div>
+    </div>
+</div>
+
 <style>
 /* Custom Pagination Styling */
 .pagination-wrapper .pagination {
@@ -170,5 +208,49 @@
 .pagination-wrapper .page-item.disabled .page-link {
     @apply text-gray-300 cursor-not-allowed hover:bg-white hover:text-gray-300;
 }
+
+/* PDF Modal Styling */
+#pdfModal {
+    transition: opacity 0.3s ease;
+}
 </style>
+
+<script>
+function filterByStatus(status) {
+    const url = new URL(window.location);
+    if (status) {
+        url.searchParams.set('status', status);
+    } else {
+        url.searchParams.delete('status');
+    }
+    window.location = url;
+}
+
+function showPdfModal(pdfUrl) {
+    document.getElementById('pdfViewer').src = pdfUrl;
+    document.getElementById('pdfModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePdfModal() {
+    document.getElementById('pdfModal').classList.add('hidden');
+    document.getElementById('pdfViewer').src = '';
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside content
+document.getElementById('pdfModal').addEventListener('click', function(e) {
+    if (e.target.id === 'pdfModal') {
+        closePdfModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePdfModal();
+    }
+});
+</script>
+
 @endsection
