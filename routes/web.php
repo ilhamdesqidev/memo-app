@@ -32,6 +32,7 @@ use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Asisten\AsistenMemoController;
 
 
+
 /*-------------------------------------------------------------------------
 | Public Routes
 |-------------------------------------------------------------------------*/
@@ -199,6 +200,9 @@ Route::prefix('asisten')
                 Route::get('/show/{id}', [AsistenMemoController::class, 'show'])->name('show');
                 Route::get('/pdf/{id}', [AsistenMemoController::class, 'viewPdf'])->name('pdf');
             });
+
+        // Fix this line - use the full namespace or import the class
+        Route::get('/arsip', [\App\Http\Controllers\Asisten\ArsipController::class, 'index'])->name('arsip');
     });
 /*-------------------------------------------------------------------------
 | Staff Routes (Previously User)

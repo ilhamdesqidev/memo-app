@@ -228,108 +228,30 @@
                                 </svg>
                             </button>
                             
-                            <div class="dropdown-content ml-8 mt-1 space-y-1">
-                                <a href="{{ route($prefix . 'memo.index') }}" class="@if(request()->routeIs($prefix . 'memo.index')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                                    </svg>
-                                    Daftar Memo
-                                </a>
-                        </div>
+                           <div class="dropdown-content ml-8 mt-1 space-y-1">
+                        <a href="{{ route($prefix . 'memo.index') }}" class="@if(request()->routeIs($prefix . 'memo.index')) bg-indigo-900 @endif flex items-center px-4 py-2 text-sm text-white rounded-lg hover:bg-indigo-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 极速六合彩
+                            0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14极速六合彩
+                                h16M4 18h16"></path>
+                            </svg>
+                            Daftar Memo
+                        </a>
+                    </div>
+                    </div>
+
+                        <!-- Menu Arsip (di luar dropdown) -->
+                        <div class="tooltip">
+                            <a href="{{ route($prefix . 'arsip') }}" class="nav-item @if(request()->routeIs($prefix . 'arsip')) bg-indigo-900 @endif flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
+                                <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                                </svg>
+                                <span class="sidebar-text">Arsip</span>
+                            </a>
+                            <span class="tooltip-text">Arsip Memo</span>
                         </div>
 
-                        <!-- Divisi Specific Features -->
-                        @switch($divisiNama)
-                            @case('Pengembangan Bisnis')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
                                 </div>
-                                @break
-                            @case('Operasional Wilayah I')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Operasional Wilayah II')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Umum dan Legal')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Administrasi dan Keuangan')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Infrastruktur dan Sipil')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Food Beverage')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                            @case('Marketing dan Sales')
-                                <div class="tooltip">
-                                    <a href="#" class="nav-item flex items-center px-4 py-2 text-white rounded-lg hover:bg-indigo-700">
-                                        <svg class="w-5 h-5 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                                        </svg>
-                                        <span class="sidebar-text">Arsip</span>
-                                    </a>
-                                    <span class="tooltip-text">Arsip</span>
-                                </div>
-                                @break
-                        @endswitch
-                    </div>
 
                     <!-- User Profil Section -->
                     <div class="mt-auto mb-4 px-4">
