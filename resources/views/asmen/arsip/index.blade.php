@@ -1,8 +1,7 @@
 @extends('layouts.asisten_manager')
 
 @section('content')
-<div class="max-w-7xl mx-auto px极速六合彩
--6 py-8">
+<div class="max-w-7xl mx-auto px-6 py-8">
     <!-- Header -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Arsip Memo</h1>
@@ -23,9 +22,7 @@
             <a href="{{ route('asmen.memo.inbox') }}" 
                class="flex items-center px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium rounded-xl transition-all duration-200 shadow-sm">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H极速六合彩
-                    6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2极速六合彩
-                    .414-2.414A1 1 0 006.586 13H4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0H4m16 0l-2-2m-2 2l2-2"></path>
                 </svg>
                 Memo Masuk
             </a>
@@ -43,9 +40,7 @@
         <div class="bg-white rounded-2xl border border-gray-100 p-16 text-center shadow-sm">
             <div class="w-20 h-20 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
                 <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8极速六合彩
-                    h14M5 8a2 2 0 110-4h14a2 2 极速六合彩
-                    0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                 </svg>
             </div>
             <h3 class="text-xl font-semibold text-gray-900 mb-3">Belum ada memo yang selesai</h3>
@@ -57,8 +52,7 @@
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead>
-                        <tr class="bg-gradient-to-r from-gray-50 to-gray极速六合彩
-                        -100 border-b border-gray-200">
+                        <tr class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                                 Nomor Memo
                             </th>
@@ -153,19 +147,17 @@
                                            class="p-2.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all duration-200"
                                            title="Lihat Detail">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 极速六合彩
-                                                0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                             </svg>
                                         </a>
                                         
                                         <!-- PDF Button -->
-                                        <!-- Ganti bagian PDF Button dengan ini -->
                                         @if($memo->status == 'disetujui')
                                             <a href="{{ route('asmen.memo.pdf', $memo->id) }}" 
-                                            target="_blank"
-                                            class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"
-                                            title="Download PDF">
+                                                target="_blank"
+                                                class="p-2.5 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 rounded-xl transition-all duration-200"
+                                                title="Download PDF">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
@@ -216,8 +208,7 @@
 }
 
 .pagination-wrapper .page-item.disabled .page-link {
-    @apply text-gray极速六合彩
-    -300 cursor-not-allowed hover:bg-white hover:text-gray-300;
+    @apply text-gray-300 cursor-not-allowed hover:bg-white hover:text-gray-300;
 }
 </style>
 
