@@ -114,28 +114,65 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Define font sizes in numeric format (like Word)
+    const Size = Quill.import('attributors/style/size');
+    Size.whitelist = [
+        '8px', '9px', '10px', '11px', '12px', '14px', '16px', 
+        '18px', '20px', '24px', '28px', '32px', '36px', '48px'
+    ];
+    Quill.register(Size, true);
+
+    // Define custom fonts including Times New Roman
+    const Font = Quill.import('formats/font');
+    Font.whitelist = [
+        'arial', 
+        'times-new-roman', 
+        'georgia', 
+        'verdana', 
+        'courier-new',
+        'tahoma',
+        'impact'
+    ];
+    Quill.register(Font, true);
+
     // Initialize Quill Editor
     var quill = new Quill('#editor-container', {
         theme: 'snow',
         modules: {
-            toolbar: [
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'font': [] }],
-                [{ 'size': ['small', false, 'large', 'huge'] }],
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'script': 'sub'}, { 'script': 'super' }],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }],
-                [{ 'align': [] }],
-                ['blockquote', 'code-block'],
-                ['link', 'image'],
-                ['clean']
-            ]
+            toolbar: {
+                container: [
+                    // Font family and size
+                    [{ 'font': Font.whitelist }],
+                    [{ 'size': Size.whitelist }],
+                    
+                    // Text formatting
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    
+                    // Lists and indentation
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    
+                    // Headers and alignment
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'align': [] }],
+                    
+                    // Script and blocks
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    ['blockquote', 'code-block'],
+                    
+                    // Media and clean
+                    ['link', 'image'],
+                    ['clean']
+                ]
+            }
         },
         placeholder: 'Tulis isi memo di sini...',
         bounds: '#editor-container'
     });
+
+    // Set default font to Times New Roman
+    quill.format('font', 'times-new-roman');
 
     // Set initial content if exists
     var initialContent = document.getElementById('isi_memo').value;
@@ -297,6 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
     font-size: 14px !important;
     line-height: 1.5 !important;
     min-height: 250px !important;
+    font-family: "Times New Roman", Times, serif;
 }
 
 .ql-editor.ql-blank::before {
@@ -350,6 +388,283 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Selected divisi text */
 #selectedDivisiText {
     min-height: 1.25rem;
+}
+
+/* Font family customizations */
+.ql-font-times-new-roman {
+    font-family: "Times New Roman", Times, serif !important;
+}
+
+.ql-font-arial {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.ql-font-georgia {
+    font-family: Georgia, serif !important;
+}
+
+.ql-font-verdana {
+    font-family: Verdana, Geneva, sans-serif !important;
+}
+
+.ql-font-courier-new {
+    font-family: "Courier New", Courier, monospace !important;
+}
+
+.ql-font-tahoma {
+    font-family: Tahoma, Geneva, sans-serif !important;
+}
+
+.ql-font-impact {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+}
+
+/* Fix for font size dropdown */
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="8px"]::before {
+    content: '8px';
+    font-size: 8px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="9px"]::before {
+    content: '9px';
+    font-size: 9px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
+    content: '10px';
+    font-size: 10px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="11px"]::before {
+    content: '11px';
+    font-size: 11px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
+    content: '12px';
+    font-size: 12px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
+    content: '14px';
+    font-size: 14px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
+    content: '16px';
+    font-size: 16px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
+    content: '18px';
+    font-size: 18px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
+    content: '20px';
+    font-size: 20px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
+    content: '24px';
+    font-size: 24px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
+    content: '28px';
+    font-size: 28px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
+    content: '32px';
+    font-size: 32px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
+    content: '36px';
+    font-size: 36px !important;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
+    content: '48px';
+    font-size: 48px !important;
+}
+
+/* Selected value in dropdown */
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="8px"]::before {
+    content: '8px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="9px"]::before {
+    content: '9px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before {
+    content: '10px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="11px"]::before {
+    content: '11px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before {
+    content: '12px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before {
+    content: '14px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before {
+    content: '16px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before {
+    content: '18px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before {
+    content: '20px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before {
+    content: '24px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before {
+    content: '28px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before {
+    content: '32px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="36px"]::before {
+    content: '36px';
+    font-size: 12px;
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="48px"]::before {
+    content: '48px';
+    font-size: 12px;
+}
+
+/* Fix font dropdown */
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times-new-roman"]::before {
+    content: "Times New Roman";
+    font-family: "Times New Roman", Times, serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before {
+    content: "Arial";
+    font-family: Arial, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"]::before {
+    content: "Georgia";
+    font-family: Georgia, serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"]::before {
+    content: "Verdana";
+    font-family: Verdana, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="courier-new"]::before {
+    content: "Courier New";
+    font-family: "Courier New", monospace;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="tahoma"]::before {
+    content: "Tahoma";
+    font-family: Tahoma, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="impact"]::before {
+    content: "Impact";
+    font-family: Impact, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times-new-roman"]::before {
+    content: "Times New Roman";
+    font-family: "Times New Roman", Times, serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before {
+    content: "Arial";
+    font-family: Arial, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="georgia"]::before {
+    content: "Georgia";
+    font-family: Georgia, serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"]::before {
+    content: "Verdana";
+    font-family: Verdana, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="courier-new"]::before {
+    content: "Courier New";
+    font-family: "Courier New", monospace;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="tahoma"]::before {
+    content: "Tahoma";
+    font-family: Tahoma, sans-serif;
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="impact"]::before {
+    content: "Impact";
+    font-family: Impact, sans-serif;
+}
+
+/* Ensure font styles are applied correctly in the editor */
+.ql-editor .ql-font-times-new-roman {
+    font-family: "Times New Roman", Times, serif !important;
+}
+
+.ql-editor .ql-font-arial {
+    font-family: Arial, Helvetica, sans-serif !important;
+}
+
+.ql-editor .ql-font-georgia {
+    font-family: Georgia, serif !important;
+}
+
+.ql-editor .ql-font-verdana {
+    font-family: Verdana, Geneva, sans-serif !important;
+}
+
+.ql-editor .ql-font-courier-new {
+    font-family: "Courier New", Courier, monospace !important;
+}
+
+.ql-editor .ql-font-tahoma {
+    font-family: Tahoma, Geneva, sans-serif !important;
+}
+
+.ql-editor .ql-font-impact {
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif !important;
+}
+
+/* Make sure font sizes are applied correctly */
+.ql-editor .ql-size-8px {
+    font-size: 8px !important;
+}
+.ql-editor .ql-size-9px {
+    font-size: 9px !important;
+}
+.ql-editor .ql-size-10px {
+    font-size: 10px !important;
+}
+.ql-editor .ql-size-11px {
+    font-size: 11px !important;
+}
+.ql-editor .ql-size-12px {
+    font-size: 12px !important;
+}
+.ql-editor .ql-size-14px {
+    font-size: 14px !important;
+}
+.ql-editor .ql-size-16px {
+    font-size: 16px !important;
+}
+.ql-editor .ql-size-18px {
+    font-size: 18px !important;
+}
+.ql-editor .ql-size-20px {
+    font-size: 20px !important;
+}
+.ql-editor .ql-size-24px {
+    font-size: 24px !important;
+}
+.ql-editor .ql-size-28px {
+    font-size: 28px !important;
+}
+.ql-editor .ql-size-32px {
+    font-size: 32px !important;
+}
+.ql-editor .ql-size-36px {
+    font-size: 36px !important;
+}
+.ql-editor .ql-size-48px {
+    font-size: 48px !important;
 }
 </style>
 @endsection

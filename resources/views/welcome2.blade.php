@@ -78,12 +78,9 @@
             <div class="flex justify-between items-center">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21l3-9 3 9-3-2-3 2zm0 0l-3-9h3m3 9h3l-3-9M5 12h14"></path>
-                        </svg>
+                    <div class="w-32 h-12 flex items-center justify-center">
+                       <img src="\assets\img\mestakara.png" alt="Logo" class="w-32 h-32">
                     </div>
-                    <span class="ml-3 text-xl font-bold text-primary-800 font-playfair">Mestakara</span>
                 </div>
 
                 <!-- Desktop Navigation -->
