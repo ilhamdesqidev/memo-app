@@ -4,16 +4,6 @@
 <div class="container mx-auto px-4 py-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Memo Masuk</h1>
-        
-        <!-- Status Filter -->
-        <div class="flex space-x-2">
-            @foreach($statuses as $key => $label)
-                <a href="{{ route('asmen.memo.inbox', ['status' => $key]) }}"
-                   class="px-4 py-2 rounded-lg {{ $currentStatus == $key ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
-                   {{ $label }}
-                </a>
-            @endforeach
-        </div>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
