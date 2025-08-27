@@ -141,7 +141,7 @@
             
             <!-- Slide 3 -->
             <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0" id="slide3">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1566438480900-0609be27a4be?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center"></div>
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center"></div>
                 <div class="absolute inset-0 bg-black/40"></div>
             </div>
         </div>
