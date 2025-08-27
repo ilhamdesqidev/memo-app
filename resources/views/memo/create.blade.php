@@ -162,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ['blockquote', 'code-block'],
                     
                     // Media and clean
-                    ['link', 'image'],
+                    ['link'],
                     ['clean']
                 ]
             }
@@ -298,17 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Ensure Quill content is saved to textarea before submission
         document.getElementById('isi_memo').value = quill.root.innerHTML;
         
-        // Validate divisi selection
-        if (!divisiTujuanInput.value) {
-            e.preventDefault();
-            alert('Silakan pilih asisten manager dari divisi lain');
-        }
-        
-        // Additional validation to ensure selected user is from different division
-        if (divisiTujuanInput.value === currentDivisi) {
-            e.preventDefault();
-            alert('Anda tidak dapat memilih asisten manager dari divisi Anda sendiri');
-        }
+
     });
 });
 </script>
