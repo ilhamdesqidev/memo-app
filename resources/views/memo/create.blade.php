@@ -255,6 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     kepadaIdInput.value = user.id;
                     // Show selected text below
                     selectedDivisiText.textContent = `Dipilih: ${user.name} - ${user.divisi_nama}`;
+                    selectedDivisiText.classList.remove('hidden');
                     divisiDropdown.classList.add('hidden');
                     clearSelectionBtn.classList.remove('hidden');
                 });
@@ -282,6 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
         divisiTujuanInput.value = '';
         kepadaIdInput.value = '';
         selectedDivisiText.textContent = '';
+        selectedDivisiText.classList.add('hidden');
         this.classList.add('hidden');
         divisiDropdown.classList.add('hidden');
     });
@@ -297,8 +299,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('form').addEventListener('submit', function(e) {
         // Ensure Quill content is saved to textarea before submission
         document.getElementById('isi_memo').value = quill.root.innerHTML;
-        
-
     });
 });
 </script>
@@ -655,6 +655,74 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 .ql-editor .ql-size-48px {
     font-size: 48px !important;
+}
+
+/* PERBAIKAN KHUSUS UNTUK DROPDOWN FONT AGAR TIDAK MENABRAK */
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+/* Perbaikan khusus untuk font Times New Roman */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times-new-roman"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times-new-roman"]::before {
+    content: "Times New R..." !important;
+    font-family: "Times New Roman", Times, serif;
+}
+
+/* Perbaikan untuk dropdown font size */
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+/* Memperbaiki lebar dropdown */
+.ql-toolbar .ql-formats {
+    margin-right: 15px;
+    position: relative;
+}
+
+.ql-snow .ql-picker.ql-font {
+    width: 140px;
+}
+
+.ql-snow .ql-picker.ql-size {
+    width: 80px;
+}
+
+/* Memastikan dropdown muncul di atas konten */
+.ql-snow .ql-picker-options {
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Toolbar styling */
+.ql-toolbar.ql-snow {
+    border: 1px solid #ddd;
+    border-radius: 4px 4px 0 0;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+    position: relative;
+    z-index: 2;
+}
+
+/* Container styling */
+.ql-container.ql-snow {
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
 }
 </style>
 @endsection
