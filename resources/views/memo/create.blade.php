@@ -91,7 +91,7 @@
                         <label class="block text-sm font-medium text-gray-700">Isi Memo *</label>
                         <div class="mt-1">
                             <!-- Quill Editor Container -->
-                            <div id="editor-container" style="height: 300px; background: white;"></div>
+                            <div id="editor-container" style="height: 333px; background: white;"></div>
                             <!-- Hidden textarea for form submission -->
                             <textarea name="isi" id="isi_memo" style="display: none;" required>{{ old('isi') }}</textarea>
                         </div>
