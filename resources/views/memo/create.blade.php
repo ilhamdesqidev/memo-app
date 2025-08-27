@@ -412,19 +412,19 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Fix for font size dropdown */
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="8px"]::before {
     content: '8px';
-    font-size: 8px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="9px"]::before {
     content: '9px';
-    font-size: 9px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="10px"]::before {
     content: '10px';
-    font-size: 10px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="11px"]::before {
     content: '11px';
-    font-size: 11px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before {
     content: '12px';
@@ -432,39 +432,39 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before {
     content: '14px';
-    font-size: 14px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before {
     content: '16px';
-    font-size: 16px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before {
     content: '18px';
-    font-size: 18px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before {
     content: '20px';
-    font-size: 20px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before {
     content: '24px';
-    font-size: 24px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before {
     content: '28px';
-    font-size: 28px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before {
     content: '32px';
-    font-size: 32px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="36px"]::before {
     content: '36px';
-    font-size: 36px !important;
+    font-size: 12px !important;
 }
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="48px"]::before {
     content: '48px';
-    font-size: 48px !important;
+    font-size: 12px !important;
 }
 
 /* Selected value in dropdown */
