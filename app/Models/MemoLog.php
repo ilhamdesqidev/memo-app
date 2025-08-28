@@ -23,5 +23,9 @@ class MemoLog extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $casts = [
+        'waktu' => 'datetime', // Ini akan mengubah string waktu menjadi Carbon instance
+    ];
 }
 
