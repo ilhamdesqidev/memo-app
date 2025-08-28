@@ -67,6 +67,8 @@
             width: 100%;
             word-wrap: break-word;
             font-size: 12px;
+            /* PERUBAHAN: Mengubah font menjadi Times New Roman */
+            font-family: "Times New Roman", Times, serif;
         }
         
         .memo-body ol, .memo-body ul {
