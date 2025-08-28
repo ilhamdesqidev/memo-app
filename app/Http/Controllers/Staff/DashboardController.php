@@ -13,11 +13,11 @@ class DashboardController extends Controller
         $user = auth()->user();
         $divisi = $user->divisi->nama;
         
-        // Hitung memo keluar
+        // Hitung memo keluar (semua memo yang dibuat oleh user)
         $memoKeluar = Memo::where('dibuat_oleh_user_id', $user->id)
                         ->count();
         
-        // Hitung memo masuk
+        // Hitung memo masuk (memo yang ditujukan ke divisi user dan bukan dari divisi user)
         $memoMasuk = Memo::where('divisi_tujuan', $divisi)
                         ->where('dari', '!=', $divisi)
                         ->whereIn('status', ['diajukan', 'revisi'])
@@ -31,6 +31,11 @@ class DashboardController extends Controller
         // Hitung memo ditolak
         $memoDitolak = Memo::where('dibuat_oleh_user_id', $user->id)
                           ->where('status', 'ditolak')
+                          ->count();
+        
+        // Hitung memo pending (memo yang masih diajukan atau revisi)
+        $memoPending = Memo::where('dibuat_oleh_user_id', $user->id)
+                          ->whereIn('status', ['diajukan', 'revisi'])
                           ->count();
         
         // Ambil 5 memo terbaru
@@ -48,7 +53,12 @@ class DashboardController extends Controller
             'memoMasuk' => $memoMasuk,
             'memoDisetujui' => $memoDisetujui,
             'memoDitolak' => $memoDitolak,
-            'memoTerbaru' => $memoTerbaru
+            'memoPending' => $memoPending,
+            'memoTerbaru' => $memoTerbaru,
+            // Tambahkan variabel untuk kompatibilitas dengan view
+            'pendingMemos' => $memoPending,
+            'approvedMemos' => $memoDisetujui,
+            'rejectedMemos' => $memoDitolak
         ]);
     }
 }

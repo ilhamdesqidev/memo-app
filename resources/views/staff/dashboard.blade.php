@@ -82,7 +82,7 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-600">Pending</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $pendingMemos ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $memoPending }}</p>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
