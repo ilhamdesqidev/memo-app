@@ -17,7 +17,7 @@
                 <div class="hidden md:block">
                     <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
                         <p class="text-sm text-gray-600">Divisi</p>
-                        <p class="font-semibold text-blue-800">{{ auth()->user()->divisi->nama ?? 'Belum ditentukan' }}</p>
+                        <p class="font-semibold text-blue-800">{{ $userDivisi }}</p>
                     </div>
                 </div>
             </div>
@@ -27,7 +27,7 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-6 py-8">
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <!-- Total Memo Card -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
                 <div class="flex items-center">
@@ -40,7 +40,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Memo</p>
-                        <p class="text-2xl font-bold text-gray-900">12</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $totalMemo }}</p>
                     </div>
                 </div>
             </div>
@@ -56,8 +56,8 @@
                         </div>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-600">Menunggu Persetujuan</p>
-                        <p class="text-2xl font-bold text-gray-900">3</p>
+                        <p class="text-sm font-medium text-gray-600">Pending</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $menungguPersetujuan }}</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,24 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Telah Disetujui</p>
-                        <p class="text-2xl font-bold text-gray-900">9</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $telahDisetujui }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejected Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Ditolak</p>
+                        <p class="text-2xl font-bold text-gray-900">{{ $ditolak }}</p>
                     </div>
                 </div>
             </div>
@@ -96,6 +113,9 @@
                             <p class="font-medium text-gray-900">Lihat Memo Masuk</p>
                             <p class="text-sm text-gray-500">Review memo yang memerlukan persetujuan</p>
                         </div>
+                        @if($menungguPersetujuan > 0)
+                            <span class="ml-auto bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $menungguPersetujuan }}</span>
+                        @endif
                     </a>
 
                     <a href="{{ route('asmen.arsip') }}" class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-green-300 transition-all duration-200 group">
@@ -108,6 +128,9 @@
                             <p class="font-medium text-gray-900">Kelola Arsip</p>
                             <p class="text-sm text-gray-500">Akses dan kelola arsip memo</p>
                         </div>
+                        @if($telahDisetujui > 0)
+                            <span class="ml-auto bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $telahDisetujui }}</span>
+                        @endif
                     </a>
 
                     <a href="#" class="flex items-center p-3 rounded-lg border border-gray-200 hover:bg-gray-50 hover:border-purple-300 transition-all duration-200 group">
@@ -128,43 +151,84 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 class="text-xl font-semibold text-gray-900 mb-4">Aktivitas Terbaru</h2>
                 <div class="space-y-4">
-                    <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">Memo baru dari Tim Marketing</p>
-                            <p class="text-xs text-gray-500 mt-1">2 jam yang lalu</p>
+                    @forelse($recentMemos as $memo)
+                        <div class="flex items-start space-x-3">
+                            @if($memo->status == 'disetujui')
+                                <div class="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                            @elseif($memo->status == 'ditolak')
+                                <div class="flex-shrink-0 w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+                            @elseif($memo->status == 'diajukan')
+                                <div class="flex-shrink-0 w-2 h-2 bg-blue-400 rounded-full mt-2"></div>
+                            @else
+                                <div class="flex-shrink-0 w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
+                            @endif
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">
+                                    @if($memo->status == 'disetujui')
+                                        Memo disetujui: {{ Str::limit($memo->perihal, 30) }}
+                                    @elseif($memo->status == 'ditolak')
+                                        Memo ditolak: {{ Str::limit($memo->perihal, 30) }}
+                                    @elseif($memo->status == 'diajukan')
+                                        Memo diajukan: {{ Str::limit($memo->perihal, 30) }}
+                                    @else
+                                        Memo {{ $memo->status }}: {{ Str::limit($memo->perihal, 30) }}
+                                    @endif
+                                </p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    {{ $memo->updated_at->diffForHumans() }}
+                                </p>
+                                @if($memo->status == 'disetujui')
+                                    <div class="mt-1">
+                                        <a href="{{ route('asmen.arsip.show', $memo->id) }}" class="text-xs text-blue-600 hover:text-blue-800">Lihat di arsip →</a>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 w-2 h-2 bg-green-400 rounded-full mt-2"></div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">Memo disetujui: Proposal Budget Q4</p>
-                            <p class="text-xs text-gray-500 mt-1">5 jam yang lalu</p>
+                    @empty
+                        <div class="flex items-center justify-center py-8">
+                            <div class="text-center">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">Belum ada aktivitas memo</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 w-2 h-2 bg-yellow-400 rounded-full mt-2"></div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">Menunggu review: Memo Operasional</p>
-                            <p class="text-xs text-gray-500 mt-1">1 hari yang lalu</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start space-x-3">
-                        <div class="flex-shrink-0 w-2 h-2 bg-gray-400 rounded-full mt-2"></div>
-                        <div class="flex-1">
-                            <p class="text-sm font-medium text-gray-900">Tim meeting dijadwalkan ulang</p>
-                            <p class="text-xs text-gray-500 mt-1">2 hari yang lalu</p>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
                 
-                <div class="mt-4 pt-4 border-t border-gray-200">
-                    <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                        Lihat semua aktivitas →
-                    </a>
+                @if($recentMemos->count() > 0)
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <a href="{{ route('asmen.arsip') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                            Lihat semua aktivitas →
+                        </a>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="mt-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-xl font-semibold text-gray-900 mb-4">Ringkasan Statistik</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-blue-600">{{ $totalMemo }}</div>
+                        <div class="text-sm text-gray-600 mt-1">Total Memo Divisi</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-600">
+                            {{ $totalMemo > 0 ? round(($telahDisetujui / $totalMemo) * 100) : 0 }}%
+                        </div>
+                        <div class="text-sm text-gray-600 mt-1">Tingkat Persetujuan</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-yellow-600">{{ $menungguPersetujuan }}</div>
+                        <div class="text-sm text-gray-600 mt-1">Menunggu Review</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-red-600">{{ $ditolak }}</div>
+                        <div class="text-sm text-gray-600 mt-1">Memo Ditolak</div>
+                    </div>
                 </div>
             </div>
         </div>

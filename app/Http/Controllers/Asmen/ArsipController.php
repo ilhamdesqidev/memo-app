@@ -7,7 +7,6 @@ use App\Models\Memo;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
 
 class ArsipController extends Controller
@@ -17,14 +16,57 @@ class ArsipController extends Controller
         // Ambil divisi asisten manager yang sedang login
         $userDivisi = Auth::user()->divisi->nama;
         
-        // Ambil memo yang sudah selesai (disetujui/ditolak) hanya dari divisi yang sama
-        $memos = Memo::whereIn('status', ['disetujui', 'ditolak'])
+        $query = Memo::whereIn('status', ['disetujui', 'ditolak'])
             ->where('dari', $userDivisi) // Hanya memo dari divisi asisten manager
-            ->with(['divisiTujuan', 'dibuatOleh', 'disetujuiOleh', 'ditolakOleh'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->with(['divisiTujuan', 'dibuatOleh', 'disetujuiOleh', 'ditolakOleh']);
 
-        return view('asmen.arsip.index', compact('memos'));
+        // Filter berdasarkan status jika ada
+        if ($request->has('status') && in_array($request->status, ['disetujui', 'ditolak'])) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter berdasarkan periode tanggal jika ada
+        if ($request->has('start_date') && $request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+        
+        if ($request->has('end_date') && $request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Filter berdasarkan pencarian perihal
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $q->where('perihal', 'like', '%' . $request->search . '%')
+                  ->orWhere('nomor', 'like', '%' . $request->search . '%')
+                  ->orWhere('kepada', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $memos = $query->orderBy('updated_at', 'desc')
+                      ->paginate(15)
+                      ->withQueryString();
+
+        // Hitung statistik untuk arsip
+        $totalArsip = Memo::whereIn('status', ['disetujui', 'ditolak'])
+                         ->where('dari', $userDivisi)
+                         ->count();
+                         
+        $disetujui = Memo::where('status', 'disetujui')
+                        ->where('dari', $userDivisi)
+                        ->count();
+                        
+        $ditolak = Memo::where('status', 'ditolak')
+                      ->where('dari', $userDivisi)
+                      ->count();
+
+        return view('asmen.arsip.index', compact(
+            'memos', 
+            'totalArsip', 
+            'disetujui', 
+            'ditolak',
+            'userDivisi'
+        ));
     }
 
     public function viewPdf($id)
@@ -99,7 +141,7 @@ class ArsipController extends Controller
 
     public function show($id)
     {
-        $memo = Memo::with(['divisiTujuan', 'dibuatOleh', 'disetujuiOleh', 'ditolakOleh'])
+        $memo = Memo::with(['divisiTujuan', 'dibuatOleh', 'disetujuiOleh', 'ditolakOleh', 'logs'])
                    ->findOrFail($id);
         
         // Pastikan hanya memo dari divisi asisten manager yang bisa diakses
@@ -109,4 +151,6 @@ class ArsipController extends Controller
         
         return view('asmen.arsip.show', compact('memo'));
     }
+
+    
 }

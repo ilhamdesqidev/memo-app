@@ -53,7 +53,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-                        <p class="mt-2 text-sm text-gray-600">Welcome back! Here's your memo management overview.</p>
+                        <p class="mt-2 text-sm text-gray-600">Selamat datang di dashboard divisi {{ $userDivisi }}!</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-500">
@@ -82,16 +82,19 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-600">Pending</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $pendingMemos ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $pendingMemos }}</p>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
-                        <a href="#" class="inline-flex items-center text-sm text-amber-600 hover:text-amber-700 font-medium group">
-                            Review now
-                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
+                        @if($pendingMemos > 0)
+                            <span class="inline-flex items-center text-sm text-amber-600 font-medium">
+                                Needs review
+                            </span>
+                        @else
+                            <span class="inline-flex items-center text-sm text-emerald-600 font-medium">
+                                All caught up
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -107,13 +110,16 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-600">Approved</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $approvedMemos ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $approvedMemos }}</p>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="text-sm text-emerald-600 font-medium">
-                            ✓ All good
-                        </span>
+                        <a href="{{ route('asisten.arsip') }}" class="inline-flex items-center text-sm text-emerald-600 hover:text-emerald-700 font-medium group">
+                            View archive
+                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
                     </div>
                 </div>
 
@@ -129,13 +135,19 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-600">Rejected</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ $rejectedMemos ?? 0 }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $rejectedMemos }}</p>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
-                        <span class="text-sm text-red-600 font-medium">
-                            Needs attention
-                        </span>
+                        @if($rejectedMemos > 0)
+                            <span class="text-sm text-red-600 font-medium">
+                                Needs attention
+                            </span>
+                        @else
+                            <span class="text-sm text-emerald-600 font-medium">
+                                All good
+                            </span>
+                        @endif
                     </div>
                 </div>
 
@@ -151,7 +163,7 @@
                         </div>
                         <div class="ml-4 flex-1">
                             <p class="text-sm font-medium text-gray-600">Total Memos</p>
-                            <p class="text-2xl font-bold text-gray-900">{{ ($pendingMemos ?? 0) + ($approvedMemos ?? 0) + ($rejectedMemos ?? 0) }}</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ $pendingMemos + $approvedMemos + $rejectedMemos }}</p>
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-100">
@@ -169,32 +181,11 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
                             <h3 class="text-lg font-semibold text-gray-900">Quick Actions</h3>
-                            <p class="text-sm text-gray-600 mt-1">Manage your memo workflow efficiently</p>
+                            <p class="text-sm text-gray-600 mt-1">Kelola memo dengan efisien</p>
                         </div>
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- Manage Memos -->
-                                <a href="#" class="group block">
-                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200 group-hover:bg-blue-50">
-                                        <div class="flex items-center mb-3">
-                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                                </svg>
-                                            </div>
-                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Manage Memos</h4>
-                                        </div>
-                                        <p class="text-sm text-gray-600 mb-3">Review and process pending memos from your team</p>
-                                        <div class="flex items-center text-sm text-blue-600 font-medium group-hover:text-blue-700">
-                                            Go to Memos
-                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Create New -->
+                                <!-- Create Memo -->
                                 <a href="#" class="group block">
                                     <div class="border border-gray-200 rounded-lg p-4 hover:border-emerald-300 hover:shadow-md transition-all duration-200 group-hover:bg-emerald-50">
                                         <div class="flex items-center mb-3">
@@ -203,11 +194,35 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                                 </svg>
                                             </div>
-                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Create New</h4>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Buat Memo</h4>
                                         </div>
-                                        <p class="text-sm text-gray-600 mb-3">Draft a new memo or document for your activity</p>
+                                        <p class="text-sm text-gray-600 mb-3">Buat memo baru untuk aktivitas divisi</p>
                                         <div class="flex items-center text-sm text-emerald-600 font-medium group-hover:text-emerald-700">
                                             Create Memo
+                                            <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- View Archive -->
+                                <a href="{{ route('asisten.arsip') }}" class="group block">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200 group-hover:bg-blue-50">
+                                        <div class="flex items-center mb-3">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </div>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Kelola Arsip</h4>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-3">Lihat dan kelola arsip memo divisi</p>
+                                        <div class="flex items-center text-sm text-blue-600 font-medium group-hover:text-blue-700">
+                                            Go to Archive
+                                            @if($approvedMemos > 0)
+                                                <span class="ml-2 bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{{ $approvedMemos }}</span>
+                                            @endif
                                             <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                                             </svg>
@@ -224,9 +239,9 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                                 </svg>
                                             </div>
-                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Reports</h4>
+                                            <h4 class="ml-3 text-sm font-semibold text-gray-900">Laporan</h4>
                                         </div>
-                                        <p class="text-sm text-gray-600 mb-3">View memo statistics and detailed reports</p>
+                                        <p class="text-sm text-gray-600 mb-3">Lihat statistik dan laporan memo</p>
                                         <div class="flex items-center text-sm text-purple-600 font-medium group-hover:text-purple-700">
                                             View Reports
                                             <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,7 +263,7 @@
                                             </div>
                                             <h4 class="ml-3 text-sm font-semibold text-gray-900">Settings</h4>
                                         </div>
-                                        <p class="text-sm text-gray-600 mb-3">Configure your dashboard and preferences</p>
+                                        <p class="text-sm text-gray-600 mb-3">Konfigurasi dashboard dan preferensi</p>
                                         <div class="flex items-center text-sm text-gray-600 font-medium group-hover:text-gray-700">
                                             Open Settings
                                             <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,48 +281,61 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-                            <h3 class="text-lg font-semibold text-gray-900">Recent Activity</h3>
-                            <p class="text-sm text-gray-600 mt-1">Latest updates and notifications</p>
+                            <h3 class="text-lg font-semibold text-gray-900">Aktivitas Terbaru</h3>
+                            <p class="text-sm text-gray-600 mt-1">Update terbaru dari memo divisi</p>
                         </div>
                         <div class="p-6">
                             <div class="space-y-4">
-                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-amber-50 transition-colors">
-                                    <div class="w-3 h-3 bg-amber-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">New memo pending review</p>
-                                        <p class="text-xs text-gray-500 mt-1">From John Doe • 2 hours ago</p>
+                                @forelse($recentMemos as $memo)
+                                    <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                        @if($memo->status == 'disetujui')
+                                            <div class="w-3 h-3 bg-emerald-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                        @elseif($memo->status == 'ditolak')
+                                            <div class="w-3 h-3 bg-red-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                        @elseif($memo->status == 'diajukan')
+                                            <div class="w-3 h-3 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                        @else
+                                            <div class="w-3 h-3 bg-amber-400 rounded-full mt-1.5 flex-shrink-0"></div>
+                                        @endif
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-gray-900">
+                                                @if($memo->status == 'disetujui')
+                                                    Memo disetujui
+                                                @elseif($memo->status == 'ditolak')
+                                                    Memo ditolak
+                                                @elseif($memo->status == 'diajukan')
+                                                    Memo diajukan
+                                                @else
+                                                    Memo {{ $memo->status }}
+                                                @endif
+                                            </p>
+                                            <p class="text-xs text-gray-500 mt-1">{{ Str::limit($memo->perihal, 30) }} • {{ $memo->updated_at->diffForHumans() }}</p>
+                                            @if($memo->status == 'disetujui')
+                                                <div class="mt-1">
+                                                    <a href="{{ route('asisten.arsip.show', $memo->id) }}" class="text-xs text-emerald-600 hover:text-emerald-800">Lihat di arsip →</a>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-emerald-50 transition-colors">
-                                    <div class="w-3 h-3 bg-emerald-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">Memo approved successfully</p>
-                                        <p class="text-xs text-gray-500 mt-1">Marketing proposal • 4 hours ago</p>
+                                @empty
+                                    <div class="text-center py-8">
+                                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        <p class="text-sm text-gray-500">Belum ada aktivitas memo</p>
                                     </div>
-                                </div>
-                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-blue-50 transition-colors">
-                                    <div class="w-3 h-3 bg-blue-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">New team member added</p>
-                                        <p class="text-xs text-gray-500 mt-1">Sarah Smith joined • 1 day ago</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-red-50 transition-colors">
-                                    <div class="w-3 h-3 bg-red-400 rounded-full mt-1.5 flex-shrink-0"></div>
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900">Memo returned for revision</p>
-                                        <p class="text-xs text-gray-500 mt-1">Budget request • 2 days ago</p>
-                                    </div>
-                                </div>
+                                @endforelse
                             </div>
-                            <div class="mt-6 pt-4 border-t border-gray-200">
-                                <a href="#" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium group w-full justify-center">
-                                    View all activity
-                                    <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </a>
-                            </div>
+                            @if($recentMemos->count() > 0)
+                                <div class="mt-6 pt-4 border-t border-gray-200">
+                                    <a href="{{ route('asisten.arsip') }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-700 font-medium group w-full justify-center">
+                                        View all activity
+                                        <svg class="ml-1 w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
