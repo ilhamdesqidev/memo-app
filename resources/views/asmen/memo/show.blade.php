@@ -18,6 +18,7 @@
         </div>
 
         <div class="px-6 py-4">
+            <!-- Info Memo -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <p class="text-sm text-gray-500">Nomor Memo</p>
@@ -42,6 +43,14 @@
                 <p class="font-medium">{{ $memo->perihal }}</p>
             </div>
 
+            <!-- Lampiran -->
+            @if($memo->lampiran)
+            <div class="mb-4">
+                <p class="text-sm text-gray-500">Lampiran</p>
+                <p class="font-medium">{{ $memo->lampiran }}</p>
+            </div>
+            @endif
+
             <!-- Tombol untuk melihat isi memo -->
             <div class="mb-6">
                 <h4 class="text-sm font-medium text-gray-500 mb-2">Isi Memo</h4>
@@ -61,63 +70,106 @@
             </div>
 
             @if($memo->status == 'diajukan')
+            <!-- Form Tindakan -->
             <div class="mt-6 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Tindakan</h3>
                 <div class="flex flex-wrap gap-3">
-                <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
-                        <textarea name="catatan" id="catatan" rows="2" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
-                    </div>
                     
-                    <div class="mb-3">
-                        <label class="block text-sm font-medium text-gray-700">Tindakan Lanjutan</label>
-                        <div class="mt-2 space-y-2">
-                            <div class="flex items-center">
-                                <input type="radio" id="action_approve" name="next_action" value="approve" checked class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                <label for="action_approve" class="ml-2 block text-sm text-gray-700">Setujui dan simpan</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="radio" id="action_forward_manager" name="next_action" value="forward_manager" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300">
-                                <label for="action_forward_manager" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Manager</label>
+                    <!-- Form Setujui -->
+                    <form action="{{ route('asmen.memo.approve', $memo->id) }}" method="POST" class="flex-1 min-w-[250px] bg-gray-50 p-4 rounded-lg">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
+                            <textarea name="catatan" id="catatan" rows="2" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Masukkan catatan jika diperlukan"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700">Tindakan Lanjutan</label>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center">
+                                    <input type="radio" id="action_approve" name="next_action" value="approve" checked 
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        onchange="toggleStaffSelection(this.value)">
+                                    <label for="action_approve" class="ml-2 block text-sm text-gray-700">Setujui dan simpan</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="action_forward_manager" name="next_action" value="forward_manager" 
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        onchange="toggleStaffSelection(this.value)">
+                                    <label for="action_forward_manager" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Manager</label>
+                                </div>
+                                @if(isset($staffList) && $staffList->count() > 0)
+                                <div class="flex items-center">
+                                    <input type="radio" id="action_forward_staff" name="next_action" value="forward_staff" 
+                                        class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                                        onchange="toggleStaffSelection(this.value)">
+                                    <label for="action_forward_staff" class="ml-2 block text-sm text-gray-700">Setujui dan teruskan ke Staff</label>
+                                </div>
+                                @endif
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex items-center mb-3">
-                        <input type="checkbox" name="include_signature" id="include_signature" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <label for="include_signature" class="ml-2 block text-sm text-gray-700">Sertakan tanda tangan digital</label>
-                    </div>
-                    
-                    <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        Proses Memo
-                    </button>
-                </form>
+                        
+                        <!-- Staff Selection -->
+                        @if(isset($staffList) && $staffList->count() > 0)
+                        <div id="staffSelection" class="mb-3 hidden">
+                            <label for="forward_to_staff_id" class="block text-sm font-medium text-gray-700">Pilih Staff *</label>
+                            <select name="forward_to_staff_id" id="forward_to_staff_id" 
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">-- Pilih Staff --</option>
+                                @foreach($staffList as $staff)
+                                    <option value="{{ $staff->id }}">{{ $staff->name }} - {{ $staff->divisi->nama ?? '-' }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Hanya staff dari divisi lain</p>
+                        </div>
+                        @endif
+                        
+                        <div class="flex items-center mb-3">
+                            <input type="checkbox" name="include_signature" id="include_signature" 
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                            <label for="include_signature" class="ml-2 block text-sm text-gray-700">Sertakan tanda tangan digital</label>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
+                            Proses Memo
+                        </button>
+                    </form>
 
-                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]">
+                    <!-- Form Minta Revisi -->
+                    <form action="{{ route('asmen.memo.request-revision', $memo->id) }}" method="POST" class="flex-1 min-w-[250px] bg-yellow-50 p-4 rounded-lg">
                         @csrf
                         <div class="mb-3">
                             <label for="catatan_revisi" class="block text-sm font-medium text-gray-700">
                                 Catatan Revisi *
                             </label>
                             <textarea name="catatan_revisi" id="catatan_revisi" rows="3" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Berikan catatan revisi yang jelas"></textarea>
                         </div>
                         <button type="submit" 
-                            class="w-full bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                            class="w-full bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
                             Minta Revisi
                         </button>
                     </form>
 
-                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST" class="flex-1 min-w-[250px]">
+                    <!-- Form Tolak -->
+                    <form action="{{ route('asmen.memo.reject', $memo->id) }}" method="POST" class="flex-1 min-w-[250px] bg-red-50 p-4 rounded-lg">
                         @csrf
                         <div class="mb-3">
                             <label for="alasan" class="block text-sm font-medium text-gray-700">Alasan Penolakan *</label>
                             <textarea name="alasan" id="alasan" rows="3" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Berikan alasan penolakan yang jelas"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <button type="submit" class="w-full bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                             Tolak Memo
                         </button>
                     </form>
@@ -125,31 +177,104 @@
             </div>
             @endif
 
+            <!-- Tanda Tangan Info -->
+            @if($memo->signature_path || $memo->manager_signature_path)
+            <div class="mt-6 border-t border-gray-200 pt-4">
+                <h3 class="text-lg font-medium text-gray-900 mb-3">Informasi Tanda Tangan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @if($memo->signature_path && $memo->dibuatOleh)
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Tanda Tangan Pembuat</h4>
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span class="text-blue-600 font-medium">{{ substr($memo->dibuatOleh->name, 0, 1) }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ $memo->dibuatOleh->name }}</p>
+                                <p class="text-sm text-gray-500">{{ $memo->dibuatOleh->role }} - {{ $memo->dari }}</p>
+                                @if($memo->creator_signed_at)
+                                <p class="text-xs text-gray-400">Ditandatangani: {{ $memo->creator_signed_at->format('d M Y H:i') }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                    
+                    @if($memo->manager_signature_path && $memo->ditandatanganiOleh)
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">Tanda Tangan Manager</h4>
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span class="text-green-600 font-medium">{{ substr($memo->ditandatanganiOleh->name, 0, 1) }}</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ $memo->ditandatanganiOleh->name }}</p>
+                                <p class="text-sm text-gray-500">Manager</p>
+                                @if($memo->manager_signed_at)
+                                <p class="text-xs text-gray-400">Ditandatangani: {{ $memo->manager_signed_at->format('d M Y H:i') }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
+            <!-- Riwayat Memo -->
             <div class="mt-8 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Riwayat Memo</h3>
                 <div class="space-y-4">
-                    @foreach($memo->logs as $log)
+                    @forelse($memo->logs->sortByDesc('waktu') as $log)
                     <div class="flex">
                         <div class="flex-shrink-0 mr-3">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <!-- PERBAIKAN: Gunakan optional chaining dengan null coalescing -->
                                 <span class="text-gray-600 text-sm">
                                     {{ $log->user?->name ? substr($log->user->name, 0, 1) : 'S' }}
                                 </span>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <!-- PERBAIKAN: Handle null user dengan aman -->
-                            <div class="text-sm font-medium text-gray-900 truncate">
-                                {{ $log->user?->name ?? 'Sistem' }}
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ $log->user?->name ?? 'Sistem' }}
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        {{ $log->divisi ?? '-' }}
+                                    </div>
+                                </div>
+                                <div class="text-xs text-gray-400">
+                                    {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}
+                                </div>
                             </div>
-                            <div class="text-sm text-gray-500">
-                                {{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}
+                            <div class="mt-1">
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium
+                                    @if(str_contains(strtolower($log->aksi), 'setuju')) bg-green-100 text-green-800
+                                    @elseif(str_contains(strtolower($log->aksi), 'tolak')) bg-red-100 text-red-800
+                                    @elseif(str_contains(strtolower($log->aksi), 'revisi')) bg-yellow-100 text-yellow-800
+                                    @elseif(str_contains(strtolower($log->aksi), 'teruskan')) bg-blue-100 text-blue-800
+                                    @else bg-gray-100 text-gray-800
+                                    @endif">
+                                    {{ ucfirst($log->aksi) }}
+                                </span>
                             </div>
-                            <div class="mt-1 text-sm text-gray-700 break-words">{{ $log->catatan }}</div>
+                            @if($log->catatan)
+                            <div class="mt-2 text-sm text-gray-700 bg-gray-50 p-3 rounded-lg break-words">
+                                {{ $log->catatan }}
+                            </div>
+                            @endif
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="text-center py-4 text-gray-500">
+                        Belum ada riwayat untuk memo ini
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -173,8 +298,8 @@
             <!-- Modal Body -->
             <div class="px-6 py-4 overflow-y-auto flex-1">
                 <div class="prose max-w-none">
-                    <div class="bg-gray-50 rounded-lg p-4 text-gray-800 leading-relaxed break-words word-wrap" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
-                        {!! $memo->isi !!}
+                    <div class="bg-gray-50 rounded-lg p-6 text-gray-800 leading-relaxed break-words word-wrap whitespace-pre-wrap" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
+                        {!! nl2br(e($memo->isi)) !!}
                     </div>
                 </div>
             </div>
@@ -200,6 +325,12 @@
     }
     textarea {
         max-width: 100%;
+        resize: vertical;
+    }
+    .word-wrap {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 </style>
 
@@ -212,53 +343,88 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalBottom = document.getElementById('closeMemoModalBottom');
     
     // Show modal
-    showMemoBtn.addEventListener('click', function() {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    });
+    if (showMemoBtn) {
+        showMemoBtn.addEventListener('click', function() {
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
     
     // Close modal functions
     function closeModal() {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto'; // Restore scrolling
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
     }
     
-    closeModalTop.addEventListener('click', closeModal);
-    closeModalBottom.addEventListener('click', closeModal);
+    if (closeModalTop) closeModalTop.addEventListener('click', closeModal);
+    if (closeModalBottom) closeModalBottom.addEventListener('click', closeModal);
     
     // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
     
     // Close modal with ESC key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
             closeModal();
         }
     });
 
-    // Staff selection functionality
-    const staffSelection = document.getElementById('staffSelection');
-    const staffRadios = document.querySelectorAll('input[name="next_action"]');
-    
-    staffRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'forward_staff') {
-                if (staffSelection) {
-                    staffSelection.classList.remove('hidden');
-                    document.getElementById('forward_to_staff_id').required = true;
-                }
+    // Toggle staff selection based on radio button
+    function toggleStaffSelection(action) {
+        const staffSelection = document.getElementById('staffSelection');
+        const staffSelect = document.getElementById('forward_to_staff_id');
+        
+        if (staffSelection && staffSelect) {
+            if (action === 'forward_staff') {
+                staffSelection.classList.remove('hidden');
+                staffSelect.required = true;
             } else {
-                if (staffSelection) {
-                    staffSelection.classList.add('hidden');
-                    document.getElementById('forward_to_staff_id').required = false;
+                staffSelection.classList.add('hidden');
+                staffSelect.required = false;
+            }
+        }
+    }
+
+    // Initialize staff selection based on default radio
+    const defaultAction = document.querySelector('input[name="next_action"]:checked');
+    if (defaultAction) {
+        toggleStaffSelection(defaultAction.value);
+    }
+
+    // Add event listeners to all radio buttons
+    const actionRadios = document.querySelectorAll('input[name="next_action"]');
+    actionRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            toggleStaffSelection(this.value);
+        });
+    });
+
+    // Form validation for staff selection
+    const approveForm = document.querySelector('form[action*="approve"]');
+    if (approveForm) {
+        approveForm.addEventListener('submit', function(e) {
+            const selectedAction = document.querySelector('input[name="next_action"]:checked');
+            const staffSelect = document.getElementById('forward_to_staff_id');
+            
+            if (selectedAction && selectedAction.value === 'forward_staff') {
+                if (!staffSelect || !staffSelect.value) {
+                    e.preventDefault();
+                    alert('Silakan pilih staff untuk meneruskan memo');
+                    if (staffSelect) staffSelect.focus();
                 }
             }
         });
-    });
+    }
 });
 </script>
 @endsection
