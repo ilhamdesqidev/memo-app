@@ -132,12 +132,20 @@
                     <div class="flex">
                         <div class="flex-shrink-0 mr-3">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <span class="text-gray-600 text-sm">{{ substr($log->user->name, 0, 1) }}</span>
+                                <!-- PERBAIKAN: Gunakan optional chaining dengan null coalescing -->
+                                <span class="text-gray-600 text-sm">
+                                    {{ $log->user?->name ? substr($log->user->name, 0, 1) : 'S' }}
+                                </span>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-gray-900 truncate">{{ $log->user->name }}</div>
-                            <div class="text-sm text-gray-500">{{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}</div>
+                            <!-- PERBAIKAN: Handle null user dengan aman -->
+                            <div class="text-sm font-medium text-gray-900 truncate">
+                                {{ $log->user?->name ?? 'Sistem' }}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                {{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}
+                            </div>
                             <div class="mt-1 text-sm text-gray-700 break-words">{{ $log->catatan }}</div>
                         </div>
                     </div>
@@ -239,11 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
     staffRadios.forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.value === 'forward_staff') {
-                staffSelection.classList.remove('hidden');
-                document.getElementById('forward_to_staff_id').required = true;
+                if (staffSelection) {
+                    staffSelection.classList.remove('hidden');
+                    document.getElementById('forward_to_staff_id').required = true;
+                }
             } else {
-                staffSelection.classList.add('hidden');
-                document.getElementById('forward_to_staff_id').required = false;
+                if (staffSelection) {
+                    staffSelection.classList.add('hidden');
+                    document.getElementById('forward_to_staff_id').required = false;
+                }
             }
         });
     });
