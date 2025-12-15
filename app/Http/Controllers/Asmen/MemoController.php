@@ -79,6 +79,14 @@ public function approve(Request $request, $id)
         abort(403, 'Tidak dapat memproses memo ini.');
     }
 
+    // Validasi input
+    $request->validate([
+        'catatan' => 'nullable|string|max:500',
+        'next_action' => 'required|in:approve,forward_manager,forward_staff',
+        'forward_to_staff_id' => 'required_if:next_action,forward_staff|exists:users,id',
+        'include_signature' => 'boolean'
+    ]);
+
     // Tentukan tindakan lanjutan
     $nextAction = $request->input('next_action', 'approve');
     $forwardToStaffId = $request->input('forward_to_staff_id');
@@ -91,10 +99,32 @@ public function approve(Request $request, $id)
 
     // Handle different actions
     if ($nextAction === 'forward_manager') {
+        // CARI ASISTEN MANAGER DIVISI ADMINISTRASI DAN KEUANGAN
+        // PERBAIKAN: Gunakan tanda kutip dan ambil satu nilai saja
+        $divisiKeuanganId = \App\Models\Divisi::where('nama', 'Administrasi dan Keuangan')
+            ->value('id');
+        
+        if (!$divisiKeuanganId) {
+            return back()->with('error', 'Divisi Administrasi dan Keuangan tidak ditemukan.');
+        }
+        
+        $asistenManager = User::where('divisi_id', $divisiKeuanganId)
+            ->where('role', 'asisten_manager')
+            ->where('deleted_at', null)
+            ->first();
+            
+        if (!$asistenManager) {
+            return back()->with('error', 'Asisten Manager Administrasi dan Keuangan tidak ditemukan.');
+        }
+        
         $updateData['status'] = 'diajukan';
-        $updateData['divisi_tujuan'] = 'Manager';
+        $updateData['divisi_tujuan'] = 'Administrasi dan Keuangan';
+        $updateData['kepada_id'] = $asistenManager->id;
+        $updateData['kepada'] = $asistenManager->name;
         $updateData['forwarded_by'] = $user->id;
         $updateData['forwarded_at'] = now();
+        $updateData['approved_by'] = null; // Reset karena diteruskan, belum final approval
+        $updateData['approval_date'] = null;
     } 
     elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
         $staff = User::findOrFail($forwardToStaffId);
@@ -104,25 +134,32 @@ public function approve(Request $request, $id)
             return back()->with('error', 'Tidak bisa meneruskan ke staff divisi sendiri');
         }
         
+        // Validasi staff memiliki role yang sesuai
+        if (!in_array($staff->role, ['staff', 'supervisor'])) {
+            return back()->with('error', 'Hanya dapat meneruskan ke staff atau supervisor');
+        }
+        
         $updateData['status'] = 'diajukan';
         $updateData['divisi_tujuan'] = $staff->divisi->nama;
         $updateData['kepada_id'] = $staff->id;
         $updateData['kepada'] = $staff->name;
         $updateData['forwarded_by'] = $user->id;
         $updateData['forwarded_at'] = now();
+        $updateData['approved_by'] = null;
+        $updateData['approval_date'] = null;
     } 
     else {
         $updateData['status'] = 'disetujui';
     }
 
     // Handle signature
-    if ($request->has('include_signature')) {
+    if ($request->has('include_signature') && $request->boolean('include_signature')) {
         if ($user->signature) {
             $updateData['signature_path'] = $user->signature;
             $updateData['signed_by'] = $user->id;
             $updateData['signed_at'] = now();
         } else {
-            return back()->with('error', 'Anda belum memiliki tanda tangan digital');
+            return back()->with('error', 'Anda belum memiliki tanda tangan digital. Silakan unggah tanda tangan terlebih dahulu.');
         }
     }
 
@@ -133,41 +170,91 @@ public function approve(Request $request, $id)
     $aksi = 'persetujuan';
     
     if ($nextAction === 'forward_manager') {
-        $logMessage = 'Memo disetujui dan diteruskan ke Manager';
+        $logMessage = 'Memo disetujui dan diteruskan ke Asisten Manager Administrasi dan Keuangan';
         $aksi = 'penerusan_manager';
     } 
     elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
         $staff = User::find($forwardToStaffId);
-        $logMessage = 'Memo disetujui dan diteruskan ke Staff: ' . $staff->name . ' (Divisi: ' . $staff->divisi->nama . ')';
+        $logMessage = 'Memo disetujui dan diteruskan ke ' . $staff->name . ' (Divisi: ' . $staff->divisi->nama . ')';
         $aksi = 'penerusan_staff';
     } 
     else {
-        $logMessage = 'Memo disetujui';
+        $logMessage = $request->catatan ?? 'Memo disetujui';
     }
 
+    // Buat log utama
     MemoLog::create([
         'memo_id' => $memo->id,
         'user_id' => $user->id,
         'divisi' => $currentDivisi,
         'aksi' => $aksi,
-        'catatan' => $request->catatan ?? $logMessage,
+        'catatan' => $logMessage,
         'waktu' => now()
     ]);
 
-    // Jika diteruskan, buat log tambahan di divisi tujuan
-    if (in_array($nextAction, ['forward_manager', 'forward_staff'])) {
+    // Jika diteruskan ke manager, buat log tambahan di divisi tujuan
+    if ($nextAction === 'forward_manager') {
         MemoLog::create([
             'memo_id' => $memo->id,
-            'user_id' => $user->id,
-            'divisi' => $updateData['divisi_tujuan'],
+            'user_id' => null, // Belum ada user di divisi tujuan
+            'divisi' => 'Administrasi dan Keuangan',
+            'aksi' => 'penerimaan',
+            'catatan' => 'Memo diterima dari Divisi ' . $currentDivisi . ' untuk ditinjau oleh Asisten Manager',
+            'waktu' => now()
+        ]);
+    }
+    
+    // Jika diteruskan ke staff, buat log tambahan
+    elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
+        $staff = User::find($forwardToStaffId);
+        MemoLog::create([
+            'memo_id' => $memo->id,
+            'user_id' => null,
+            'divisi' => $staff->divisi->nama,
             'aksi' => 'penerimaan',
             'catatan' => 'Memo diterima dari Divisi ' . $currentDivisi,
             'waktu' => now()
         ]);
     }
 
+    // Generate PDF jika memo disetujui (final approval)
+    if ($nextAction === 'approve') {
+        try {
+            $this->generateMemoPdf($memo);
+        } catch (\Exception $e) {
+            \Log::error('Gagal generate PDF untuk memo ' . $memo->id . ': ' . $e->getMessage());
+        }
+    }
+
     return redirect()->route('asmen.memo.inbox')
-        ->with('success', $logMessage);
+        ->with('success', $aksi === 'persetujuan' ? 'Memo berhasil disetujui' : 'Memo berhasil diteruskan');
+}
+
+/**
+ * Helper method untuk generate PDF
+ */
+protected function generateMemoPdf($memo)
+{
+    try {
+        $pdf = PDF::loadView('memo.pdf', [
+            'memo' => $memo,
+            'include_signature' => true
+        ]);
+        
+        $filename = 'memo_' . $memo->id . '_' . time() . '.pdf';
+        $path = 'memo_pdfs/' . $filename;
+        
+        // Pastikan folder exists
+        Storage::makeDirectory('public/memo_pdfs');
+        
+        $pdf->save(storage_path('app/public/' . $path));
+        
+        $memo->update(['pdf_path' => $path]);
+        
+        return $path;
+    } catch (\Exception $e) {
+        throw $e;
+    }
 }
 
    public function reject(Request $request, $id)
