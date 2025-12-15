@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\MemoLog;
 use App\Models\Divisi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -57,20 +58,28 @@ class ManagerMemoController extends Controller
 
         $request->validate([
             'divisi_tujuan' => 'required|exists:divisis,nama',
-            'include_signature' => 'nullable|boolean'
+            'include_signature' => 'nullable|boolean',
+            'catatan' => 'nullable|string|max:500'
         ]);
 
         $divisiTujuan = $request->input('divisi_tujuan');
 
+        // PERBAIKAN: Gunakan value() atau first() untuk menghindari subquery multiple rows
+        // Cari ID divisi tujuan terlebih dahulu
+        $divisi = Divisi::where('nama', $divisiTujuan)->first();
+        
+        if (!$divisi) {
+            return back()->with('error', 'Divisi tujuan tidak ditemukan.');
+        }
+
         // Cari Asisten Manager dari divisi tujuan
-        $asmen = \App\Models\User::where('divisi_id', function($query) use ($divisiTujuan) {
-                $query->select('id')->from('divisis')->where('nama', $divisiTujuan);
-            })
+        $asmen = User::where('divisi_id', $divisi->id)
             ->where('role', 'asisten_manager')
+            ->where('deleted_at', null)
             ->first();
 
         if (!$asmen) {
-            return back()->with('error', 'Divisi tujuan tidak memiliki Asisten Manager yang aktif');
+            return back()->with('error', 'Divisi tujuan tidak memiliki Asisten Manager yang aktif.');
         }
 
         // Update data memo
@@ -86,17 +95,12 @@ class ManagerMemoController extends Controller
         ];
 
         // Handle manager signature jika diminta
-        if ($request->has('include_signature') && $request->include_signature) {
+        if ($request->has('include_signature') && $request->boolean('include_signature')) {
             if ($user->signature) {
                 // Simpan tanda tangan manager di field khusus manager
                 $updateData['manager_signature_path'] = $user->signature;
                 $updateData['manager_signed_at'] = now();
                 $updateData['manager_signed'] = true;
-                
-                // Jangan timpa tanda tangan creator
-                // $updateData['signature_path'] = $user->signature; // HAPUS BARIS INI
-                // $updateData['signed_by'] = $user->id; // HAPUS BARIS INI
-                // $updateData['signed_at'] = now(); // HAPUS BARIS INI
             } else {
                 return back()->with('error', 'Anda belum memiliki tanda tangan digital. Silakan buat tanda tangan terlebih dahulu.');
             }
@@ -108,24 +112,43 @@ class ManagerMemoController extends Controller
         $this->saveCreatorSignature($memo);
 
         // Create log
-        $logMessage = $request->has('include_signature') && $request->include_signature 
+        $logMessage = $request->has('include_signature') && $request->boolean('include_signature') 
             ? "Memo disetujui dengan tanda tangan dan diteruskan ke Asisten Manager $divisiTujuan"
             : "Memo disetujui dan diteruskan ke Asisten Manager $divisiTujuan";
+
+        // Tambahkan catatan dari input jika ada
+        if ($request->filled('catatan')) {
+            $logMessage .= " - " . $request->catatan;
+        }
 
         MemoLog::create([
             'memo_id' => $memo->id,
             'user_id' => $user->id,
             'divisi' => 'Manager',
             'aksi' => 'penerusan_ke_divisi',
-            'catatan' => $request->catatan ?? $logMessage,
+            'catatan' => $logMessage,
+            'waktu' => now()
+        ]);
+
+        // Buat log tambahan di divisi tujuan
+        MemoLog::create([
+            'memo_id' => $memo->id,
+            'user_id' => null, // Belum ada user yang memproses
+            'divisi' => $divisiTujuan,
+            'aksi' => 'penerimaan_dari_manager',
+            'catatan' => "Memo diterima dari Manager untuk ditinjau oleh Asisten Manager",
             'waktu' => now()
         ]);
 
         // Regenerate PDF dengan tanda tangan baru
-        $this->regeneratePdf($memo->id);
+        try {
+            $this->regeneratePdf($memo->id);
+        } catch (\Exception $e) {
+            \Log::error('Gagal generate PDF untuk memo ' . $memo->id . ': ' . $e->getMessage());
+        }
 
         return redirect()->route('manager.memo.inbox')
-            ->with('success', $logMessage);
+            ->with('success', 'Memo berhasil diteruskan ke ' . $divisiTujuan);
     }
 
     /**
@@ -244,7 +267,12 @@ class ManagerMemoController extends Controller
         ]);
 
         // Regenerate PDF
-        $this->regeneratePdf($memo->id);
+        try {
+            $this->regeneratePdf($memo->id);
+        } catch (\Exception $e) {
+            \Log::error('Gagal generate PDF setelah penandatanganan: ' . $e->getMessage());
+            return back()->with('error', 'Memo berhasil ditandatangani tetapi gagal generate PDF.');
+        }
 
         return back()->with('success', 'Memo berhasil ditandatangani');
     }

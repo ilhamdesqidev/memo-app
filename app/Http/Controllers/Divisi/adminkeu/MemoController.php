@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Divisi\adminkeu;
 
 use App\Http\Controllers\Divisi\BaseMemoController;
+use App\Models\Divisi;
 use App\Models\Memo;
 
 class MemoController extends BaseMemoController

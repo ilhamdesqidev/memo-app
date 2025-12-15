@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Asmen;
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\MemoLog;
+use App\Models\Divisi;
 use Illuminate\Support\Facades\Log;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
