@@ -99,32 +99,17 @@ public function approve(Request $request, $id)
 
     // Handle different actions
     if ($nextAction === 'forward_manager') {
-        // CARI ASISTEN MANAGER DIVISI ADMINISTRASI DAN KEUANGAN
-        // PERBAIKAN: Gunakan tanda kutip dan ambil satu nilai saja
-        $divisiKeuanganId = \App\Models\Divisi::where('nama', 'Administrasi dan Keuangan')
-            ->value('id');
-        
-        if (!$divisiKeuanganId) {
-            return back()->with('error', 'Divisi Administrasi dan Keuangan tidak ditemukan.');
-        }
-        
-        $asistenManager = User::where('divisi_id', $divisiKeuanganId)
-            ->where('role', 'asisten_manager')
-            ->where('deleted_at', null)
-            ->first();
-            
-        if (!$asistenManager) {
-            return back()->with('error', 'Asisten Manager Administrasi dan Keuangan tidak ditemukan.');
-        }
-        
+        // PERBAIKAN: Langsung set ke Manager, bukan Administrasi dan Keuangan
         $updateData['status'] = 'diajukan';
-        $updateData['divisi_tujuan'] = 'Administrasi dan Keuangan';
-        $updateData['kepada_id'] = $asistenManager->id;
-        $updateData['kepada'] = $asistenManager->name;
+        $updateData['divisi_tujuan'] = 'Manager'; // <- INI YANG DIPERBAIKI
+        $updateData['kepada'] = 'Manager'; // <- INI JUGA
         $updateData['forwarded_by'] = $user->id;
         $updateData['forwarded_at'] = now();
         $updateData['approved_by'] = null; // Reset karena diteruskan, belum final approval
         $updateData['approval_date'] = null;
+        
+        $logMessage = 'Memo disetujui dan diteruskan ke Manager';
+        $aksi = 'penerusan_manager';
     } 
     elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
         $staff = User::findOrFail($forwardToStaffId);
@@ -147,9 +132,14 @@ public function approve(Request $request, $id)
         $updateData['forwarded_at'] = now();
         $updateData['approved_by'] = null;
         $updateData['approval_date'] = null;
+        
+        $logMessage = 'Memo disetujui dan diteruskan ke ' . $staff->name . ' (Divisi: ' . $staff->divisi->nama . ')';
+        $aksi = 'penerusan_staff';
     } 
     else {
         $updateData['status'] = 'disetujui';
+        $logMessage = $request->catatan ?? 'Memo disetujui';
+        $aksi = 'persetujuan';
     }
 
     // Handle signature
@@ -166,29 +156,12 @@ public function approve(Request $request, $id)
     $memo->update($updateData);
 
     // Create log dengan divisi asal
-    $logMessage = '';
-    $aksi = 'persetujuan';
-    
-    if ($nextAction === 'forward_manager') {
-        $logMessage = 'Memo disetujui dan diteruskan ke Asisten Manager Administrasi dan Keuangan';
-        $aksi = 'penerusan_manager';
-    } 
-    elseif ($nextAction === 'forward_staff' && $forwardToStaffId) {
-        $staff = User::find($forwardToStaffId);
-        $logMessage = 'Memo disetujui dan diteruskan ke ' . $staff->name . ' (Divisi: ' . $staff->divisi->nama . ')';
-        $aksi = 'penerusan_staff';
-    } 
-    else {
-        $logMessage = $request->catatan ?? 'Memo disetujui';
-    }
-
-    // Buat log utama
     MemoLog::create([
         'memo_id' => $memo->id,
         'user_id' => $user->id,
         'divisi' => $currentDivisi,
         'aksi' => $aksi,
-        'catatan' => $logMessage,
+        'catatan' => $request->filled('catatan') ? $request->catatan . ' - ' . $logMessage : $logMessage,
         'waktu' => now()
     ]);
 
@@ -196,10 +169,10 @@ public function approve(Request $request, $id)
     if ($nextAction === 'forward_manager') {
         MemoLog::create([
             'memo_id' => $memo->id,
-            'user_id' => null, // Belum ada user di divisi tujuan
-            'divisi' => 'Administrasi dan Keuangan',
+            'user_id' => null,
+            'divisi' => 'Manager', // <- INI JUGA DIPERBAIKI
             'aksi' => 'penerimaan',
-            'catatan' => 'Memo diterima dari Divisi ' . $currentDivisi . ' untuk ditinjau oleh Asisten Manager',
+            'catatan' => 'Memo diterima dari Divisi ' . $currentDivisi . ' untuk ditinjau oleh Manager',
             'waktu' => now()
         ]);
     }
