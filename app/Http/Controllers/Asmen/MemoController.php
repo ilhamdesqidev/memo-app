@@ -54,9 +54,8 @@ public function show($id)
         abort(403, 'Anda tidak memiliki akses ke memo ini.');
     }
 
-    // Ambil daftar staff di divisi yang sama
-    $staffList = User::where('divisi_id', $user->divisi_id)
-                    ->where('id', '!=', $user->id)
+    // PERBAIKAN: Ambil staff dari divisi LAIN, bukan divisi sendiri
+    $staffList = User::where('divisi_id', '!=', $user->divisi_id)
                     ->whereIn('role', ['staff', 'supervisor'])
                     ->with('divisi')
                     ->get();
