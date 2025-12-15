@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Models\Memo;
 use App\Models\MemoLog;
-use App\Models\User;
 use App\Models\Divisi;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DashboardManagerController extends Controller
 {
@@ -30,23 +28,27 @@ class DashboardManagerController extends Controller
         // Hitung semua memo yang ditolak (status ditolak)
         $rejectedMemo = Memo::where('status', 'ditolak')->count();
         
-        // PERBAIKAN: Ambil aktivitas terbaru dengan handling null user
+        // Ambil aktivitas terbaru - dengan handling null user
         $recentActivities = MemoLog::with(['user' => function($query) {
-                // Gunakan withTrashed jika ada soft delete
                 $query->withTrashed();
             }])
-            ->whereNotNull('divisi') // Hanya ambil log yang punya divisi
+            ->whereNotNull('divisi')
             ->orderBy('waktu', 'desc')
             ->limit(5)
             ->get();
 
-        // Tambahkan statistik divisi jika diperlukan
-        $activeDivisions = Divisi::withCount(['memos' => function($query) {
-                $query->where('status', '!=', 'ditolak');
-            }])
-            ->orderBy('memos_count', 'desc')
-            ->limit(3)
-            ->get();
+        // PERBAIKAN: Ambil divisi aktif menggunakan accessor
+        $activeDivisions = Divisi::all()->map(function($divisi) {
+            // Tambahkan count menggunakan accessor
+            return (object) [
+                'id' => $divisi->id,
+                'nama' => $divisi->nama,
+                'memo_count' => $divisi->memo_count,
+                'approved_count' => $divisi->approved_count,
+                'rejected_count' => $divisi->rejected_count,
+                'pending_count' => $divisi->pending_count
+            ];
+        })->sortByDesc('memo_count')->take(3);
 
         return view('manager.dashboard', compact(
             'totalMemo', 
