@@ -164,23 +164,39 @@
                             @else bg-gray-400 @endif
                             rounded-full mt-2"></div>
                         <div class="flex-1">
+                            <!-- PERBAIKAN: Gunakan optional chaining dan null coalescing -->
                             <p class="text-sm font-medium text-gray-900">
-                                {{ $activity->user->name }}: 
-                                @if($activity->aksi == 'penerusan_ke_divisi' || $activity->aksi == 'persetujuan')
+                                {{ $activity->user?->name ?? 'Sistem' }}: 
+                                @if($activity->aksi == 'penerusan_ke_divisi')
+                                    Meneruskan memo ke divisi
+                                @elseif($activity->aksi == 'persetujuan')
                                     Menyetujui memo
-                                @elseif($activity->aksi == 'penolakan_final' || $activity->aksi == 'penolakan')
+                                @elseif($activity->aksi == 'penolakan_final')
+                                    Menolak memo
+                                @elseif($activity->aksi == 'penolakan')
                                     Menolak memo
                                 @elseif($activity->aksi == 'penandatanganan')
                                     Menandatangani memo
+                                @elseif($activity->aksi == 'penerimaan')
+                                    Menerima memo
+                                @elseif($activity->aksi == 'penerusan_manager')
+                                    Meneruskan ke Manager
+                                @elseif($activity->aksi == 'penerusan_staff')
+                                    Meneruskan ke Staff
                                 @else
-                                    {{ $activity->aksi }}
+                                    {{ ucfirst(str_replace('_', ' ', $activity->aksi)) }}
                                 @endif
                             </p>
                             <p class="text-xs text-gray-500 mt-1">
                                 {{ \Carbon\Carbon::parse($activity->waktu)->diffForHumans() }}
+                                @if($activity->divisi)
+                                    • Divisi: {{ $activity->divisi }}
+                                @endif
                             </p>
                             @if($activity->catatan)
-                            <p class="text-xs text-gray-600 mt-1">Catatan: {{ $activity->catatan }}</p>
+                            <p class="text-xs text-gray-600 mt-1 break-words">
+                                <span class="font-medium">Catatan:</span> {{ $activity->catatan }}
+                            </p>
                             @endif
                         </div>
                     </div>
@@ -191,13 +207,81 @@
                     @endforelse
                 </div>
                 
+                @if($recentActivities->count() > 0)
                 <div class="mt-4 pt-4 border-t border-gray-200">
-                    <a href="{{ route('manager.arsip.index') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
-                        Lihat semua aktivitas →
+                    <a href="{{ route('manager.arsip.index') }}" class="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                        Lihat semua aktivitas
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </a>
                 </div>
+                @endif
             </div>
         </div>
+
+        <!-- Additional Info -->
+        @if($activeDivisions->count() > 0)
+        <div class="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Aktivitas Divisi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                @foreach($activeDivisions as $division)
+                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-medium text-gray-900">{{ $division->nama }}</h3>
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                            {{ $division->memo_count }} memo
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <div class="flex items-center justify-between mb-1">
+                            <span>Disetujui:</span>
+                            <span class="font-medium text-green-600">{{ $division->approved_count ?? 0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between mb-1">
+                            <span>Ditolak:</span>
+                            <span class="font-medium text-red-600">{{ $division->rejected_count ?? 0 }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span>Menunggu:</span>
+                            <span class="font-medium text-yellow-600">{{ $division->pending_count ?? 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+    /* Optional: Tambahkan style custom jika diperlukan */
+    .break-words {
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Dashboard Manager loaded successfully');
+        
+        // Optional: Tambahkan interaktivitas jika diperlukan
+        const statCards = document.querySelectorAll('.bg-white.rounded-xl');
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+@endpush
