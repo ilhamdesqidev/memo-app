@@ -6,7 +6,12 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold text-gray-800">Detail Memo - Manager</h2>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                <span class="px-3 py-1 text-xs font-semibold rounded-full 
+                    @if($memo->status == 'diajukan') bg-yellow-100 text-yellow-800
+                    @elseif($memo->status == 'disetujui') bg-green-100 text-green-800
+                    @elseif($memo->status == 'ditolak') bg-red-100 text-red-800
+                    @else bg-gray-100 text-gray-800
+                    @endif">
                     {{ ucfirst($memo->status) }}
                 </span>
             </div>
@@ -21,11 +26,23 @@
                 </div>
                 <div>
                     <h4 class="text-sm font-medium text-gray-500">Tanggal</h4>
-                    <p class="mt-1 text-sm text-gray-900">{{ $memo->tanggal->format('d F Y') }}</p>
+                    <p class="mt-1 text-sm text-gray-900">
+                        @if($memo->tanggal)
+                            {{ $memo->tanggal->format('d F Y') }}
+                        @else
+                            {{ $memo->created_at->format('d F Y') }}
+                        @endif
+                    </p>
                 </div>
                 <div>
                     <h4 class="text-sm font-medium text-gray-500">Dari</h4>
-                    <p class="mt-1 text-sm text-gray-900">{{ $memo->dibuatOleh->name }} ({{ $memo->divisiAsal->nama }})</p>
+                    <!-- PERBAIKAN: Gunakan optional chaining -->
+                    <p class="mt-1 text-sm text-gray-900">
+                        {{ $memo->dibuatOleh?->name ?? $memo->dari }} 
+                        @if($memo->divisiAsal?->nama)
+                            ({{ $memo->divisiAsal->nama }})
+                        @endif
+                    </p>
                 </div>
                 <div>
                     <h4 class="text-sm font-medium text-gray-500">Perihal</h4>
@@ -59,9 +76,15 @@
                     <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                     </svg>
-                    <a href="{{ asset('storage/' . $memo->lampiran) }}" target="_blank" class="ml-2 text-sm text-blue-600 hover:text-blue-800">
-                        Download Lampiran
-                    </a>
+                    @if(Str::startsWith($memo->lampiran, 'http'))
+                        <a href="{{ $memo->lampiran }}" target="_blank" class="ml-2 text-sm text-blue-600 hover:text-blue-800">
+                            Download Lampiran
+                        </a>
+                    @else
+                        <a href="{{ asset('storage/' . $memo->lampiran) }}" target="_blank" class="ml-2 text-sm text-blue-600 hover:text-blue-800">
+                            Download Lampiran
+                        </a>
+                    @endif
                 </div>
             </div>
             @endif
@@ -78,10 +101,13 @@
                         <select name="divisi_tujuan" required class="w-full border border-gray-300 rounded-md p-2" id="divisiSelect">
                             <option value="">Pilih Divisi Tujuan</option>
                             @foreach($otherDivisions as $division)
-                                @if($division->asistenManagers->count() > 0)
+                                @php
+                                    $asmen = $division->asistenManagers->first();
+                                @endphp
+                                @if($asmen)
                                     <option value="{{ $division->nama }}" 
-                                        data-asmen="{{ $division->asistenManagers->first()->name }}">
-                                        {{ $division->nama }} (Asmen: {{ $division->asistenManagers->first()->name }})
+                                        data-asmen="{{ $asmen->name }}">
+                                        {{ $division->nama }} (Asmen: {{ $asmen->name }})
                                     </option>
                                 @endif
                             @endforeach
@@ -174,20 +200,34 @@
             <div class="mt-8 border-t border-gray-200 pt-4">
                 <h3 class="text-lg font-medium text-gray-900 mb-3">Riwayat Memo</h3>
                 <div class="space-y-4">
-                    @foreach($memo->logs as $log)
+                    @forelse($memo->logs as $log)
                     <div class="flex">
                         <div class="flex-shrink-0 mr-3">
                             <div class="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                                <span class="text-gray-600 text-sm">{{ substr($log->user->name, 0, 1) }}</span>
+                                <!-- PERBAIKAN: Gunakan optional chaining -->
+                                <span class="text-gray-600 text-sm">
+                                    {{ $log->user?->name ? substr($log->user->name, 0, 1) : 'S' }}
+                                </span>
                             </div>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-gray-900 truncate">{{ $log->user->name }}</div>
-                            <div class="text-sm text-gray-500">{{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}</div>
+                            <!-- PERBAIKAN: Gunakan optional chaining -->
+                            <div class="text-sm font-medium text-gray-900 truncate">
+                                {{ $log->user?->name ?? 'Sistem' }}
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                {{ $log->aksi }} - {{ \Carbon\Carbon::parse($log->waktu)->format('d M Y H:i') }}
+                            </div>
+                            @if($log->catatan)
                             <div class="mt-1 text-sm text-gray-700 break-words">{{ $log->catatan }}</div>
+                            @endif
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="text-center py-4 text-gray-500">
+                        Belum ada riwayat untuk memo ini
+                    </div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -212,7 +252,7 @@
             <div class="px-6 py-4 overflow-y-auto flex-1">
                 <div class="prose max-w-none">
                     <div class="bg-gray-50 rounded-lg p-4 text-gray-800 leading-relaxed break-words" style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;">
-                        {{ strip_tags($memo->isi) }}
+                        {!! nl2br(e($memo->isi)) !!}
                     </div>
                 </div>
             </div>
@@ -237,31 +277,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalTop = document.getElementById('closeMemoModal');
     const closeModalBottom = document.getElementById('closeMemoModalBottom');
     
-    // Show modal
-    showMemoBtn.addEventListener('click', function() {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    });
+    if (showMemoBtn) {
+        showMemoBtn.addEventListener('click', function() {
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
     
     // Close modal functions
     function closeModal() {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
     }
     
-    closeModalTop.addEventListener('click', closeModal);
-    closeModalBottom.addEventListener('click', closeModal);
+    if (closeModalTop) closeModalTop.addEventListener('click', closeModal);
+    if (closeModalBottom) closeModalBottom.addEventListener('click', closeModal);
     
     // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
     
     // Close modal with ESC key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
             closeModal();
         }
     });
@@ -284,48 +331,52 @@ document.addEventListener('DOMContentLoaded', function() {
     const divisiSelect = document.getElementById('divisiSelect');
     const forwardForm = document.getElementById('forwardForm');
     
-    forwardForm.addEventListener('submit', function(e) {
-        if (!divisiSelect.value) {
-            e.preventDefault();
-            alert('Silakan pilih divisi tujuan terlebih dahulu');
-            return false;
-        }
+    if (forwardForm) {
+        forwardForm.addEventListener('submit', function(e) {
+            if (!divisiSelect || !divisiSelect.value) {
+                e.preventDefault();
+                alert('Silakan pilih divisi tujuan terlebih dahulu');
+                return false;
+            }
 
-        // Konfirmasi penerusan dengan/tanpa tanda tangan
-        const includeSignature = signatureCheckbox && signatureCheckbox.checked;
-        const confirmMessage = includeSignature 
-            ? 'Apakah Anda yakin ingin meneruskan memo ini dengan tanda tangan digital Anda?'
-            : 'Apakah Anda yakin ingin meneruskan memo ini?';
-            
-        if (!confirm(confirmMessage)) {
-            e.preventDefault();
-            return false;
-        }
-    });
+            // Konfirmasi penerusan dengan/tanpa tanda tangan
+            const includeSignature = signatureCheckbox && signatureCheckbox.checked;
+            const confirmMessage = includeSignature 
+                ? 'Apakah Anda yakin ingin meneruskan memo ini dengan tanda tangan digital Anda?'
+                : 'Apakah Anda yakin ingin meneruskan memo ini?';
+                
+            if (!confirm(confirmMessage)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
 
     // Validasi form penolakan
     const rejectForm = document.getElementById('rejectForm');
     
-    rejectForm.addEventListener('submit', function(e) {
-        const alasan = rejectForm.querySelector('textarea[name="alasan"]').value.trim();
-        
-        if (!alasan) {
-            e.preventDefault();
-            alert('Silakan berikan alasan penolakan');
-            return false;
-        }
-        
-        if (alasan.length > 500) {
-            e.preventDefault();
-            alert('Alasan penolakan maksimal 500 karakter');
-            return false;
-        }
-        
-        if (!confirm('Apakah Anda yakin ingin menolak memo ini?')) {
-            e.preventDefault();
-            return false;
-        }
-    });
+    if (rejectForm) {
+        rejectForm.addEventListener('submit', function(e) {
+            const alasan = rejectForm.querySelector('textarea[name="alasan"]');
+            
+            if (!alasan || !alasan.value.trim()) {
+                e.preventDefault();
+                alert('Silakan berikan alasan penolakan');
+                return false;
+            }
+            
+            if (alasan.value.trim().length > 500) {
+                e.preventDefault();
+                alert('Alasan penolakan maksimal 500 karakter');
+                return false;
+            }
+            
+            if (!confirm('Apakah Anda yakin ingin menolak memo ini?')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
 });
 </script>
 @endpush
@@ -339,31 +390,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeModalTop = document.getElementById('closeMemoModal');
     const closeModalBottom = document.getElementById('closeMemoModalBottom');
     
-    // Show modal
-    showMemoBtn.addEventListener('click', function() {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    });
+    if (showMemoBtn) {
+        showMemoBtn.addEventListener('click', function() {
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
     
     // Close modal functions
     function closeModal() {
-        modal.classList.add('hidden');
-        document.body.style.overflow = 'auto';
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
     }
     
-    closeModalTop.addEventListener('click', closeModal);
-    closeModalBottom.addEventListener('click', closeModal);
+    if (closeModalTop) closeModalTop.addEventListener('click', closeModal);
+    if (closeModalBottom) closeModalBottom.addEventListener('click', closeModal);
     
     // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
     
     // Close modal with ESC key
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
             closeModal();
         }
     });
