@@ -232,8 +232,7 @@
                 </a>
                 @endif
 
-                <!-- Button untuk delete (hanya jika status draft dan pembuatnya sendiri) -->
-                @if($memo->status == 'draft' && $memo->dibuat_oleh_user_id == auth()->id())
+                <!-- Button untuk delete (BISA LANGSUNG HAPUS TANPA SYARAT STATUS) -->
                 <form action="{{ route('staff.memo.destroy', $memo->id) }}" 
                       method="POST" 
                       class="inline delete-form"
@@ -250,7 +249,6 @@
                         Hapus Memo
                     </button>
                 </form>
-                @endif
 
                 <!-- Button untuk regenerate PDF (hanya untuk admin/pembuat memo) -->
                 @if($memo->dibuat_oleh_user_id == auth()->id() || auth()->user()->role == 'admin')
@@ -329,12 +327,13 @@
 function confirmDelete(memoId, memoNumber) {
     Swal.fire({
         title: 'Konfirmasi Hapus',
-        html: `Apakah Anda yakin ingin menghapus memo dengan nomor <strong>${memoNumber}</strong>?`,
+        html: `Apakah Anda yakin ingin menghapus memo dengan nomor <strong>${memoNumber}</strong>?<br><br>
+               <span class="text-red-600 font-semibold">⚠️ PERINGATAN: Tindakan ini tidak dapat dibatalkan!</span>`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Ya, Hapus!',
+        confirmButtonText: 'Ya, Hapus Sekarang!',
         cancelButtonText: 'Batal',
         reverseButtons: true,
         customClass: {
@@ -343,6 +342,16 @@ function confirmDelete(memoId, memoNumber) {
         }
     }).then((result) => {
         if (result.isConfirmed) {
+            // Tampilkan loading state
+            Swal.fire({
+                title: 'Menghapus...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+            
             // Cari form yang sesuai dengan memo ID
             const form = document.querySelector(`form.delete-form[data-id="${memoId}"]`);
             if (form) {
