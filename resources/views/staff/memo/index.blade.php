@@ -187,6 +187,25 @@
                                                 </svg>
                                             </a>
                                         @endif
+
+                                        <!-- TOMBOL DELETE (DITAMBAHKAN DI SINI) -->
+                                        <!-- Hapus memo langsung tanpa syarat status -->
+                                        <form action="{{ route('staff.memo.destroy', $memo->id) }}" 
+                                              method="POST" 
+                                              class="inline delete-form"
+                                              data-id="{{ $memo->id }}"
+                                              data-nomor="{{ $memo->nomor }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    onclick="confirmDelete({{ $memo->id }}, '{{ $memo->nomor }}')"
+                                                    class="p-2.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-xl transition-all duration-200"
+                                                    title="Hapus Memo">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                </svg>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -230,6 +249,8 @@
 }
 </style>
 
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function filterByStatus(status) {
     const url = new URL(window.location);
@@ -240,5 +261,43 @@ function filterByStatus(status) {
     }
     window.location = url;
 }
+
+function confirmDelete(memoId, memoNumber) {
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        html: `Apakah Anda yakin ingin menghapus memo dengan nomor <strong>${memoNumber}</strong>?<br><br>
+               <span class="text-red-600 font-semibold">⚠️ PERINGATAN: Tindakan ini tidak dapat dibatalkan!</span>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus Sekarang!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+            confirmButton: 'px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
+            cancelButton: 'px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Tampilkan loading state
+            Swal.fire({
+                title: 'Menghapus...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading()
+                }
+            });
+            
+            // Cari form yang sesuai dengan memo ID
+            const form = document.querySelector(`form.delete-form[data-id="${memoId}"]`);
+            if (form) {
+                form.submit();
+            }
+        }
+    });
+}
 </script>
+@endpush
 @endsection
