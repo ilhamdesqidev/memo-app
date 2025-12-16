@@ -188,8 +188,7 @@
                                             </a>
                                         @endif
                                         
-                                        <!-- DELETE BUTTON - Tampil untuk semua memo yang belum disetujui -->
-                                        <!-- Hapus kondisi @if($memo->status == 'draft') agar tombol delete selalu muncul -->
+                                        <!-- DELETE BUTTON (ADDED HERE) -->
                                         <form action="{{ route('staff.memo.destroy', $memo->id) }}" 
                                               method="POST" 
                                               class="inline delete-form"
@@ -198,7 +197,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" 
-                                                    onclick="confirmDelete({{ $memo->id }}, '{{ $memo->nomor }}', '{{ $memo->status }}')"
+                                                    onclick="confirmDelete({{ $memo->id }}, '{{ $memo->nomor }}')"
                                                     class="p-2.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-xl transition-all duration-200"
                                                     title="Hapus Memo">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,33 +261,10 @@ function filterByStatus(status) {
     window.location = url;
 }
 
-function confirmDelete(memoId, memoNumber, memoStatus) {
-    // Pesan berbeda berdasarkan status memo
-    let statusMessage = '';
-    switch(memoStatus) {
-        case 'draft':
-            statusMessage = 'Status: <span class="text-gray-600 font-semibold">Draft</span>';
-            break;
-        case 'diajukan':
-            statusMessage = 'Status: <span class="text-yellow-600 font-semibold">Diajukan</span>';
-            break;
-        case 'revisi':
-            statusMessage = 'Status: <span class="text-orange-600 font-semibold">Revisi</span>';
-            break;
-        case 'ditolak':
-            statusMessage = 'Status: <span class="text-red-600 font-semibold">Ditolak</span>';
-            break;
-        default:
-            statusMessage = '';
-    }
-    
+function confirmDelete(memoId, memoNumber) {
     Swal.fire({
         title: 'Konfirmasi Hapus',
-        html: `Apakah Anda yakin ingin menghapus memo?<br><br>
-               <div class="text-left">
-                 <div><strong>Nomor:</strong> ${memoNumber}</div>
-                 <div>${statusMessage}</div>
-               </div><br>
+        html: `Apakah Anda yakin ingin menghapus memo dengan nomor <strong>${memoNumber}</strong>?<br><br>
                <span class="text-red-600 font-semibold">⚠️ PERINGATAN: Tindakan ini tidak dapat dibatalkan!</span>`,
         icon: 'warning',
         showCancelButton: true,
