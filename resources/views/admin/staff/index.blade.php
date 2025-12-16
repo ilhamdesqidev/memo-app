@@ -1,278 +1,335 @@
-@extends('home')
+@extends('layouts.divisi')
 
 @section('content')
-<div class="p-6 bg-gray-50 min-h-screen">
-    <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Manajemen User</h1>
-                <p class="text-gray-600 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 5A2 2 0 1 0 5 9 2 2 0 1 0 5 5z"></path>
-                        <path d="m19.5,10h-.7c-.84,0-1.61.42-2.08,1.11l-3.26,4.89h-2.93l-3.26-4.89c-.46-.7-1.24-1.11-2.08-1.11h-.7c-1.38,0-2.5,1.12-2.5,2.5v5.5h5v-3.7l1.87,2.81c.37.56.99.89,1.66.89h2.93c.67,0,1.29-.33,1.66-.89l1.87-2.81v3.7h5v-5.5c0-1.38-1.12-2.5-2.5-2.5Z"></path>
-                        <path d="M19 5A2 2 0 1 0 19 9 2 2 0 1 0 19 5z"></path>
-                        <path d="m14.51,10.17c.65-.67.65-1.74,0-2.41-.66-.67-1.69-.67-2.34,0l-.17.17-.17-.17c-.65-.67-1.69-.67-2.34,0-.65.68-.65,1.74,0,2.41l2.51,2.58,2.51-2.58Z"></path>
+<div class="container mx-auto px-4 py-6 max-w-4xl">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <div class="flex items-center">
+                <a href="{{ route('staff.memo.index') }}" 
+                   class="p-2 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-800 transition-colors mr-4">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
-                    Kelola pengguna sistem dengan mudah dan efisien
-                </p>
+                </a>
+                <h2 class="text-xl font-semibold text-gray-800">Detail Memo</h2>
             </div>
-            <!-- Stats Cards -->
-            <div class="hidden md:flex space-x-4">
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 px-4 py-3">
-                    <div class="flex items-center">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-600">Total User</p>
-                            <p class="text-lg font-semibold text-gray-900">{{ $users->total() }}</p>
-                        </div>
-                    </div>
+            @php
+                $statusClasses = [
+                    'draft' => 'bg-gray-100 text-gray-800',
+                    'pending' => 'bg-yellow-100 text-yellow-800',
+                    'approved' => 'bg-green-100 text-green-800',
+                    'rejected' => 'bg-red-100 text-red-800',
+                ];
+                $statusText = [
+                    'draft' => 'Draft',
+                    'pending' => 'Menunggu Persetujuan',
+                    'approved' => 'Disetujui',
+                    'rejected' => 'Ditolak',
+                ];
+            @endphp
+            <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $statusClasses[$memo->status] ?? 'bg-gray-100 text-gray-800' }}">
+                {{ $statusText[$memo->status] ?? ucfirst($memo->status) }}
+            </span>
+        </div>
+
+        <!-- Info Memo -->
+        <div class="px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <p class="text-sm text-gray-500">Nomor Memo</p>
+                    <p class="font-medium">{{ $memo->nomor ?? '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Tanggal</p>
+                    <p class="font-medium">{{ $memo->tanggal->format('d F Y') }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Dari</p>
+                    <p class="font-medium">{{ $memo->dari }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Kepada</p>
+                    <p class="font-medium">{{ $memo->kepada }}</p>
                 </div>
             </div>
+
+            <div class="mb-4">
+                <p class="text-sm text-gray-500">Perihal</p>
+                <p class="font-medium">{{ $memo->perihal }}</p>
+            </div>
+
+            <!-- Isi Memo Button -->
+            <div class="mb-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Isi Memo</h4>
+                <button onclick="openMemoModal()" 
+                        class="inline-flex items-center px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors duration-200 w-full text-left">
+                    <svg class="w-5 h-5 mr-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-medium text-gray-800">Klik untuk melihat isi memo</p>
+                        <p class="text-sm text-gray-500">Klik tombol ini untuk membaca isi memo lengkap</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Lampiran -->
+            @if($memo->lampiran)
+            <div class="mb-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Lampiran</h4>
+                <div class="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                    </svg>
+                    <span class="text-sm text-gray-600">{{ $memo->lampiran }}</span>
+                </div>
+            </div>
+            @endif
+
+            <!-- Signature -->
+            @if($memo->signature)
+            <div class="mb-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Tanda Tangan</h4>
+                @if(file_exists(storage_path('app/public/'.$memo->signature)))
+                    @if(Str::endsWith($memo->signature, '.pdf'))
+                    <div class="border border-gray-200 rounded-lg p-4 overflow-x-auto bg-gray-50">
+                        <embed src="{{ url('storage/'.$memo->signature) }}" 
+                            type="application/pdf"
+                            width="100%"
+                            height="300px"
+                            style="max-width: 100%">
+                        <p class="text-center mt-3 text-sm text-gray-600">{{ $memo->dari }}</p>
+                    </div>
+                    @else
+                    <div class="text-center p-4 border border-gray-200 rounded-lg max-w-xs mx-auto bg-gray-50">
+                        <img src="{{ url('storage/'.$memo->signature) }}" 
+                            alt="Tanda Tangan"
+                            class="max-h-32 mx-auto mb-2 w-full h-auto">
+                        <p class="text-sm text-gray-600">{{ $memo->dari }}</p>
+                    </div>
+                    @endif
+                @endif
+            </div>
+            @endif
         </div>
     </div>
 
-    <!-- Main Content Card -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <!-- Card Header -->
-        <div class="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-white to-gray-50">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-                <div>
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#NaNNaNNaN" viewBox="0 0 24 24">
-                            <path d="m20,3H4c-1.1,0-2,.9-2,2v14c0,1.1.9,2,2,2h16c1.1,0,2-.9,2-2V5c0-1.1-.9-2-2-2Zm0,5.25h-10v-3.25h10v3.25Zm-10,2h10v3.5s-10,0-10,0v-3.5Zm-2,3.5h-4v-3.5h4v3.5Zm0-8.75v3.25h-4v-3.25h4Zm-4,14v-3.25h4v3.25h-4Zm6,0v-3.25h10v3.25s-10,0-10,0Z"></path>
-                        </svg>
-                        Daftar User
-                    </h3>
-                    <p class="text-sm text-gray-500 mt-1">Menampilkan {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }} pengguna</p>
+    <!-- Riwayat Memo -->
+    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Riwayat Persetujuan</h3>
+        </div>
+        <div class="px-6 py-4">
+            @if($memo->logs && $memo->logs->count() > 0)
+                <div class="flow-root">
+                    <ul class="-mb-8">
+                        @foreach($memo->logs as $index => $log)
+                        <li>
+                            <div class="relative pb-8">
+                                @if(!$loop->last)
+                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                @endif
+                                <div class="relative flex space-x-3">
+                                    <div>
+                                        <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                                            <span class="text-white text-sm font-medium">{{ substr($log->user->name ?? $log->divisi ?? 'U', 0, 1) }}</span>
+                                        </span>
+                                    </div>
+                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">{{ $log->user->name ?? $log->divisi ?? 'Unknown' }}</p>
+                                            <div class="mt-1">
+                                                @if(str_contains(strtolower($log->aksi), 'approve') || str_contains(strtolower($log->aksi), 'setuju'))
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ ucfirst($log->aksi) }}
+                                                    </span>
+                                                @elseif(str_contains(strtolower($log->aksi), 'reject') || str_contains(strtolower($log->aksi), 'tolak'))
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                        <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ ucfirst($log->aksi) }}
+                                                    </span>
+                                                @elseif(str_contains(strtolower($log->aksi), 'revisi'))
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                        <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ ucfirst($log->aksi) }}
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                        <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {{ ucfirst($log->aksi) }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            @if($log->catatan || $log->rejection_reason)
+                                            <div class="mt-2 text-sm text-gray-600 bg-gray-50 border-l-4 border-gray-300 pl-3 py-2 pr-4 rounded-r">
+                                                <span class="block text-gray-500 text-xs mb-1 font-medium">Catatan:</span>
+                                                {{ $log->catatan ?? $log->rejection_reason }}
+                                            </div>
+                                            @endif
+                                        </div>
+                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                            <time datetime="{{ $log->waktu }}">{{ \Carbon\Carbon::parse($log->waktu)->format('d M Y') }}</time>
+                                            <br>
+                                            <time datetime="{{ $log->waktu }}">{{ \Carbon\Carbon::parse($log->waktu)->format('H:i') }}</time>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full md:w-auto">
-                    <!-- Search Box -->
-                    <form method="GET" action="{{ route('admin.staff.index') }}" class="relative w-full sm:w-64">
-                        <input type="text" 
-                               name="search"
-                               id="searchInput"
-                               value="{{ request('search') }}"
-                               placeholder="Cari user..." 
-                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                    </form>
-                    <!-- Add User Button -->
-                    <a href="{{ route('admin.staff.create') }}" 
-                       class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+            @else
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada riwayat</h3>
+                    <p class="mt-1 text-sm text-gray-500">Belum ada aktivitas persetujuan pada memo ini.</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Aksi</h3>
+        </div>
+        <div class="px-6 py-4">
+            <div class="flex flex-wrap gap-3">
+                <!-- Button untuk melihat PDF -->
+                @if($memo->pdf_path)
+                <a href="{{ route('staff.memo.pdf', $memo->id) }}" 
+                   target="_blank"
+                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Lihat PDF
+                </a>
+                @endif
+
+                <!-- Button untuk edit (hanya jika status draft atau revisi) -->
+                @if(in_array($memo->status, ['draft', 'revisi']) && $memo->dibuat_oleh_user_id == auth()->id())
+                <a href="{{ route('staff.memo.edit', $memo->id) }}"
+                   class="inline-flex items-center px-4 py-2 bg-amber-600 text-white text-sm font-medium rounded-lg hover:bg-amber-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Edit Memo
+                </a>
+                @endif
+
+                <!-- Button untuk delete (hanya jika status draft dan pembuatnya sendiri) -->
+                @if($memo->status == 'draft' && $memo->dibuat_oleh_user_id == auth()->id())
+                <form action="{{ route('staff.memo.destroy', $memo->id) }}" 
+                      method="POST" 
+                      class="inline delete-form"
+                      data-id="{{ $memo->id }}"
+                      data-nomor="{{ $memo->nomor }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="button" 
+                            onclick="confirmDelete({{ $memo->id }}, '{{ $memo->nomor }}')"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
-                        Tambah User
-                    </a>
-                </div>
+                        Hapus Memo
+                    </button>
+                </form>
+                @endif
+
+                <!-- Button untuk regenerate PDF (hanya untuk admin/pembuat memo) -->
+                @if($memo->dibuat_oleh_user_id == auth()->id() || auth()->user()->role == 'admin')
+                <button type="button" 
+                        onclick="regeneratePdf({{ $memo->id }})"
+                        class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Buat Ulang PDF
+                </button>
+                @endif
             </div>
         </div>
-        
-        <!-- Table Container -->
-        <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">No</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Nama</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Username</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Jabatan</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Role</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Divisi</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($users as $user)
-                    <tr class="hover:bg-gray-50 transition-all duration-200 group">
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors duration-200">
-                                {{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-8 w-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium text-xs mr-2">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="text-sm font-medium text-gray-900 truncate">{{ $user->name }}</div>
-                                    <div class="text-xs text-gray-500 truncate">ID: {{ $user->id }}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                                <div class="text-sm text-gray-600 truncate max-w-xs">{{ $user->username }}</div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm text-gray-900 capitalize truncate max-w-xs">
-                                {{ $user->jabatan ?? '-' }}
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 capitalize border border-blue-200">
-                                <div class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-1.5"></div>
-                                {{ $user->role }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                               <div class="text-sm text-gray-900 capitalize truncate max-w-xs">{{ $user->divisi->nama ?? '-' }}</div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex items-center space-x-2">
-                                <a href="{{ route('admin.staff.edit', $user->id) }}" 
-                                   class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                    Edit
-                                </a>
-                                <form action="{{ route('admin.staff.destroy', $user->id) }}" 
-                                      method="POST" 
-                                      class="inline delete-form"
-                                      data-id="{{ $user->id }}"
-                                      data-name="{{ $user->name }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" 
-                                            onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')"
-                                            class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                        Hapus
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="px-6 py-16 text-center">
-                            <div class="text-gray-500">
-                                <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-medium text-gray-900 mb-2">Belum ada data user</h3>
-                                <p class="text-sm text-gray-500 mb-4">Mulai dengan menambahkan user pertama ke dalam sistem</p>
-                                <a href="{{ route('admin.staff.create') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors duration-200">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                    Tambah User Sekarang
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Pagination Section -->
-        @if($users->hasPages())
-        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-                <div class="text-sm text-gray-600">
-                    Menampilkan {{ $users->firstItem() }} - {{ $users->lastItem() }} dari {{ $users->total() }} data
-                </div>
-                <div class="flex items-center space-x-2">
-                    <!-- Previous Page Link -->
-                    @if ($users->onFirstPage())
-                        <span class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
-                            &laquo; Sebelumnya
-                        </span>
-                    @else
-                        <a href="{{ $users->previousPageUrl() }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                            &laquo; Sebelumnya
-                        </a>
-                    @endif
-
-                    <!-- Page Numbers -->
-                    @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
-                        @if ($page == $users->currentPage())
-                            <span class="px-3 py-1 rounded-md border border-blue-500 bg-blue-500 text-white">
-                                {{ $page }}
-                            </span>
-                        @else
-                            <a href="{{ $url }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                                {{ $page }}
-                            </a>
-                        @endif
-                    @endforeach
-
-                    <!-- Next Page Link -->
-                    @if ($users->hasMorePages())
-                        <a href="{{ $users->nextPageUrl() }}" class="px-3 py-1 rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
-                            Selanjutnya &raquo;
-                        </a>
-                    @else
-                        <span class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 text-gray-400 cursor-not-allowed">
-                            Selanjutnya &raquo;
-                        </span>
-                    @endif
-                </div>
-            </div>
-        </div>
-        @endif
     </div>
 </div>
 
-<style>
-    .group:hover .group-hover\:bg-blue-100 {
-        background-color: #dbeafe;
-    }
-    .group:hover .group-hover\:text-blue-600 {
-        color: #2563eb;
-    }
-    
-    tr {
-        transition: all 0.2s ease;
-    }
-    tr:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    
-    @media (max-width: 768px) {
-        table {
-            display: block;
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-    }
-</style>
+<!-- Modal untuk Isi Memo -->
+<div id="memoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center pb-4 mb-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Isi Memo</h3>
+                <button onclick="closeMemoModal()" class="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 rounded">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="max-h-96 overflow-y-auto">
+                <div class="text-gray-700 leading-relaxed break-words memo-content">
+                    {!! $memo->isi !!}
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="flex justify-end pt-4 mt-4 border-t border-gray-200">
+                <button onclick="closeMemoModal()" 
+                        class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Alasan Penolakan</h3>
+        <form id="rejectForm" method="POST">
+            @csrf
+            @method('PUT')
+            <textarea 
+                name="rejection_reason" 
+                rows="3" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none mb-4" 
+                placeholder="Masukkan alasan penolakan..."
+                required></textarea>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeRejectModal()" class="px-4 py-2 text-gray-700 text-sm font-medium hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300">
+                    Batal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    Tolak
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-function confirmDelete(userId, userName) {
+function confirmDelete(memoId, memoNumber) {
     Swal.fire({
         title: 'Konfirmasi Hapus',
-        html: `Apakah Anda yakin ingin menghapus user <strong>${userName}</strong>?`,
+        html: `Apakah Anda yakin ingin menghapus memo dengan nomor <strong>${memoNumber}</strong>?`,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
@@ -281,13 +338,13 @@ function confirmDelete(userId, userName) {
         cancelButtonText: 'Batal',
         reverseButtons: true,
         customClass: {
-            confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
-            cancelButton: 'px-4 py-2 text-sm font-medium rounded-md'
+            confirmButton: 'px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
+            cancelButton: 'px-4 py-2 text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300'
         }
     }).then((result) => {
         if (result.isConfirmed) {
-            // Cari form yang sesuai dengan user ID
-            const form = document.querySelector(`form.delete-form[data-id="${userId}"]`);
+            // Cari form yang sesuai dengan memo ID
+            const form = document.querySelector(`form.delete-form[data-id="${memoId}"]`);
             if (form) {
                 form.submit();
             }
@@ -295,13 +352,256 @@ function confirmDelete(userId, userName) {
     });
 }
 
-// Search functionality
-document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        this.closest('form').submit();
+function openMemoModal() {
+    document.getElementById('memoModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeMemoModal() {
+    document.getElementById('memoModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside
+document.getElementById('memoModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeMemoModal();
     }
 });
+
+// Close modal with ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeMemoModal();
+    }
+});
+
+function openRejectModal(memoId) {
+    const modal = document.getElementById('rejectModal');
+    const form = document.getElementById('rejectForm');
+    form.action = `/sipil/memo/${memoId}/reject`;
+    modal.classList.remove('hidden');
+}
+
+function closeRejectModal() {
+    document.getElementById('rejectModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('rejectModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRejectModal();
+    }
+});
+
+function regeneratePdf(memoId) {
+    if (confirm('Anda yakin ingin membuat ulang PDF?')) {
+        fetch(`/staff/memo/${memoId}/regenerate-pdf`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'PDF berhasil dibuat ulang',
+                    confirmButtonColor: '#2563eb',
+                    confirmButtonText: 'OK'
+                });
+                window.location.reload();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text: data.message || 'Terjadi kesalahan saat membuat PDF',
+                    confirmButtonColor: '#dc2626',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Terjadi kesalahan saat membuat PDF',
+                confirmButtonColor: '#dc2626',
+                confirmButtonText: 'OK'
+            });
+        });
+    }
+}
 </script>
 @endpush
+
+<style>
+/* Custom styles untuk konten rich text di modal */
+.memo-content h1, .memo-content h2, .memo-content h3, 
+.memo-content h4, .memo-content h5, .memo-content h6 {
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #374151;
+}
+
+.memo-content h1 { font-size: 1.5rem; }
+.memo-content h2 { font-size: 1.25rem; }
+.memo-content h3 { font-size: 1.125rem; }
+.memo-content h4 { font-size: 1rem; }
+.memo-content h5 { font-size: 0.875rem; }
+.memo-content h6 { font-size: 0.75rem; }
+
+.memo-content p {
+    margin: 0.75rem 0;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.memo-content strong {
+    font-weight: 600;
+}
+
+.memo-content em {
+    font-style: italic;
+}
+
+.memo-content u {
+    text-decoration: underline;
+}
+
+.memo-content s {
+    text-decoration: line-through;
+}
+
+.memo-content ul, .memo-content ol {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.memo-content li {
+    margin: 0.25rem 0;
+    line-height: 1.5;
+}
+
+.memo-content blockquote {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #e5e7eb;
+    background-color: #f9fafb;
+    font-style: italic;
+    color: #6b7280;
+}
+
+.memo-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: ui-monospace, SFMono-Regular, "Menlo", "Monaco", "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Code", "Droid Sans Mono", "Courier New", monospace;
+    font-size: 0.875em;
+    color: #dc2626;
+}
+
+.memo-content pre {
+    background-color: #f3f4f6;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+    border: 1px solid #e5e7eb;
+}
+
+.memo-content pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+}
+
+.memo-content a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.memo-content a:hover {
+    color: #1d4ed8;
+}
+
+.memo-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0;
+    border-radius: 0.375rem;
+}
+
+/* Styling untuk align text */
+.memo-content .ql-align-center {
+    text-align: center;
+}
+
+.memo-content .ql-align-right {
+    text-align: right;
+}
+
+.memo-content .ql-align-justify {
+    text-align: justify;
+}
+
+/* Color styling */
+.memo-content .ql-color-red {
+    color: #dc2626;
+}
+
+.memo-content .ql-color-blue {
+    color: #2563eb;
+}
+
+.memo-content .ql-color-green {
+    color: #16a34a;
+}
+
+/* Background color styling */
+.memo-content .ql-bg-yellow {
+    background-color: #fef3c7;
+}
+
+.memo-content .ql-bg-red {
+    background-color: #fecaca;
+}
+
+.memo-content .ql-bg-blue {
+    background-color: #dbeafe;
+}
+
+/* Font size styling */
+.memo-content .ql-size-small {
+    font-size: 0.75em;
+}
+
+.memo-content .ql-size-large {
+    font-size: 1.25em;
+}
+
+.memo-content .ql-size-huge {
+    font-size: 1.5em;
+}
+
+/* Responsive design for action buttons */
+@media (max-width: 640px) {
+    .flex-wrap.gap-3 {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .flex-wrap.gap-3 > * {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
 @endsection
