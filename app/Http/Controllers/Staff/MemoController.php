@@ -67,6 +67,30 @@ class MemoController extends Controller
         ]);
     }
 
+    public function destroy($id)
+{
+    $memo = Memo::findOrFail($id);
+    
+    // Pastikan hanya pembuat memo yang bisa menghapus
+    if ($memo->dibuat_oleh_user_id !== auth()->id()) {
+        abort(403, 'Anda tidak memiliki izin untuk menghapus memo ini.');
+    }
+    
+    // Hapus file PDF jika ada
+    if ($memo->pdf_path && Storage::exists('public/'.$memo->pdf_path)) {
+        Storage::delete('public/'.$memo->pdf_path);
+    }
+    
+    // Hapus logs memo
+    MemoLog::where('memo_id', $memo->id)->delete();
+    
+    // Hapus memo
+    $memo->delete();
+    
+    return redirect()->route('staff.memo.index')
+        ->with('success', 'Memo berhasil dihapus');
+}
+
     public function create()
     {
         $divisiTujuan = Divisi::where('nama', '!=', auth()->user()->divisi->nama)->get();

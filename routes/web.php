@@ -224,6 +224,8 @@ Route::prefix('staff')
             Route::get('/{memo}', [\App\Http\Controllers\Staff\MemoController::class, 'show'])->name('show');
             Route::get('/{memo}/edit', [\App\Http\Controllers\Staff\MemoController::class, 'edit'])->name('edit');
             Route::put('/{memo}', [\App\Http\Controllers\Staff\MemoController::class, 'update'])->name('update');
+            // TAMBAHKAN ROUTE DESTROY DI SINI
+            Route::delete('/{memo}', [\App\Http\Controllers\Staff\MemoController::class, 'destroy'])->name('destroy');
             Route::post('/update-status', [\App\Http\Controllers\Staff\MemoController::class, 'updateStatus'])->name('updateStatus');
             Route::post('/{memo}/regenerate-pdf', [\App\Http\Controllers\Staff\MemoController::class, 'regeneratePdf'])->name('regenerate-pdf');
             Route::get('/{memo}/pdf', [\App\Http\Controllers\Staff\MemoController::class, 'viewPdf'])->name('pdf');
