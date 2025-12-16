@@ -140,7 +140,7 @@
                         <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center space-x-2">
                                 <a href="{{ route('admin.staff.edit', $user->id) }}" 
-                                   class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-all duration-200 hover:shadow-sm">
+                                   class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-md transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
                                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                     </svg>
@@ -148,12 +148,14 @@
                                 </a>
                                 <form action="{{ route('admin.staff.destroy', $user->id) }}" 
                                       method="POST" 
-                                      class="inline" 
-                                      onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                      class="inline delete-form"
+                                      data-id="{{ $user->id }}"
+                                      data-name="{{ $user->name }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                            class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition-all duration-200 hover:shadow-sm">
+                                    <button type="button" 
+                                            onclick="confirmDelete({{ $user->id }}, '{{ $user->name }}')"
+                                            class="inline-flex items-center px-2.5 py-1 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
@@ -263,4 +265,43 @@
         }
     }
 </style>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function confirmDelete(userId, userName) {
+    Swal.fire({
+        title: 'Konfirmasi Hapus',
+        html: `Apakah Anda yakin ingin menghapus user <strong>${userName}</strong>?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6b7280',
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+            confirmButton: 'px-4 py-2 text-sm font-medium rounded-md',
+            cancelButton: 'px-4 py-2 text-sm font-medium rounded-md'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Cari form yang sesuai dengan user ID
+            const form = document.querySelector(`form.delete-form[data-id="${userId}"]`);
+            if (form) {
+                form.submit();
+            }
+        }
+    });
+}
+
+// Search functionality
+document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        this.closest('form').submit();
+    }
+});
+</script>
+@endpush
 @endsection
